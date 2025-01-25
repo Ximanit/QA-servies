@@ -1,7 +1,5 @@
-const profile = require('./ProfileController');
-const mapProfile = require('./MapProfileController');
+const auth = require('./Auth');
 
 module.exports = {
-	profile,
-	mapProfile,
+	auth,
 };

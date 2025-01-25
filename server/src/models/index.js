@@ -1,7 +1,7 @@
-const Profile = require('./Profile');
-const MapProfile = require('./MapProfile');
+const usersauth = require('./Users');
+const userroles = require('./Roles');
 
 module.exports = {
-	Profile,
-	MapProfile,
+	usersauth,
+	userroles,
 };
