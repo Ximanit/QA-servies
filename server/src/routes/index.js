@@ -1,3 +1,3 @@
 module.exports = {
-	routes: ['auth'],
+	routes: ['auth', 'answer', 'question'],
 };

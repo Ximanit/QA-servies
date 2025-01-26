@@ -6,6 +6,8 @@ const cors = require('cors');
 // const path = require('path');
 const { routes } = require('./src/routes');
 
+const errorMiddleware = require('./src/middleware/errorMiddleware');
+
 const db_uri = 'mongodb://localhost:27017/QA';
 const hostname = 'localhost';
 const port = 3000;
@@ -23,6 +25,7 @@ const corsOptions = {
 	allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
 };
 
+app.use(errorMiddleware);
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
