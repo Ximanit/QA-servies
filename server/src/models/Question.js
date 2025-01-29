@@ -28,6 +28,10 @@ const QuestionSchema = new Schema({
 		type: Date,
 		default: Date.now,
 	},
+	answers: {
+		type: Schema.Types.ObjectId,
+		ref: 'Answer',
+	}, // Добавьте это поле
 });
 
 module.exports = model('Question', QuestionSchema);
