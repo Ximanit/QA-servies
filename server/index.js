@@ -8,7 +8,9 @@ const { routes } = require('./src/routes');
 
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
-const db_uri = 'mongodb://localhost:27017/QA';
+// const db_uri = 'mongodb://localhost:27017/QA';
+const db_uri =
+	'mongodb+srv://admin:admin@cluster0.jis6w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const hostname = 'localhost';
 const port = 3000;
 
