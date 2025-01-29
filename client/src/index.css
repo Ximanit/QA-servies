@@ -1,0 +1,13 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.login-page,
+.register-page,
+.dashboard,
+.question-page,
+.not-found {
+	padding: 20px;
+}
