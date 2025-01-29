@@ -23,8 +23,9 @@ const app = express();
 
 const corsOptions = {
 	origin: '*',
-	methods: 'HEAD,PUT,PATCH,POST,DELETE',
-	allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+	methods: 'HEAD,PUT,PATCH,POST,DELETE, GET',
+	allowedHeaders:
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
 };
 
 app.use(errorMiddleware);
