@@ -8,11 +8,13 @@ const AuthLayout = ({ children }) => {
 		<Layout
 			style={{
 				minHeight: '100vh',
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
 			}}>
-			<Content>
+			<Content
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}>
 				<Card style={{ width: 400, textAlign: 'center', padding: '20px' }}>
 					{children}
 				</Card>

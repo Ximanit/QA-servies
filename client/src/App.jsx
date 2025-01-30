@@ -48,7 +48,7 @@ const App = () => (
 					<Route
 						path="/questions/:id"
 						element={
-							<ProtectedRoute allowedRoles={['user', 'special']}>
+							<ProtectedRoute>
 								<MainLayout>
 									<QuestionPage />
 								</MainLayout>
@@ -58,7 +58,7 @@ const App = () => (
 					<Route
 						path="/create-question"
 						element={
-							<ProtectedRoute allowedRoles={['user']}>
+							<ProtectedRoute>
 								<MainLayout>
 									<CreateQuestionPage />
 								</MainLayout>

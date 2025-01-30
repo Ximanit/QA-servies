@@ -10,6 +10,7 @@ const CreateQuestionPage = () => {
 	const navigate = useNavigate();
 
 	const onFinish = (values) => {
+		console.log(values);
 		dispatch(createQuestion(values));
 		navigate('/');
 	};
@@ -17,14 +18,11 @@ const CreateQuestionPage = () => {
 	return (
 		<Card title="Ask a Question" style={{ maxWidth: 600, margin: 'auto' }}>
 			<Form form={form} onFinish={onFinish} layout="vertical">
-				<Form.Item name="title" label="Title" rules={[{ required: true }]}>
+				<Form.Item name="title" label="Title">
 					{' '}
 					<Input />{' '}
 				</Form.Item>
-				<Form.Item
-					name="description"
-					label="Description"
-					rules={[{ required: true }]}>
+				<Form.Item name="description" label="Description">
 					{' '}
 					<Input.TextArea rows={4} />{' '}
 				</Form.Item>
