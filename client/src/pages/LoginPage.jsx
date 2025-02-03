@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setUser as setAuthUser } from '../store/slices/authSlice';
+import { setUser } from '../store/slices/authSlice';
 import { loginUser } from '../api';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,8 +17,7 @@ const LoginPage = () => {
 
 		try {
 			const data = await loginUser({ username, password });
-			const token = data.token; // предполагается, что токен возвращается в ответе
-			dispatch(setAuthUser({ username, token }));
+			dispatch(setUser({ data }));
 			message.success('Вы успешно вошли в систему!');
 			navigate('/');
 		} catch (error) {
