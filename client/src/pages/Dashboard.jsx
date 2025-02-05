@@ -7,6 +7,7 @@ import { fetchQuestions } from '../store/actions/questionsActions';
 const Dashboard = () => {
 	const dispatch = useDispatch();
 	const questions = useSelector((state) => state.questions.list);
+	const user = useSelector((state) => state.auth.user);
 
 	useEffect(() => {
 		dispatch(fetchQuestions()); // Получаем список вопросов при загрузке компонента
@@ -14,7 +15,7 @@ const Dashboard = () => {
 
 	return (
 		<div className="dashboard">
-			<h1>Добро пожаловать!</h1>
+			<h1>Добро пожаловать, {user}</h1>
 			<h2>Список вопросов</h2>
 			<ul>
 				{questions.length > 0 ? (
