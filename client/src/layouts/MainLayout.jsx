@@ -1,25 +1,105 @@
 // src/layouts/MainLayout.jsx
 import React from 'react';
-import { Layout, Menu } from 'antd';
-import { Link } from 'react-router-dom';
+import { LogoutOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme } from 'antd';
 
-const { Header, Content } = Layout;
+import { Link, Outlet } from 'react-router-dom';
+
+const { Header, Content, Sider } = Layout;
+
+const items2 = [
+	{
+		key: 'sub1',
+		label: 'Вопросы без ответа',
+		children: [
+			{
+				key: '67998f159685a5723a90e700',
+				label: <a href="/questions/67998f159685a5723a90e700">Test</a>,
+			},
+			{
+				key: '67a2bb9aec4441f9e79983a3',
+				label: <a href="/questions/67a2bb9aec4441f9e79983a3">1</a>,
+			},
+		],
+	},
+	{
+		key: 'sub2',
+		label: 'Вопросы с ответом',
+		children: [
+			{
+				key: '67a2bfe6ec4441f9e79983dc',
+				label: <a href="/questions/67a2bfe6ec4441f9e79983dc">Test</a>,
+			},
+			{
+				key: '67a2c07cec4441f9e79983ea',
+				label: <a href="/questions/67a2bfe6ec4441f9e79983dc">Test</a>,
+			},
+		],
+	},
+];
 
 const MainLayout = ({ children }) => {
+	const {
+		token: { colorBgContainer, borderRadiusLG },
+	} = theme.useToken();
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
-			<Header style={{ display: 'flex', alignItems: 'center' }}>
-				<h1 style={{ color: 'white', flexGrow: 1 }}>Q&A Platform</h1>
-				<Menu theme="dark" mode="horizontal">
+			<Header
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+				}}>
+				<h1 style={{ color: 'white' }}>Q&A Platform</h1>
+				<Menu theme="dark" mode="horizontal" style={{ width: '250px' }}>
 					<Menu.Item key="1">
 						<Link to="/">Home</Link>
 					</Menu.Item>
 					<Menu.Item key="2">
-						<Link to="/create-question">Create Question</Link>
+						<Link to="questions/create-question">Create Question</Link>
+					</Menu.Item>
+					<Menu.Item key="3">
+						<Link to="/auth/login">
+							<LogoutOutlined />
+						</Link>
 					</Menu.Item>
 				</Menu>
 			</Header>
-			<Content style={{ padding: '20px' }}>{children}</Content>
+			<Layout>
+				<Sider
+					width={200}
+					style={{
+						background: colorBgContainer,
+					}}>
+					<Menu
+						mode="inline"
+						defaultSelectedKeys={['1']}
+						defaultOpenKeys={['sub1']}
+						style={{
+							height: '100%',
+							borderRight: 0,
+						}}
+						items={items2}
+					/>
+				</Sider>
+				<Layout
+					style={{
+						padding: '24px',
+					}}>
+					<Content
+						style={{
+							padding: 24,
+							margin: 0,
+							minHeight: 280,
+							background: colorBgContainer,
+							borderRadius: borderRadiusLG,
+							display: 'flex',
+							alignContent: 'center',
+							justifyContent: 'center',
+						}}>
+						<Outlet />
+					</Content>
+				</Layout>
+			</Layout>
 		</Layout>
 	);
 };

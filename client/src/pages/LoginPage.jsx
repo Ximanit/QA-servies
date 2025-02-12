@@ -45,6 +45,7 @@ const LoginPage = () => {
 						Войти
 					</Button>
 				</Form.Item>
+				<a href="/auth/register">Зарегистрироваться</a>
 			</Form>
 		</div>
 	);

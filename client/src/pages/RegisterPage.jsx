@@ -57,6 +57,7 @@ const RegisterPage = () => {
 						Зарегистрироваться
 					</Button>
 				</Form.Item>
+				<a href="/auth/login">Войти в уже созданный профиль</a>
 			</Form>
 		</div>
 	);
