@@ -14,11 +14,11 @@ const items2 = [
 		children: [
 			{
 				key: '67998f159685a5723a90e700',
-				label: <a href="/questions/67998f159685a5723a90e700">Test</a>,
+				label: <Link to="/questions/67998f159685a5723a90e700">Test</Link>,
 			},
 			{
 				key: '67a2bb9aec4441f9e79983a3',
-				label: <a href="/questions/67a2bb9aec4441f9e79983a3">1</a>,
+				label: <Link to="/questions/67a2bb9aec4441f9e79983a3">1</Link>,
 			},
 		],
 	},
@@ -28,11 +28,11 @@ const items2 = [
 		children: [
 			{
 				key: '67a2bfe6ec4441f9e79983dc',
-				label: <a href="/questions/67a2bfe6ec4441f9e79983dc">Test</a>,
+				label: <Link to="/questions/67a2bfe6ec4441f9e79983dc">Test</Link>,
 			},
 			{
 				key: '67a2c07cec4441f9e79983ea',
-				label: <a href="/questions/67a2bfe6ec4441f9e79983dc">Test</a>,
+				label: <Link to="/questions/67a2bfe6ec4441f9e79983dc">Test</Link>,
 			},
 		],
 	},
