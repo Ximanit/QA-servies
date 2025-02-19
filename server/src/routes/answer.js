@@ -17,4 +17,6 @@ router
 	.put(controller.updateAnswer) // Обновление ответа
 	.delete(controller.deleteAnswer); // Удаление ответа
 
+router.route('/question/:questionId').get(controller.getAnswerByQuestionId);
+
 module.exports = router;

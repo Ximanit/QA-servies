@@ -49,6 +49,18 @@ module.exports = {
 		}
 	},
 
+	async getAnswerByQuestionId(req, res, next) {
+		try {
+			const answer = await Answer.find({ question: req.params.questionId });
+			if (!answer) {
+				throw boom.notFound('Ответ не найден');
+			}
+			res.status(200).json(answer);
+		} catch (error) {
+			next(error);
+		}
+	},
+
 	async updateAnswer(req, res, next) {
 		try {
 			const { content } = req.body;
