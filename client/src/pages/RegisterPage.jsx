@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import { setUser } from '../store/slices/authSlice';
 
 import { Form, Input, Button, message } from 'antd';
 
-import { loginUser, registerUser } from '../api';
+import { registerUser } from '../store/actions/authActions';
 
 const RegisterPage = () => {
 	const [loading, setLoading] = useState(false);
@@ -18,12 +18,7 @@ const RegisterPage = () => {
 		setLoading(true);
 
 		try {
-			await registerUser(values);
-			//TODO  подумать, как это сделать адекватнее
-			const data = await loginUser({
-				username: values.username,
-				password: values.password,
-			});
+			await dispatch(registerUser(values));
 			message.success('Вы успешно зарегистрированы!');
 			dispatch(setUser({ data }));
 			navigate('/');
@@ -57,7 +52,7 @@ const RegisterPage = () => {
 						Зарегистрироваться
 					</Button>
 				</Form.Item>
-				<a href="/auth/login">Войти в уже созданный профиль</a>
+				<Link to="/auth/login">Войти в уже созданный профиль</Link>
 			</Form>
 		</div>
 	);

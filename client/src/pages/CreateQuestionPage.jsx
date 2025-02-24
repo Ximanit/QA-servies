@@ -1,41 +1,61 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card } from 'antd';
-import { createQuestion } from '../store/slices/questionsSlice';
+import { Form, Input, Button, Card, message } from 'antd';
+import { createQuestion } from '../store/actions/questionsActions';
 
 const CreateQuestionPage = () => {
 	const [form] = Form.useForm();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const [loading, setLoading] = useState(false); // Состояние загрузки
 
-	const onFinish = (values) => {
-		console.log(values);
-		dispatch(
-			createQuestion({
-				title: values.title,
-				description: values.description,
-				category: values.category,
-			})
-		);
-		navigate('/');
+	const onFinish = async (values) => {
+		setLoading(true); // Устанавливаем состояние загрузки
+		try {
+			const newQuestion = await dispatch(
+				createQuestion({
+					title: values.title,
+					description: values.description,
+					category: values.category,
+				})
+			);
+			message.success('Вопрос успешно создан!'); // Показываем уведомление
+			form.resetFields(); // Очищаем форму
+			navigate(`/questions/${newQuestion._id}`); // Переход к созданному вопросу
+		} catch (error) {
+			message.error('Ошибка при создании вопроса. Попробуйте снова.');
+		} finally {
+			setLoading(false); // Отключаем состояние загрузки
+		}
 	};
 
 	return (
-		<Card title="Ask a Question" style={{ maxWidth: 600, margin: 'auto' }}>
+		<Card title="Задайте вопрос" style={{ maxWidth: 600, margin: 'auto' }}>
 			<Form form={form} onFinish={onFinish} layout="vertical">
-				<Form.Item name="title" label="Title">
+				<Form.Item
+					name="title"
+					label="Заголовок"
+					rules={[
+						{ required: true, message: 'Пожалуйста, введите заголовок!' },
+					]}>
 					<Input />
 				</Form.Item>
-				<Form.Item name="category" label="Category">
+				<Form.Item
+					name="category"
+					label="Категория"
+					rules={[{ required: true, message: 'Выберите категорию!' }]}>
 					<Input />
 				</Form.Item>
-				<Form.Item name="description" label="Description">
+				<Form.Item
+					name="description"
+					label="Описание"
+					rules={[{ required: true, message: 'Введите описание!' }]}>
 					<Input.TextArea rows={4} />
 				</Form.Item>
 				<Form.Item>
-					<Button type="primary" htmlType="submit">
-						Submit
+					<Button type="primary" htmlType="submit" loading={loading}>
+						{loading ? 'Создание...' : 'Создать'}
 					</Button>
 				</Form.Item>
 			</Form>
