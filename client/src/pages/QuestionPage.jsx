@@ -20,23 +20,32 @@ const QuestionPage = () => {
 	}
 
 	return (
-		<div className="question-page">
-			<h1>{questionDetails.title}</h1>
-			<p>{questionDetails.description}</p>
-			<p>
-				<strong>Категория:</strong> {questionDetails.category}
-			</p>
-			<p>
-				<strong>Статус:</strong> {questionDetails.status}
-			</p>
-			<p>
-				<strong>Автор:</strong> {questionDetails.username}
-			</p>
-			<p>
-				<strong>Дата создания:</strong>{' '}
-				{new Date(questionDetails.createdAt).toLocaleString()}
-			</p>
-		</div>
+		<>
+			<div>
+				<div className="question-page">
+					Вопрос
+					<h1>{questionDetails.title}</h1>
+					<p>{questionDetails.description}</p>
+					<p>
+						<strong>Категория:</strong> {questionDetails.category}
+					</p>
+					<p>
+						<strong>Статус:</strong> {questionDetails.status}
+					</p>
+					<p>
+						<strong>Автор:</strong> {questionDetails.author.username}
+					</p>
+					<p>
+						<strong>Дата создания:</strong>{' '}
+						{new Date(questionDetails.createdAt).toLocaleString()}
+					</p>
+				</div>
+				<div>
+					Ответ
+					<p>{questionDetails.description}</p>
+				</div>
+			</div>
+		</>
 	);
 };
 

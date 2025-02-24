@@ -1,52 +1,19 @@
-// import React from 'react';
-import ReactDOM from 'react-dom/client';
+// src/App.jsx
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
+
 import store from './store/store';
-import './index.css';
 
-// Pages
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Dashboard from './pages/Dashboard';
-import QuestionPage from './pages/QuestionPage';
-import NotFound from './pages/NotFound';
-
-// Components
-import ProtectedRoute from './components/ProtectedRoute';
+import { router } from './routes';
 
 const App = () => (
 	<Provider store={store}>
 		<ConfigProvider>
-			<Router>
-				<Routes>
-					<Route path="/login" element={<LoginPage />} />
-					<Route path="/register" element={<RegisterPage />} />
-					<Route
-						path="/"
-						element={
-							<ProtectedRoute>
-								<Dashboard />
-							</ProtectedRoute>
-						}
-					/>
-					<Route
-						path="/questions/:id"
-						element={
-							<ProtectedRoute>
-								<QuestionPage />
-							</ProtectedRoute>
-						}
-					/>
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</Router>
+			<RouterProvider router={router} />
 		</ConfigProvider>
 	</Provider>
 );
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
 
 export default App;

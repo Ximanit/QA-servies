@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setUser as setAuthUser } from '../store/slices/authSlice';
-import { loginUser } from '../api';
-import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../store/actions/authActions';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
 	const dispatch = useDispatch();
@@ -12,13 +11,8 @@ const LoginPage = () => {
 
 	const onFinish = async (values) => {
 		setLoading(true);
-
-		const { username, password } = values;
-
 		try {
-			const data = await loginUser({ username, password });
-			const token = data.token; // предполагается, что токен возвращается в ответе
-			dispatch(setAuthUser({ username, token }));
+			await dispatch(loginUser(values));
 			message.success('Вы успешно вошли в систему!');
 			navigate('/');
 		} catch (error) {
@@ -46,6 +40,7 @@ const LoginPage = () => {
 						Войти
 					</Button>
 				</Form.Item>
+				<Link to="/auth/register">Зарегистрироваться</Link>
 			</Form>
 		</div>
 	);

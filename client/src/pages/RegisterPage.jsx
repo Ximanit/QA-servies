@@ -1,18 +1,27 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
+import { setUser } from '../store/slices/authSlice';
+
 import { Form, Input, Button, message } from 'antd';
-import { registerUser } from '../api';
+
+import { registerUser } from '../store/actions/authActions';
 
 const RegisterPage = () => {
 	const [loading, setLoading] = useState(false);
 
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
 	const onFinish = async (values) => {
 		setLoading(true);
 
-		const { username, password } = values;
-
 		try {
-			const data = await registerUser({ username, password });
+			await dispatch(registerUser(values));
 			message.success('Вы успешно зарегистрированы!');
+			dispatch(setUser({ data }));
+			navigate('/');
 		} catch (error) {
 			message.error(error.message || 'Ошибка регистрации');
 		}
@@ -24,9 +33,14 @@ const RegisterPage = () => {
 		<div className="register-page">
 			<Form onFinish={onFinish}>
 				<Form.Item
+					name="name"
+					rules={[{ required: true, message: 'Введите ваше ФИО!' }]}>
+					<Input placeholder="Фамилия Имя Отчество" />
+				</Form.Item>
+				<Form.Item
 					name="username"
-					rules={[{ required: true, message: 'Введите имя пользователя!' }]}>
-					<Input placeholder="Имя пользователя" />
+					rules={[{ required: true, message: 'Введите логин!' }]}>
+					<Input placeholder="Логин" />
 				</Form.Item>
 				<Form.Item
 					name="password"
@@ -38,6 +52,7 @@ const RegisterPage = () => {
 						Зарегистрироваться
 					</Button>
 				</Form.Item>
+				<Link to="/auth/login">Войти в уже созданный профиль</Link>
 			</Form>
 		</div>
 	);

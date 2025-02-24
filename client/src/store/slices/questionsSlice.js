@@ -5,7 +5,7 @@ const questionsSlice = createSlice({
 	name: 'questions',
 	initialState: {
 		list: [],
-		questionDetails: null, // Добавляем поле для хранения деталей вопроса
+		questionDetails: null, // Храним детали одного вопроса
 	},
 	reducers: {
 		setQuestions(state, action) {
@@ -15,7 +15,6 @@ const questionsSlice = createSlice({
 			state.list.push(action.payload);
 		},
 		setQuestionDetails(state, action) {
-			// Новый редьюсер для деталей вопроса
 			state.questionDetails = action.payload;
 		},
 	},
