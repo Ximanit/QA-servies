@@ -15,12 +15,10 @@ const User = new Schema({
 		type: String,
 		required: true,
 	},
-	roles: [
-		{
-			type: String,
-			ref: 'Role',
-		},
-	],
+	roles: {
+		type: String,
+		ref: 'Role',
+	},
 	registrDate: {
 		type: Date,
 		default: new Date(),
