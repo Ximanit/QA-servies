@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound';
 import EmptyPage from './pages/EmptyPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
+import ProfilePage from './pages/ProfilePage';
 
 export const router = createBrowserRouter([
 	{
@@ -36,6 +37,14 @@ export const router = createBrowserRouter([
 						element: (
 							<ProtectedRoute>
 								<CreateQuestionPage />
+							</ProtectedRoute>
+						),
+					},
+					{
+						path: 'profile',
+						element: (
+							<ProtectedRoute>
+								<ProfilePage />
 							</ProtectedRoute>
 						),
 					},
