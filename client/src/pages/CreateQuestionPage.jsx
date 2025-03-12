@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message } from 'antd';
-import { createQuestion } from '../store/actions/questionsActions';
+import { createQuestionAction } from '../store/actions/questionsActions';
 
 const CreateQuestionPage = () => {
 	const [form] = Form.useForm();
@@ -14,7 +14,7 @@ const CreateQuestionPage = () => {
 		setLoading(true); // Устанавливаем состояние загрузки
 		try {
 			const newQuestion = await dispatch(
-				createQuestion({
+				createQuestionAction({
 					title: values.title,
 					description: values.description,
 					category: values.category,

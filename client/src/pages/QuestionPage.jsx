@@ -2,8 +2,8 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchQuestionDetails } from '../store/actions/questionsActions';
-import { addAnswer } from '../store/actions/answersActions';
+import { fetchQuestionDetailsAction } from '../store/actions/questionsActions';
+import { addAnswerAction } from '../store/actions/answersActions';
 
 import { Form, Button, Input } from 'antd';
 
@@ -29,9 +29,9 @@ const QuestionPage = () => {
 	const onFinish = async (values) => {
 		// setLoading(true);
 		try {
-			await dispatch(addAnswer(id, values.content));
+			await dispatch(addAnswerAction(id, values.content));
 			form.resetFields();
-			dispatch(addAnswer(id)); // Обновляем вопрос после добавления ответа
+			dispatch(fetchQuestionDetailsAction(id)); // Обновляем данные вопроса
 		} finally {
 			// setLoading(false);
 		}

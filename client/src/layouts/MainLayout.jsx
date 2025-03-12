@@ -7,7 +7,7 @@ import { Link, Outlet } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchQuestions } from '../store/actions/questionsActions';
+import { fetchQuestionsAction } from '../store/actions/questionsActions';
 
 import { formatMenuItems } from '../utils/utils';
 
@@ -25,7 +25,7 @@ const MainLayout = () => {
 	const items = formatMenuItems(questions);
 
 	useEffect(() => {
-		dispatch(fetchQuestions()); // Получаем список вопросов при загрузке компонента
+		dispatch(fetchQuestionsAction()); // Получаем список вопросов при загрузке компонента
 	}, [dispatch]);
 
 	const items2 = [
