@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message } from 'antd';
-import { useCreateQuestionMutation } from '../store/api';
+import { useCreateQuestionMutation } from '../store/api/questionsApi';
 
 const CreateQuestionPage = () => {
 	const [form] = Form.useForm();

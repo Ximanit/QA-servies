@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
-import { useRegisterMutation } from '../store/api';
+import { useRegisterMutation } from '../store/api/authApi';
 
 const RegisterPage = () => {
 	const [register, { isLoading }] = useRegisterMutation();

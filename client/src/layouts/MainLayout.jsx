@@ -4,7 +4,7 @@ import { Layout, Menu, theme } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetQuestionsQuery } from '../store/api';
+import { useGetQuestionsQuery } from '../store/api/questionsApi';
 import { formatMenuItems } from '../utils/utils';
 
 const { Header, Content, Sider } = Layout;

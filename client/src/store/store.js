@@ -1,17 +1,26 @@
 // src/store/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-import questionsReducer from './slices/questionsSlice'; // Оставляем для совместимости, если нужно
-import { api } from './api';
+import { authApi } from './api/authApi';
+import { questionsApi } from './api/questionsApi';
+import { profileApi } from './api/profileApi';
+import { categoryApi } from './api/categoryApi';
 
 const store = configureStore({
 	reducer: {
 		auth: authReducer,
-		questions: questionsReducer, // Можно убрать, если данные будут только в RTK Query
-		[api.reducerPath]: api.reducer,
+		[authApi.reducerPath]: authApi.reducer,
+		[questionsApi.reducerPath]: questionsApi.reducer,
+		[profileApi.reducerPath]: profileApi.reducer,
+		[categoryApi.reducerPath]: categoryApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(api.middleware),
+		getDefaultMiddleware().concat(
+			authApi.middleware,
+			questionsApi.middleware,
+			profileApi.middleware,
+			categoryApi.middleware
+		),
 });
 
 export default store;

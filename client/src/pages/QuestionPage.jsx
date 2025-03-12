@@ -2,7 +2,10 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Form, Button, Input } from 'antd';
-import { useGetQuestionDetailsQuery, useAddAnswerMutation } from '../store/api';
+import {
+	useGetQuestionDetailsQuery,
+	useAddAnswerMutation,
+} from '../store/api/questionsApi';
 
 const QuestionPage = () => {
 	const { id } = useParams();
