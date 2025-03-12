@@ -3,13 +3,20 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchQuestionDetails } from '../store/actions/questionsActions';
+import { addAnswer } from '../store/actions/answersActions';
+
+import { Form, Button, Input } from 'antd';
 
 const QuestionPage = () => {
 	const { id } = useParams(); // Получаем параметр id из URL
+	const { TextArea } = Input;
+	const [form] = Form.useForm();
 	const dispatch = useDispatch();
 	const questionDetails = useSelector(
 		(state) => state.questions.questionDetails
 	);
+
+	const role = useSelector((state) => state.auth.roles);
 
 	useEffect(() => {
 		dispatch(fetchQuestionDetails(id)); // Загружаем детали вопроса при монтировании компонента
@@ -18,6 +25,17 @@ const QuestionPage = () => {
 	if (!questionDetails) {
 		return <div>Загрузка...</div>; // Пока данные не загрузились, показываем сообщение
 	}
+
+	const onFinish = async (values) => {
+		// setLoading(true);
+		try {
+			await dispatch(addAnswer(id, values.content));
+			form.resetFields();
+			dispatch(addAnswer(id)); // Обновляем вопрос после добавления ответа
+		} finally {
+			// setLoading(false);
+		}
+	};
 
 	return (
 		<>
@@ -40,10 +58,25 @@ const QuestionPage = () => {
 						{new Date(questionDetails.createdAt).toLocaleString()}
 					</p>
 				</div>
-				<div>
-					Ответ
-					<p>{questionDetails.description}</p>
-				</div>
+				{role == '["USER"]' ? (
+					<div>
+						Ответ
+						<p>{questionDetails.description}</p>
+					</div>
+				) : (
+					<Form form={form} onFinish={onFinish} layout="vertical">
+						<Form.Item
+							name="content"
+							rules={[{ required: true, message: 'Введите текст ответа!' }]}>
+							<TextArea rows={4} placeholder="Ваш ответ" />
+						</Form.Item>
+						<Form.Item>
+							<Button type="primary" htmlType="submit">
+								Отправить
+							</Button>
+						</Form.Item>
+					</Form>
+				)}
 			</div>
 		</>
 	);

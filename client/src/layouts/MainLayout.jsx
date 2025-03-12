@@ -156,6 +156,9 @@ const MainLayout = () => {
 						<Link to="questions/create-question">Create Question</Link>
 					</Menu.Item>
 					<Menu.Item key="3">
+						<Link to="profile">Profile</Link>
+					</Menu.Item>
+					<Menu.Item key="4">
 						<Link to="/auth/login">
 							<LogoutOutlined />
 						</Link>
