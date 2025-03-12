@@ -1,42 +1,28 @@
-// src/pages/QuestionPage.js
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchQuestionDetailsAction } from '../store/actions/questionsActions';
-import { addAnswerAction } from '../store/actions/answersActions';
-
+import { useSelector } from 'react-redux';
 import { Form, Button, Input } from 'antd';
+import { useGetQuestionDetailsQuery, useAddAnswerMutation } from '../store/api';
 
 const QuestionPage = () => {
-	const { id } = useParams(); // Получаем параметр id из URL
+	const { id } = useParams();
 	const { TextArea } = Input;
 	const [form] = Form.useForm();
-	const dispatch = useDispatch();
-	const questionDetails = useSelector(
-		(state) => state.questions.questionDetails
-	);
-
+	const { data: questionDetails, isLoading } = useGetQuestionDetailsQuery(id);
+	const [addAnswer, { isLoading: isAdding }] = useAddAnswerMutation();
 	const role = useSelector((state) => state.auth.roles);
 
-	useEffect(() => {
-		dispatch(fetchQuestionDetails(id)); // Загружаем детали вопроса при монтировании компонента
-	}, [id, dispatch]);
-
-	if (!questionDetails) {
-		return <div>Загрузка...</div>; // Пока данные не загрузились, показываем сообщение
-	}
-
 	const onFinish = async (values) => {
-		// setLoading(true);
 		try {
-			await dispatch(addAnswerAction(id, values.content));
+			await addAnswer({ questionId: id, content: values.content }).unwrap();
 			form.resetFields();
-			dispatch(fetchQuestionDetailsAction(id)); // Обновляем данные вопроса
-		} finally {
-			// setLoading(false);
+			message.success('Ответ добавлен!');
+		} catch (error) {
+			message.error('Ошибка при добавлении ответа');
 		}
 	};
 
+	if (isLoading || !questionDetails) return <div>Загрузка...</div>;
 	return (
 		<>
 			<div>

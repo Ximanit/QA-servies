@@ -1,32 +1,21 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message } from 'antd';
-import { createQuestionAction } from '../store/actions/questionsActions';
+import { useCreateQuestionMutation } from '../store/api';
 
 const CreateQuestionPage = () => {
 	const [form] = Form.useForm();
-	const dispatch = useDispatch();
+	const [createQuestion, { isLoading }] = useCreateQuestionMutation();
 	const navigate = useNavigate();
-	const [loading, setLoading] = useState(false); // Состояние загрузки
 
 	const onFinish = async (values) => {
-		setLoading(true); // Устанавливаем состояние загрузки
 		try {
-			const newQuestion = await dispatch(
-				createQuestionAction({
-					title: values.title,
-					description: values.description,
-					category: values.category,
-				})
-			);
-			message.success('Вопрос успешно создан!'); // Показываем уведомление
-			form.resetFields(); // Очищаем форму
-			navigate(`/questions/${newQuestion._id}`); // Переход к созданному вопросу
+			const newQuestion = await createQuestion(values).unwrap();
+			message.success('Вопрос успешно создан!');
+			form.resetFields();
+			navigate(`/questions/${newQuestion._id}`);
 		} catch (error) {
-			message.error('Ошибка при создании вопроса. Попробуйте снова.');
-		} finally {
-			setLoading(false); // Отключаем состояние загрузки
+			message.error('Ошибка при создании вопроса');
 		}
 	};
 
@@ -54,8 +43,8 @@ const CreateQuestionPage = () => {
 					<Input.TextArea rows={4} />
 				</Form.Item>
 				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={loading}>
-						{loading ? 'Создание...' : 'Создать'}
+					<Button type="primary" htmlType="submit" loading={isLoading}>
+						{isLoading ? 'Создание...' : 'Создать'}
 					</Button>
 				</Form.Item>
 			</Form>
