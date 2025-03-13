@@ -1,6 +1,7 @@
 const Answer = require('../models/Answer');
 const Question = require('../models/Question');
 const boom = require('@hapi/boom');
+const logger = require('../logger');
 
 module.exports = {
 	async createAnswer(req, res, next) {
@@ -18,8 +19,13 @@ module.exports = {
 
 			const answer = new Answer({ question: questionId, content, author });
 			await answer.save();
+			logger.info('Ответ успешно создан', { answerId: answer._id, author });
 			res.status(201).json(answer);
 		} catch (error) {
+			logger.error('Ошибка создания ответа', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -29,8 +35,13 @@ module.exports = {
 			const answers = await Answer.find()
 				.populate('author', 'username')
 				.populate('question', 'title');
+			logger.info('Ответы получен', { answers });
 			res.status(200).json(answers);
 		} catch (error) {
+			logger.error('Ошибка получения ответов', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -43,8 +54,13 @@ module.exports = {
 			if (!answer) {
 				throw boom.notFound('Ответ не найден');
 			}
+			logger.info('Ответ получен по id ответа', { answer });
 			res.status(200).json(answer);
 		} catch (error) {
+			logger.error('Ошибка получения ответа по id ответа', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -55,8 +71,13 @@ module.exports = {
 			if (!answer) {
 				throw boom.notFound('Ответ не найден');
 			}
+			logger.info('Ответ получен  по id вопроса', { answer });
 			res.status(200).json(answer);
 		} catch (error) {
+			logger.error('Ошибка получения ответа по id вопроса', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -75,8 +96,13 @@ module.exports = {
 			if (!answer) {
 				throw boom.notFound('Ответ не найден');
 			}
+			logger.info('Ответ успешно обновлен', { answer });
 			res.status(200).json(answer);
 		} catch (error) {
+			logger.error('Ошибка обновления ответа', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -87,8 +113,13 @@ module.exports = {
 			if (!answer) {
 				throw boom.notFound('Ответ не найден');
 			}
+			logger.info('Ответ успешно удален', { answer });
 			res.status(200).json({ message: 'Ответ успешно удален' });
 		} catch (error) {
+			logger.error('Ошибка удаления ответа', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},

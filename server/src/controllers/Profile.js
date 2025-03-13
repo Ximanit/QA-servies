@@ -10,8 +10,13 @@ module.exports = {
 			const userId = req.user.id;
 			const profile = new Profile({ fio, userId });
 			await profile.save();
+			logger.info('Поофиль успешно создан', { profile });
 			res.status(201).json(profile);
 		} catch (error) {
+			logger.error('Ошибка создания профиля', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error); // Передаем ошибку в middleware обработки ошибок
 		}
 	},
@@ -19,8 +24,13 @@ module.exports = {
 	async getProfile(req, res, next) {
 		try {
 			const profile = await Profile.find().populate('userId', 'username');
+			logger.info('Поофиль успешно получен', { profile });
 			res.status(200).json(profile);
 		} catch (error) {
+			logger.error('Ошибка получения профиля', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -34,8 +44,13 @@ module.exports = {
 			if (!profile) {
 				throw boom.notFound('Вопрос не найден');
 			}
+			logger.info('Поофиль успешно получен по id пользователя', { profile });
 			res.status(200).json(profile);
 		} catch (error) {
+			logger.error('Ошибка получения профиля по id пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -49,8 +64,13 @@ module.exports = {
 			if (!profile) {
 				throw boom.notFound('Профиль не найден');
 			}
+			logger.info('Профиль успешно обновлен', { profile });
 			res.status(200).json(profile);
 		} catch (error) {
+			logger.error('Ошибка обновления профиля', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -61,8 +81,13 @@ module.exports = {
 			if (!profile) {
 				throw boom.notFound('Профиль не найден');
 			}
+			logger.info('Профиль успешно удален', { profile });
 			res.status(200).json({ message: 'Профиль успешно удален' });
 		} catch (error) {
+			logger.error('Ошибка удаления профиля', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},

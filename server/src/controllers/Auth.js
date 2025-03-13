@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const { secret } = require('../../config');
 const boom = require('boom');
+const logger = require('../logger');
 
 const generateAccesToken = (id, username) => {
 	const payload = {
@@ -58,9 +59,13 @@ module.exports = {
 				roles: [userRole.value],
 			});
 			await user.save();
-
+			logger.info('Пользователь успешно зарегистрирован', { user });
 			res.status(201).json(user);
 		} catch (error) {
+			logger.error('Ошибка регистрации пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error); // Передаем ошибку в middleware обработки ошибок
 		}
 	},
@@ -92,8 +97,18 @@ module.exports = {
 			}
 
 			const token = generateAccesToken(user._id, user.name);
+			logger.info('Пользователь успешно авторизовался', {
+				token,
+				name: user.name,
+				roles: user.roles,
+				id: user._id,
+			});
 			res.json({ token, name: user.name, roles: user.roles, id: user._id });
 		} catch (error) {
+			logger.error('Ошибка авторизации пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -101,8 +116,13 @@ module.exports = {
 	async getAll(req, res, next) {
 		try {
 			const users = await User.find();
+			logger.info('Успешное получение списка пользователей', { users });
 			res.json(users);
 		} catch (error) {
+			logger.error('Ошибка получение списка пользователей', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -114,8 +134,13 @@ module.exports = {
 			if (!user) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			logger.info('Успешное получение  пользователя', { user });
 			res.json(user);
 		} catch (error) {
+			logger.error('Ошибка получение пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -139,11 +164,16 @@ module.exports = {
 			if (!updatedUser) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			logger.info('Успешное обновление пользователя', { updatedUser });
 			res.json({
 				message: 'Данные пользователя успешно обновлены',
 				user: updatedUser,
 			});
 		} catch (error) {
+			logger.error('Ошибка обновления пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -155,8 +185,13 @@ module.exports = {
 			if (!deletedUser) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			logger.info('Успешное удаление пользователя', { deletedUser });
 			res.json({ message: 'Пользователь удален!' });
 		} catch (error) {
+			logger.error('Ошибка удаления пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -170,8 +205,13 @@ module.exports = {
 			}
 			const newRole = new Roles({ value: rolesName });
 			await newRole.save();
+			logger.info('Успешное добавления новой роли', { newRole });
 			res.json({ message: 'Роль успешно создана' });
 		} catch (error) {
+			logger.error('Ошибка добавление новой роли', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
