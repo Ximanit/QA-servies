@@ -21,6 +21,7 @@ const logger = createLogger({
 		}),
 		// Логи в файл (для продакшена)
 		new transports.File({ filename: 'logs/error.log', level: 'error' }), // Только ошибки
+		new transports.File({ filename: 'logs/info.log', level: 'info' }), // Только информация
 		new transports.File({ filename: 'logs/combined.log' }), // Все логи
 	],
 });
