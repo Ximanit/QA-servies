@@ -4,14 +4,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const morgan = require('morgan');
+const path = require('path');
 
 const { routes } = require('./src/routes');
 const logger = require('./src/logger');
-
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
-// const db_uri = 'mongodb://localhost:27017/QA';
-const hostname = 'localhost';
 const db_uri = process.env.DB_URI;
 const port = process.env.PORT || 3000;
 
@@ -25,7 +23,7 @@ mongoose
 const app = express();
 
 const corsOptions = {
-	origin: ['http://localhost:5173	', 'https://your-frontend-domain.com'],
+	origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
 	methods: 'HEAD,PUT,PATCH,POST,DELETE,GET',
 	allowedHeaders:
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
@@ -34,6 +32,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(
 	morgan('combined', {
@@ -41,9 +40,6 @@ app.use(
 	})
 );
 
-//Название роута сотовляется из названия файла + роут
-//Пример:
-//http:/localhost:PORT/назвение_route/запрос
 routes.forEach((item) => {
 	app.use(`/${item}`, require(`./src/routes/${item}`));
 });
@@ -51,5 +47,5 @@ routes.forEach((item) => {
 app.use(errorMiddleware);
 
 app.listen(port, () => {
-	logger.info(`Server running at http://${hostname}:${port}/`);
+	logger.info(`Server running at http://localhost:${port}/`);
 });

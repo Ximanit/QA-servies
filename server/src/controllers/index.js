@@ -1,13 +1,13 @@
 const auth = require('./Auth');
-const answer = require('./Answer');
-const question = require('./Question');
+const message = require('./Message');
+const ticket = require('./Ticket');
 const category = require('./Category');
 const profile = require('./Profile');
 
 module.exports = {
 	auth,
-	answer,
-	question,
+	message,
+	ticket,
 	category,
 	profile,
 };
