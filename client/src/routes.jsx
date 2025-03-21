@@ -1,16 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
-
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
-
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-
-import QuestionPage from './pages/QuestionPage';
-import CreateQuestionPage from './pages/CreateQuestionPage';
+import TicketPage from './pages/TicketPage';
+import CreateTicketPage from './pages/CreateTicketPage';
 import NotFound from './pages/NotFound';
 import EmptyPage from './pages/EmptyPage';
-
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 
@@ -25,18 +21,18 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <EmptyPage /> },
 					{
-						path: 'questions/:id',
+						path: 'tickets/:id',
 						element: (
 							<ProtectedRoute>
-								<QuestionPage />
+								<TicketPage />
 							</ProtectedRoute>
 						),
 					},
 					{
-						path: 'questions/create-question',
+						path: 'tickets/create-ticket',
 						element: (
 							<ProtectedRoute>
-								<CreateQuestionPage />
+								<CreateTicketPage />
 							</ProtectedRoute>
 						),
 					},

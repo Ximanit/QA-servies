@@ -4,7 +4,7 @@ import { Layout, Menu, theme } from 'antd';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetQuestionsQuery } from '../store/api/questionsApi';
+import { useGetTicketsQuery } from '../store/api/ticketsApi';
 import { formatMenuItems } from '../utils/utils';
 
 const { Header, Content, Sider } = Layout;
@@ -14,11 +14,11 @@ const MainLayout = () => {
 		token: { colorBgContainer, borderRadiusLG },
 	} = theme.useToken();
 	const dispatch = useDispatch();
-	const { data: questions, isLoading } = useGetQuestionsQuery();
+	const { data: tickets, isLoading } = useGetTicketsQuery();
 	const user = useSelector((state) => state.auth.user);
 	const navigate = useNavigate();
 
-	const items = questions ? formatMenuItems(questions) : [];
+	const items = tickets ? formatMenuItems(tickets) : [];
 
 	const handleLogout = () => {
 		navigate('/auth/login');
@@ -30,13 +30,13 @@ const MainLayout = () => {
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
 			<Header style={{ display: 'flex', alignItems: 'center' }}>
-				<h1 style={{ color: 'white' }}>Q&A Platform</h1>
+				<h1 style={{ color: 'white' }}>Ticket Platform</h1>
 				<Menu theme="dark" mode="horizontal" style={{ width: '250px' }}>
 					<Menu.Item key="1">
 						<Link to="/">Home</Link>
 					</Menu.Item>
 					<Menu.Item key="2">
-						<Link to="questions/create-question">Create Question</Link>
+						<Link to="tickets/create-ticket">Create Ticket</Link>
 					</Menu.Item>
 					<Menu.Item key="3">
 						<Link to="profile">Profile</Link>
