@@ -1,3 +1,4 @@
+// src/pages/TicketPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -25,12 +26,18 @@ const TicketPage = () => {
 
 	// WebSocket
 	useEffect(() => {
-		const socket = io(API_URL);
+		const socket = io(API_URL, {
+			transports: ['websocket', 'polling'], // Указываем возможные транспорты
+		});
 		socket.on('connect', () => {
 			socket.emit('joinTicket', id);
+			console.log('Connected to Socket.IO server');
 		});
 		socket.on('newMessage', (message) => {
 			setChatMessages((prev) => [...prev, message]);
+		});
+		socket.on('connect_error', (error) => {
+			console.error('Socket.IO connection error:', error);
 		});
 		return () => socket.disconnect();
 	}, [id]);
@@ -70,6 +77,7 @@ const TicketPage = () => {
 
 	return (
 		<Card title={`Заявка: ${ticketDetails?.title}`}>
+			{/* Остальной код остаётся без изменений */}
 			<div>
 				<p>
 					<strong>Описание:</strong> {ticketDetails?.description}
