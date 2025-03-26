@@ -39,6 +39,7 @@ const TicketSchema = new Schema({
 	assignedTo: {
 		type: Schema.Types.ObjectId,
 		ref: 'usersauth',
+		require: true,
 	},
 	createdAt: {
 		type: Date,

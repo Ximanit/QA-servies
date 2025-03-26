@@ -97,6 +97,29 @@ module.exports = {
 		}
 	},
 
+	async getTicketsByUserId(req, res, next) {
+		try {
+			const { userId } = req.params;
+			const tickets = await Ticket.find({
+				$or: [{ author: userId }, { assignedTo: userId }],
+			})
+				.populate('author', 'username')
+				.populate('assignedTo', 'username');
+
+			logger.info('Заявки пользователя успешно получены', {
+				userId,
+				ticketCount: tickets.length,
+			});
+			res.status(200).json(tickets);
+		} catch (error) {
+			logger.error('Ошибка получения заявок пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
+		}
+	},
+
 	async updateTicket(req, res, next) {
 		upload(req, res, async (err) => {
 			try {

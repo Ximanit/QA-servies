@@ -13,4 +13,6 @@ router
 	.put(controller.updateTicket)
 	.delete(controller.deleteTicket);
 
+router.route('/user/:userId').get(controller.getTicketsByUserId);
+
 module.exports = router;
