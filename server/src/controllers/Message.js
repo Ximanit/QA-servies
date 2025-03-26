@@ -5,7 +5,6 @@ const boom = require('@hapi/boom');
 const logger = require('../logger');
 const multer = require('multer');
 const path = require('path');
-const { io } = require('../../index'); // Импортируем io из index.js
 
 const storage = multer.diskStorage({
 	destination: './uploads/',
@@ -26,7 +25,7 @@ const upload = multer({
 	},
 }).array('files', 5);
 
-module.exports = {
+module.exports = (io) => ({
 	async createMessage(req, res, next) {
 		upload(req, res, async (err) => {
 			try {
@@ -57,12 +56,11 @@ module.exports = {
 				});
 				const savedMessage = await message.save();
 
-				// Популяция данных автора для отправки через Socket.IO
 				const populatedMessage = await Message.findById(
 					savedMessage._id
 				).populate('author', 'username');
 
-				// Отправка сообщения всем клиентам в комнате ticketId
+				// Используем переданный io для отправки сообщения
 				io.to(ticketId).emit('newMessage', populatedMessage);
 
 				logger.info('Сообщение успешно создано', { message: populatedMessage });
@@ -95,4 +93,4 @@ module.exports = {
 			next(error);
 		}
 	},
-};
+});
