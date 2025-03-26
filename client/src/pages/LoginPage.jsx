@@ -1,30 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { useDispatch } from 'react-redux';
-import { setUser } from '../store/slices/authSlice';
-import { loginUser } from '../api';
 import { useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '../store/api/authApi';
 
 const LoginPage = () => {
-	const dispatch = useDispatch();
+	const [login, { isLoading }] = useLoginMutation();
 	const navigate = useNavigate();
-	const [loading, setLoading] = useState(false);
 
 	const onFinish = async (values) => {
-		setLoading(true);
-
-		const { username, password } = values;
-
 		try {
-			const data = await loginUser({ username, password });
-			dispatch(setUser({ data }));
+			await login(values).unwrap();
 			message.success('Вы успешно вошли в систему!');
 			navigate('/');
 		} catch (error) {
-			message.error(error.message || 'Неверное имя пользователя или пароль');
+			message.error(
+				error.data?.message || 'Неверное имя пользователя или пароль'
+			);
 		}
-
-		setLoading(false);
 	};
 
 	return (
@@ -41,7 +33,7 @@ const LoginPage = () => {
 					<Input.Password placeholder="Пароль" />
 				</Form.Item>
 				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={loading}>
+					<Button type="primary" htmlType="submit" loading={isLoading}>
 						Войти
 					</Button>
 				</Form.Item>

@@ -1,0 +1,7 @@
+// src/store/actions/authActions.js
+import { logout } from '../slices/authSlice';
+
+export const logoutUser = () => (dispatch) => {
+	dispatch(logout());
+	localStorage.clear();
+};

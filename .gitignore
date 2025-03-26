@@ -130,3 +130,7 @@ dist
 .pnp.*
 
 uploads
+
+config.js
+
+.env
