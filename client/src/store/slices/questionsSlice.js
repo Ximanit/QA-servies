@@ -1,5 +1,21 @@
 // src/redux/slices/questionsSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+
+export const createQuestion = createAsyncThunk(
+	'questions/createQuestion',
+	async (questionData, { getState }) => {
+		const { token } = getState().auth;
+		const response = await axios.post(
+			'http://localhost:3000/question/',
+			questionData,
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		);
+		return response.data;
+	}
+);
 
 const questionsSlice = createSlice({
 	name: 'questions',
@@ -18,6 +34,11 @@ const questionsSlice = createSlice({
 			// Новый редьюсер для деталей вопроса
 			state.questionDetails = action.payload;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(createQuestion.fulfilled, (state, action) => {
+			state.items.push(action.payload);
+		});
 	},
 });
 
