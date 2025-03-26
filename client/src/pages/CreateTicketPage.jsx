@@ -1,12 +1,15 @@
+// src/pages/CreateTicketPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, message, Upload } from 'antd';
+import { Form, Input, Button, Card, message, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useCreateTicketMutation } from '../store/api/ticketsApi';
+import { useGetUsersQuery } from '../store/api/authApi'; // Изменён импорт
 
 const CreateTicketPage = () => {
 	const [form] = Form.useForm();
 	const [createTicket, { isLoading }] = useCreateTicketMutation();
+	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
 	const navigate = useNavigate();
 	const [fileList, setFileList] = useState([]);
 
@@ -32,10 +35,17 @@ const CreateTicketPage = () => {
 		},
 		beforeUpload: (file) => {
 			setFileList([...fileList, file]);
-			return false; // Предотвращаем автоматическую загрузку
+			return false;
 		},
 		fileList,
 	};
+
+	if (usersLoading) return <div>Загрузка пользователей...</div>;
+
+	const userOptions = users?.map((user) => ({
+		label: user.username,
+		value: user._id,
+	}));
 
 	return (
 		<Card title="Создать заявку" style={{ maxWidth: 600, margin: 'auto' }}>
@@ -59,6 +69,12 @@ const CreateTicketPage = () => {
 					label="Описание"
 					rules={[{ required: true, message: 'Введите описание!' }]}>
 					<Input.TextArea rows={4} />
+				</Form.Item>
+				<Form.Item
+					name="assignedTo"
+					label="Исполнитель"
+					rules={[{ required: true, message: 'Выберите исполнителя!' }]}>
+					<Select options={userOptions} placeholder="Выберите исполнителя" />
 				</Form.Item>
 				<Form.Item label="Файлы">
 					<Upload {...uploadProps}>

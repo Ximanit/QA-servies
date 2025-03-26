@@ -23,7 +23,7 @@ mongoose
 const app = express();
 
 const corsOptions = {
-	origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+	origin: '*',
 	methods: 'HEAD,PUT,PATCH,POST,DELETE,GET',
 	allowedHeaders:
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization',

@@ -42,7 +42,12 @@ export const authApi = createApi({
 				dispatch(setUser({ data }));
 			},
 		}),
+		getUsers: builder.query({
+			query: () => '/auth/users',
+			providesTags: ['Users'],
+		}),
 	}),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useGetUsersQuery } =
+	authApi;
