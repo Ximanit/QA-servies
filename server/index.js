@@ -32,6 +32,8 @@ const io = new Server(server, {
 	},
 });
 
+app.set('io', io); // Привязываем io к объекту app
+
 const corsOptions = {
 	origin: '*',
 	methods: 'HEAD,PUT,PATCH,POST,DELETE,GET',
@@ -72,5 +74,3 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
 	logger.info(`Server running at http://localhost:${port}/`);
 });
-
-module.exports = { io, app }; // Экспортируем io и app

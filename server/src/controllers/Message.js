@@ -25,7 +25,7 @@ const upload = multer({
 	},
 }).array('files', 5);
 
-module.exports = (io) => ({
+module.exports = {
 	async createMessage(req, res, next) {
 		upload(req, res, async (err) => {
 			try {
@@ -60,7 +60,8 @@ module.exports = (io) => ({
 					savedMessage._id
 				).populate('author', 'username');
 
-				// Используем переданный io для отправки сообщения
+				// Получаем io из объекта приложения
+				const io = req.app.get('io');
 				io.to(ticketId).emit('newMessage', populatedMessage);
 
 				logger.info('Сообщение успешно создано', { message: populatedMessage });
@@ -93,4 +94,4 @@ module.exports = (io) => ({
 			next(error);
 		}
 	},
-});
+};
