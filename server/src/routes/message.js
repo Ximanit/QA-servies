@@ -1,11 +1,8 @@
 // server/src/routes/message.js
 const Router = require('express');
 const router = new Router();
-const { io } = require('../../index'); // Импортируем io
-const controllerFactory = require('../controllers/Message'); // Импортируем как фабричную функцию
+const controller = require('../controllers/Message');
 const authMiddleware = require('../middleware/authMiddleware');
-
-const controller = controllerFactory(io); // Создаём контроллер с io
 
 router.use(authMiddleware);
 
