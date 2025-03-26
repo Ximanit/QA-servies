@@ -1,4 +1,3 @@
-// src/pages/TicketPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -24,14 +23,10 @@ const TicketPage = () => {
 	const [fileList, setFileList] = useState([]);
 	const [chatMessages, setChatMessages] = useState([]);
 
-	// WebSocket
 	useEffect(() => {
-		const socket = io(API_URL, {
-			transports: ['websocket', 'polling'], // Указываем возможные транспорты
-		});
+		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
 		socket.on('connect', () => {
 			socket.emit('joinTicket', id);
-			console.log('Connected to Socket.IO server');
 		});
 		socket.on('newMessage', (message) => {
 			setChatMessages((prev) => [...prev, message]);
@@ -46,12 +41,27 @@ const TicketPage = () => {
 		if (messages) setChatMessages(messages);
 	}, [messages]);
 
+	const uploadProps = {
+		onChange: ({ fileList: newFileList }) => {
+			setFileList(newFileList);
+		},
+		onRemove: (file) => {
+			setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+		},
+		beforeUpload: () => false,
+		fileList,
+	};
+
 	const onFinish = async (values) => {
+		const validFiles = fileList
+			.filter((file) => file.originFileObj)
+			.map((file) => file.originFileObj);
+
 		try {
 			const messageData = {
 				ticketId: id,
 				content: values.content,
-				files: fileList.map((file) => file.originFileObj),
+				files: validFiles,
 			};
 			await addMessage(messageData).unwrap();
 			form.resetFields();
@@ -59,25 +69,14 @@ const TicketPage = () => {
 			message.success('Сообщение отправлено!');
 		} catch (error) {
 			message.error('Ошибка при отправке сообщения');
+			console.error('Error:', error);
 		}
-	};
-
-	const uploadProps = {
-		onRemove: (file) => {
-			setFileList(fileList.filter((item) => item.uid !== file.uid));
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-			return false;
-		},
-		fileList,
 	};
 
 	if (ticketLoading || messagesLoading) return <div>Загрузка...</div>;
 
 	return (
 		<Card title={`Заявка: ${ticketDetails?.title}`}>
-			{/* Остальной код остаётся без изменений */}
 			<div>
 				<p>
 					<strong>Описание:</strong> {ticketDetails?.description}
