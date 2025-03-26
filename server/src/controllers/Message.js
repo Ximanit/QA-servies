@@ -1,9 +1,11 @@
+// server/src/controllers/Message.js
 const Message = require('../models/Message');
 const Ticket = require('../models/Ticket');
 const boom = require('@hapi/boom');
 const logger = require('../logger');
 const multer = require('multer');
 const path = require('path');
+const { io } = require('../../index'); // Импортируем io из index.js
 
 const storage = multer.diskStorage({
 	destination: './uploads/',
@@ -53,11 +55,19 @@ module.exports = {
 					author,
 					files,
 				});
-				await message.save();
+				const savedMessage = await message.save();
 
-				logger.info('Сообщение успешно создано', { message });
+				// Популяция данных автора для отправки через Socket.IO
+				const populatedMessage = await Message.findById(
+					savedMessage._id
+				).populate('author', 'username');
 
-				res.status(201).json(message);
+				// Отправка сообщения всем клиентам в комнате ticketId
+				io.to(ticketId).emit('newMessage', populatedMessage);
+
+				logger.info('Сообщение успешно создано', { message: populatedMessage });
+
+				res.status(201).json(populatedMessage);
 			} catch (error) {
 				logger.error('Ошибка создания сообщения', {
 					error: error.message,
@@ -75,7 +85,7 @@ module.exports = {
 				'author',
 				'username'
 			);
-			logger.info('Сообщение успешно получены', { messages });
+			logger.info('Сообщения успешно получены', { messages });
 			res.status(200).json(messages);
 		} catch (error) {
 			logger.error('Ошибка получения сообщений', {
