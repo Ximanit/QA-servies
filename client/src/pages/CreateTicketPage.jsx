@@ -1,10 +1,9 @@
-// src/pages/CreateTicketPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useCreateTicketMutation } from '../store/api/ticketsApi';
-import { useGetUsersQuery } from '../store/api/authApi'; // Изменён импорт
+import { useGetUsersQuery } from '../store/api/authApi';
 
 const CreateTicketPage = () => {
 	const [form] = Form.useForm();
@@ -13,11 +12,27 @@ const CreateTicketPage = () => {
 	const navigate = useNavigate();
 	const [fileList, setFileList] = useState([]);
 
+	const uploadProps = {
+		onChange: ({ fileList: newFileList }) => {
+			console.log('onChange - newFileList:', newFileList);
+			setFileList(newFileList);
+		},
+		onRemove: (file) => {
+			setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+		},
+		beforeUpload: () => false,
+		fileList,
+	};
+
 	const onFinish = async (values) => {
+		const validFiles = fileList
+			.filter((file) => file.originFileObj)
+			.map((file) => file.originFileObj);
+		console.log('Valid files:', validFiles);
 		try {
 			const ticketData = {
 				...values,
-				files: fileList.map((file) => file.originFileObj),
+				files: validFiles,
 			};
 			const newTicket = await createTicket(ticketData).unwrap();
 			message.success('Заявка успешно создана!');
@@ -26,18 +41,8 @@ const CreateTicketPage = () => {
 			navigate(`/tickets/${newTicket._id}`);
 		} catch (error) {
 			message.error('Ошибка при создании заявки');
+			console.error('Error:', error);
 		}
-	};
-
-	const uploadProps = {
-		onRemove: (file) => {
-			setFileList(fileList.filter((item) => item.uid !== file.uid));
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-			return false;
-		},
-		fileList,
 	};
 
 	if (usersLoading) return <div>Загрузка пользователей...</div>;
