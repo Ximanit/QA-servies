@@ -1,0 +1,88 @@
+const Message = require('../models/Message');
+const Ticket = require('../models/Ticket');
+const boom = require('@hapi/boom');
+const logger = require('../logger');
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+	destination: './uploads/',
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + path.extname(file.originalname));
+	},
+});
+
+const upload = multer({
+	storage: storage,
+	limits: { fileSize: 10000000 },
+	fileFilter: (req, file, cb) => {
+		const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+		if (!allowedTypes.includes(file.mimetype)) {
+			return cb(new Error('Недопустимый тип файла'));
+		}
+		cb(null, true);
+	},
+}).array('files', 5);
+
+module.exports = {
+	async createMessage(req, res, next) {
+		upload(req, res, async (err) => {
+			try {
+				if (err) throw boom.badRequest('Ошибка загрузки файлов');
+
+				const { ticketId, content } = req.body;
+				if (!ticketId || !content) {
+					throw boom.badRequest('Необходимо указать ticketId и content');
+				}
+
+				const author = req.user.id;
+				const ticket = await Ticket.findById(ticketId);
+				if (!ticket) throw boom.notFound('Заявка не найдена');
+
+				const files =
+					req.files?.map((file) => ({
+						filename: file.filename,
+						path: file.path,
+						mimetype: file.mimetype,
+						size: file.size,
+					})) || [];
+
+				const message = new Message({
+					ticket: ticketId,
+					content,
+					author,
+					files,
+				});
+				await message.save();
+
+				logger.info('Сообщение успешно создано', { message });
+
+				res.status(201).json(message);
+			} catch (error) {
+				logger.error('Ошибка создания сообщения', {
+					error: error.message,
+					stack: error.stack,
+				});
+				next(error);
+			}
+		});
+	},
+
+	async getMessages(req, res, next) {
+		try {
+			const { ticketId } = req.params;
+			const messages = await Message.find({ ticket: ticketId }).populate(
+				'author',
+				'username'
+			);
+			logger.info('Сообщение успешно получены', { messages });
+			res.status(200).json(messages);
+		} catch (error) {
+			logger.error('Ошибка получения сообщений', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
+		}
+	},
+};

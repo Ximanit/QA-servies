@@ -1,45 +1,51 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const http = require('http');
 const cors = require('cors');
-// const path = require('path');
-const { routes } = require('./src/routes');
+require('dotenv').config();
+const morgan = require('morgan');
+const path = require('path');
 
+const { routes } = require('./src/routes');
+const logger = require('./src/logger');
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 
-// const db_uri = 'mongodb://localhost:27017/QA';
-const db_uri =
-	'mongodb+srv://admin:admin@cluster0.jis6w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-const hostname = 'localhost';
-const port = 3000;
+const db_uri = process.env.DB_URI;
+const port = process.env.PORT || 3000;
 
 mongoose
 	.connect(db_uri)
-	.then(() => console.log('Connected to the database!'))
-	.catch((err) => console.log(err));
+	.then(() => logger.info('Connected to the database!'))
+	.catch((err) =>
+		logger.error('Database connection failed', { error: err.message })
+	);
 
 const app = express();
 
 const corsOptions = {
-	origin: '*',
-	methods: 'HEAD,PUT,PATCH,POST,DELETE, GET',
+	origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+	methods: 'HEAD,PUT,PATCH,POST,DELETE,GET',
 	allowedHeaders:
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
 };
 
-app.use(errorMiddleware);
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-//Название роута сотовляется из названия файла + роут
-//Пример:
-//http:/localhost:PORT/назвение_route/запрос
+app.use(
+	morgan('combined', {
+		stream: { write: (message) => logger.info(message.trim()) },
+	})
+);
+
 routes.forEach((item) => {
 	app.use(`/${item}`, require(`./src/routes/${item}`));
 });
 
+app.use(errorMiddleware);
+
 app.listen(port, () => {
-	console.log(`Server running at http://${hostname}:${port}/`);
+	logger.info(`Server running at http://localhost:${port}/`);
 });
