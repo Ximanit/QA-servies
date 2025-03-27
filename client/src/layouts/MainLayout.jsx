@@ -1,10 +1,11 @@
+// src/layouts/MainLayout.jsx
 import React from 'react';
 import { LogoutOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetTicketsQuery } from '../store/api/ticketsApi';
+import { useGetUserTicketsQuery } from '../store/api/ticketsApi';
 import { formatMenuItems } from '../utils/utils';
 
 const { Header, Content, Sider } = Layout;
@@ -14,18 +15,25 @@ const MainLayout = () => {
 		token: { colorBgContainer, borderRadiusLG },
 	} = theme.useToken();
 	const dispatch = useDispatch();
-	const { data: tickets, isLoading } = useGetTicketsQuery();
-	const user = useSelector((state) => state.auth.user);
 	const navigate = useNavigate();
+	const location = useLocation(); // Для определения текущего пути
+	const userId = useSelector((state) => state.auth.id);
+	const { data: userTickets, isLoading: userTicketsLoading } =
+		useGetUserTicketsQuery(userId);
 
-	const items = tickets ? formatMenuItems(tickets) : [];
+	const user = useSelector((state) => state.auth.user);
 
 	const handleLogout = () => {
 		navigate('/auth/login');
 		dispatch(logoutUser());
 	};
 
-	if (isLoading) return <div>Загрузка...</div>;
+	if (userTicketsLoading) return <div>Загрузка...</div>;
+
+	const items = formatMenuItems(userTickets || [], userId);
+
+	// Определяем текущую заявку из пути
+	const currentTicketId = location.pathname.split('/tickets/')[1];
 
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
@@ -50,8 +58,8 @@ const MainLayout = () => {
 				<Sider width={200} style={{ background: colorBgContainer }}>
 					<Menu
 						mode="inline"
-						defaultSelectedKeys={['1']}
-						defaultOpenKeys={['sub1']}
+						selectedKeys={[currentTicketId]} // Подсвечиваем текущую заявку
+						defaultOpenKeys={['open']}
 						style={{ height: '100%', borderRight: 0 }}
 						items={items}
 					/>

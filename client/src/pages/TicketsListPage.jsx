@@ -17,7 +17,7 @@ const TicketsListPage = () => {
 
 	const handleAccept = async (ticketId) => {
 		try {
-			await updateTicket({ id: ticketId, status: 'In Progress' }).unwrap();
+			await updateTicket({ id: ticketId, status: 'В работе' }).unwrap();
 			message.success('Заявка принята!');
 		} catch (error) {
 			message.error('Ошибка при принятии заявки');
