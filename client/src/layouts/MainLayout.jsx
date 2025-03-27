@@ -1,7 +1,6 @@
-// src/layouts/MainLayout.jsx
 import React from 'react';
 import { LogoutOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme, Badge } from 'antd'; // Добавляем Badge
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
@@ -16,7 +15,7 @@ const MainLayout = () => {
 	} = theme.useToken();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const location = useLocation(); // Для определения текущего пути
+	const location = useLocation();
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading: userTicketsLoading } =
 		useGetUserTicketsQuery(userId);
@@ -32,7 +31,29 @@ const MainLayout = () => {
 
 	const items = formatMenuItems(userTickets || [], userId);
 
-	// Определяем текущую заявку из пути
+	// Подсчитываем количество открытых заявок
+	const openTicketsCount =
+		userTickets?.filter((ticket) => ticket.status === 'Открыта').length || 0;
+
+	// Обновляем пункт "Открытые" с бейджем
+	const updatedItems = items.map((item) => {
+		if (item.key === 'open') {
+			return {
+				...item,
+				label: (
+					<>
+						Открытые{' '}
+						<Badge
+							count={openTicketsCount}
+							style={{ backgroundColor: '#fa541c' }}
+						/>
+					</>
+				),
+			};
+		}
+		return item;
+	});
+
 	const currentTicketId = location.pathname.split('/tickets/')[1];
 
 	return (
@@ -58,10 +79,10 @@ const MainLayout = () => {
 				<Sider width={200} style={{ background: colorBgContainer }}>
 					<Menu
 						mode="inline"
-						selectedKeys={[currentTicketId]} // Подсвечиваем текущую заявку
+						selectedKeys={[currentTicketId]}
 						defaultOpenKeys={['open']}
 						style={{ height: '100%', borderRight: 0 }}
-						items={items}
+						items={updatedItems} // Используем обновленные элементы с бейджем
 					/>
 				</Sider>
 				<Layout style={{ padding: '24px' }}>

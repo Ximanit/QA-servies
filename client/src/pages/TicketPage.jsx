@@ -8,6 +8,7 @@ import {
 	useGetTicketDetailsQuery,
 	useGetMessagesQuery,
 	useAddMessageMutation,
+	useUpdateTicketMutation,
 } from '../store/api/ticketsApi';
 import { API_URL } from '../constants';
 
@@ -19,9 +20,24 @@ const TicketPage = () => {
 	const { data: messages, isLoading: messagesLoading } =
 		useGetMessagesQuery(id);
 	const [addMessage, { isLoading: isAdding }] = useAddMessageMutation();
-	const userId = useSelector((state) => state.auth.id);
+	const [updateTicket] = useUpdateTicketMutation();
+	const userId = useSelector((state) => state.auth.id); // ID текущего пользователя
 	const [fileList, setFileList] = useState([]);
 	const [chatMessages, setChatMessages] = useState([]);
+
+	// Обновляем статус при открытии заявки, если пользователь не является автором
+	useEffect(() => {
+		if (
+			ticketDetails &&
+			ticketDetails.status === 'Открыта' &&
+			ticketDetails.author._id !== userId
+		) {
+			updateTicket({ id, status: 'В работе' })
+				.unwrap()
+				.then(() => message.success('Заявка переведена в статус "В работе"'))
+				.catch((error) => message.error('Ошибка при обновлении статуса'));
+		}
+	}, [ticketDetails, id, updateTicket, userId]);
 
 	useEffect(() => {
 		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
