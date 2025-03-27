@@ -1,3 +1,4 @@
+// src/routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
@@ -9,6 +10,7 @@ import NotFound from './pages/NotFound';
 import EmptyPage from './pages/EmptyPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
+import TicketsListPage from './pages/TicketsListPage';
 
 export const router = createBrowserRouter([
 	{
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
 						),
 					},
 					{
+						path: 'tickets',
+						element: (
+							<ProtectedRoute>
+								<TicketsListPage />
+							</ProtectedRoute>
+						),
+					},
+					{
 						path: 'profile',
 						element: (
 							<ProtectedRoute>
@@ -53,14 +63,8 @@ export const router = createBrowserRouter([
 		element: <AuthLayout />,
 		errorElement: <NotFound />,
 		children: [
-			{
-				path: 'login',
-				element: <LoginPage />,
-			},
-			{
-				path: 'register',
-				element: <RegisterPage />,
-			},
+			{ path: 'login', element: <LoginPage /> },
+			{ path: 'register', element: <RegisterPage /> },
 		],
 	},
 ]);
