@@ -58,12 +58,17 @@ routes.forEach((item) => {
 
 app.use(errorMiddleware);
 
-io.on('connection', (socket) => {
+o.on('connection', (socket) => {
 	logger.info('New client connected', { socketId: socket.id });
 
 	socket.on('joinTicket', (ticketId) => {
 		socket.join(ticketId);
 		logger.info('Client joined ticket room', { socketId: socket.id, ticketId });
+	});
+
+	socket.on('resetNotifications', ({ ticketId, userId }) => {
+		// Здесь можно добавить логику для сброса уведомлений на сервере, если нужно
+		io.to(ticketId).emit('notificationsReset', { ticketId, userId });
 	});
 
 	socket.on('disconnect', () => {
