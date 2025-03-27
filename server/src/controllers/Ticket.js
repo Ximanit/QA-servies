@@ -29,7 +29,7 @@ module.exports = {
 			try {
 				if (err) throw boom.badRequest('Ошибка загрузки файлов');
 
-				const { title, description, category } = req.body;
+				const { title, description, category, priority, assignedTo } = req.body;
 				if (!title || !description) {
 					throw boom.badRequest('Заголовок и описание обязательны');
 				}
@@ -49,6 +49,8 @@ module.exports = {
 					category,
 					author,
 					files,
+					priority,
+					assignedTo,
 				});
 				await ticket.save();
 
