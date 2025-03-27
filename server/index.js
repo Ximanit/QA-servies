@@ -58,7 +58,7 @@ routes.forEach((item) => {
 
 app.use(errorMiddleware);
 
-o.on('connection', (socket) => {
+io.on('connection', (socket) => {
 	logger.info('New client connected', { socketId: socket.id });
 
 	socket.on('joinTicket', (ticketId) => {
