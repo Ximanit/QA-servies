@@ -60,12 +60,21 @@ module.exports = {
 					savedMessage._id
 				).populate('author', 'username');
 
-				// Получаем io из объекта приложения
 				const io = req.app.get('io');
 				io.to(ticketId).emit('newMessage', populatedMessage);
 
-				logger.info('Сообщение успешно создано', { message: populatedMessage });
+				// Определяем получателя (исполнитель или автор)
+				const recipientId =
+					author === ticket.author.toString()
+						? ticket.assignedTo.toString()
+						: ticket.author.toString();
+				io.to(ticketId).emit('newMessageNotification', {
+					ticketId,
+					recipientId,
+					messageId: savedMessage._id,
+				});
 
+				logger.info('Сообщение успешно создано', { message: populatedMessage });
 				res.status(201).json(populatedMessage);
 			} catch (error) {
 				logger.error('Ошибка создания сообщения', {
