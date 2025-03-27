@@ -21,11 +21,10 @@ const TicketPage = () => {
 		useGetMessagesQuery(id);
 	const [addMessage, { isLoading: isAdding }] = useAddMessageMutation();
 	const [updateTicket] = useUpdateTicketMutation();
-	const userId = useSelector((state) => state.auth.id); // ID текущего пользователя
+	const userId = useSelector((state) => state.auth.id);
 	const [fileList, setFileList] = useState([]);
 	const [chatMessages, setChatMessages] = useState([]);
 
-	// Обновляем статус при открытии заявки, если пользователь не является автором
 	useEffect(() => {
 		if (
 			ticketDetails &&
@@ -55,7 +54,10 @@ const TicketPage = () => {
 
 	useEffect(() => {
 		if (messages) setChatMessages(messages);
-	}, [messages]);
+		// Сбрасываем уведомления при открытии страницы
+		const socket = io(API_URL);
+		socket.emit('resetNotifications', { ticketId: id, userId });
+	}, [messages, id, userId]);
 
 	const uploadProps = {
 		onChange: ({ fileList: newFileList }) => {

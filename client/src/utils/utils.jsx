@@ -28,12 +28,12 @@ export const formatMenuItems = (tickets, userId) => {
 	};
 
 	// Фильтрация и сортировка заявок
-	const openTickets = sortByDate(tickets.filter((t) => t.status === 'Open'));
+	const openTickets = sortByDate(tickets.filter((t) => t.status === 'Открыта'));
 	const inProgressTickets = sortByDate(
-		tickets.filter((t) => t.status === 'In Progress')
+		tickets.filter((t) => t.status === 'В работе')
 	);
 	const closedTickets = sortByDate(
-		tickets.filter((t) => t.status === 'Closed')
+		tickets.filter((t) => t.status === 'Закрыта')
 	);
 	const createdTickets = sortByDate(
 		tickets.filter((t) => t.author?._id === userId)

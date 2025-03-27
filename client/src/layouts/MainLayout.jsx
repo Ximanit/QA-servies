@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogoutOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme, Badge } from 'antd'; // Добавляем Badge
+import { Layout, Menu, theme, Badge } from 'antd';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
 import { useGetUserTicketsQuery } from '../store/api/ticketsApi';
 import { formatMenuItems } from '../utils/utils';
+import { io } from 'socket.io-client';
+import { API_URL } from '../constants';
 
 const { Header, Content, Sider } = Layout;
 
@@ -19,8 +21,20 @@ const MainLayout = () => {
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading: userTicketsLoading } =
 		useGetUserTicketsQuery(userId);
+	const [newMessages, setNewMessages] = useState({}); // Храним новые сообщения по ticketId
 
-	const user = useSelector((state) => state.auth.user);
+	useEffect(() => {
+		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
+		socket.on('newMessageNotification', ({ ticketId, recipientId }) => {
+			if (recipientId === userId) {
+				setNewMessages((prev) => ({
+					...prev,
+					[ticketId]: (prev[ticketId] || 0) + 1,
+				}));
+			}
+		});
+		return () => socket.disconnect();
+	}, [userId]);
 
 	const handleLogout = () => {
 		navigate('/auth/login');
@@ -31,11 +45,13 @@ const MainLayout = () => {
 
 	const items = formatMenuItems(userTickets || [], userId);
 
-	// Подсчитываем количество открытых заявок
-	const openTicketsCount =
-		userTickets?.filter((ticket) => ticket.status === 'Открыта').length || 0;
+	const openTicketsForUser =
+		userTickets?.filter(
+			(ticket) =>
+				ticket.status === 'Открыта' && ticket.assignedTo?._id === userId
+		) || [];
+	const openTicketsCount = openTicketsForUser.length;
 
-	// Обновляем пункт "Открытые" с бейджем
 	const updatedItems = items.map((item) => {
 		if (item.key === 'open') {
 			return {
@@ -43,12 +59,47 @@ const MainLayout = () => {
 				label: (
 					<>
 						Открытые{' '}
-						<Badge
-							count={openTicketsCount}
-							style={{ backgroundColor: '#fa541c' }}
-						/>
+						{openTicketsCount > 0 && (
+							<Badge
+								count={openTicketsCount}
+								style={{ backgroundColor: '#fa541c' }}
+							/>
+						)}
 					</>
 				),
+				children: item.children.map((child) => {
+					const ticket = openTicketsForUser.find((t) => t._id === child.key);
+					return {
+						...child,
+						label: ticket ? (
+							<>
+								<Link to={`/tickets/${child.key}`}>{ticket.title}</Link>{' '}
+								<Badge count={1} style={{ backgroundColor: '#fa541c' }} />
+							</>
+						) : (
+							child.label
+						),
+					};
+				}),
+			};
+		}
+		if (item.key === 'inProgress' || item.key === 'created') {
+			return {
+				...item,
+				children: item.children.map((child) => ({
+					...child,
+					label: (
+						<>
+							{child.label}{' '}
+							{newMessages[child.key] > 0 && (
+								<Badge
+									count={newMessages[child.key]}
+									style={{ backgroundColor: '#52c41a' }}
+								/>
+							)}
+						</>
+					),
+				})),
 			};
 		}
 		return item;
@@ -82,7 +133,7 @@ const MainLayout = () => {
 						selectedKeys={[currentTicketId]}
 						defaultOpenKeys={['open']}
 						style={{ height: '100%', borderRight: 0 }}
-						items={updatedItems} // Используем обновленные элементы с бейджем
+						items={updatedItems}
 					/>
 				</Sider>
 				<Layout style={{ padding: '24px' }}>
