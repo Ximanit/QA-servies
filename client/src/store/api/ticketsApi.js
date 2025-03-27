@@ -1,7 +1,5 @@
-// src/store/api/ticketsApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_URL } from '../../constants';
-import { logoutUser } from '../actions/authActions';
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: API_URL,
@@ -39,7 +37,6 @@ export const ticketsApi = createApi({
 				formData.append('title', ticketData.title);
 				formData.append('description', ticketData.description);
 				formData.append('category', ticketData.category);
-				formData.append('assignedTo', ticketData.assignedTo);
 				if (ticketData.files) {
 					ticketData.files.forEach((file) => formData.append('files', file));
 				}
@@ -54,10 +51,9 @@ export const ticketsApi = createApi({
 		updateTicket: builder.mutation({
 			query: ({ id, ...ticketData }) => {
 				const formData = new FormData();
-				if (ticketData.status) formData.append('status', ticketData.status);
-				if (ticketData.assignedTo)
-					formData.append('assignedTo', ticketData.assignedTo);
-				// Поддержка файлов при необходимости
+				Object.keys(ticketData).forEach((key) => {
+					if (key !== 'files') formData.append(key, ticketData[key]);
+				});
 				if (ticketData.files) {
 					ticketData.files.forEach((file) => formData.append('files', file));
 				}
@@ -69,7 +65,6 @@ export const ticketsApi = createApi({
 			},
 			invalidatesTags: (result, error, { id }) => [
 				{ type: 'TicketDetails', id },
-				'Tickets',
 			],
 		}),
 		getMessages: builder.query({
@@ -96,10 +91,6 @@ export const ticketsApi = createApi({
 				{ type: 'Messages', id: ticketId },
 			],
 		}),
-		getUserTickets: builder.query({
-			query: (userId) => `/ticket/user/${userId}`,
-			providesTags: ['Tickets'],
-		}),
 	}),
 });
 
@@ -110,5 +101,4 @@ export const {
 	useUpdateTicketMutation,
 	useGetMessagesQuery,
 	useAddMessageMutation,
-	useGetUserTicketsQuery,
 } = ticketsApi;
