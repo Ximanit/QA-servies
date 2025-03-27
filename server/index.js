@@ -27,7 +27,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+		origin: '*',
 		methods: ['GET', 'POST'],
 	},
 });
@@ -35,7 +35,7 @@ const io = new Server(server, {
 app.set('io', io); // Привязываем io к объекту app
 
 const corsOptions = {
-	origin: ['http://localhost:5173', 'https://your-frontend-domain.com'],
+	origin: '*',
 	methods: 'HEAD,PUT,PATCH,POST,DELETE,GET',
 	allowedHeaders:
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
@@ -58,7 +58,7 @@ routes.forEach((item) => {
 
 app.use(errorMiddleware);
 
-o.on('connection', (socket) => {
+io.on('connection', (socket) => {
 	logger.info('New client connected', { socketId: socket.id });
 
 	socket.on('joinTicket', (ticketId) => {

@@ -63,11 +63,18 @@ module.exports = {
 				const io = req.app.get('io');
 				io.to(ticketId).emit('newMessage', populatedMessage);
 
-				// Определяем получателя (исполнитель или автор)
+				// Определяем получателя
 				const recipientId =
 					author === ticket.author.toString()
 						? ticket.assignedTo.toString()
 						: ticket.author.toString();
+				logger.info('Sending newMessageNotification', {
+					ticketId,
+					recipientId,
+					messageId: savedMessage._id,
+				});
+
+				// Отправляем уведомление
 				io.to(ticketId).emit('newMessageNotification', {
 					ticketId,
 					recipientId,
