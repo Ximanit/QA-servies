@@ -1,5 +1,6 @@
 const Category = require('../models/Profile');
 const boom = require('@hapi/boom'); // Импорт boom
+const logger = require('../logger');
 
 module.exports = {
 	async createCategory(req, res, next) {
