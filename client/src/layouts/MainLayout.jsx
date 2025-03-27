@@ -21,17 +21,38 @@ const MainLayout = () => {
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading: userTicketsLoading } =
 		useGetUserTicketsQuery(userId);
-	const [newMessages, setNewMessages] = useState({}); // Храним новые сообщения по ticketId
+	const [newMessages, setNewMessages] = useState({});
 
 	useEffect(() => {
 		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
+		socket.on('connect', () => {
+			console.log('Connected to Socket.IO server');
+		});
 		socket.on('newMessageNotification', ({ ticketId, recipientId }) => {
+			console.log('Received newMessageNotification:', {
+				ticketId,
+				recipientId,
+				userId,
+			});
 			if (recipientId === userId) {
-				setNewMessages((prev) => ({
-					...prev,
-					[ticketId]: (prev[ticketId] || 0) + 1,
-				}));
+				setNewMessages((prev) => {
+					const updated = { ...prev, [ticketId]: (prev[ticketId] || 0) + 1 };
+					console.log('Updated newMessages:', updated);
+					return updated;
+				});
 			}
+		});
+		socket.on('notificationsReset', ({ ticketId, userId: resetUserId }) => {
+			if (resetUserId === userId) {
+				setNewMessages((prev) => {
+					const updated = { ...prev };
+					delete updated[ticketId];
+					return updated;
+				});
+			}
+		});
+		socket.on('connect_error', (error) => {
+			console.error('Socket.IO connection error:', error);
 		});
 		return () => socket.disconnect();
 	}, [userId]);
