@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
 			{
 				errorElement: <NotFound />,
 				children: [
-					{ index: true, element: <EmptyPage /> },
+					{ index: true, element: <TicketsListPage /> },
 					{
 						path: 'tickets/:id',
 						element: (

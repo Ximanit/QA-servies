@@ -1,6 +1,7 @@
 // src/pages/TicketsListPage.jsx
 import React, { useState } from 'react';
 import { Card, List, Button, Modal, Select, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import {
 	useGetTicketsQuery,
 	useUpdateTicketMutation,
@@ -8,6 +9,7 @@ import {
 import { useGetUsersQuery } from '../store/api/authApi';
 
 const TicketsListPage = () => {
+	const navigate = useNavigate();
 	const { data: tickets, isLoading: ticketsLoading } = useGetTicketsQuery();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
 	const [updateTicket] = useUpdateTicketMutation();
@@ -54,6 +56,10 @@ const TicketsListPage = () => {
 		setSelectedTicketId(null);
 	};
 
+	const handleCardClick = (ticketId) => {
+		navigate(`/tickets/${ticketId}`);
+	};
+
 	if (ticketsLoading || usersLoading) return <div>Загрузка...</div>;
 
 	const userOptions = users?.map((user) => ({
@@ -63,26 +69,17 @@ const TicketsListPage = () => {
 
 	return (
 		<div style={{ padding: '20px' }}>
-			<h2>Открытые заявки</h2>
+			<h2>Заявки в работе</h2>
 			<List
 				grid={{ gutter: 16, column: 3 }}
-				dataSource={tickets?.filter((ticket) => ticket.status !== 'Closed')} // Показываем только открытые заявки
+				dataSource={tickets?.filter((ticket) => ticket.status !== 'Closed')}
 				renderItem={(ticket) => (
 					<List.Item>
 						<Card
 							title={ticket.title}
 							extra={<span>{ticket.status}</span>}
-							actions={[
-								<Button
-									type="primary"
-									onClick={() => handleAccept(ticket._id)}
-									disabled={ticket.status === 'In Progress'}>
-									Принять
-								</Button>,
-								<Button onClick={() => showTransferModal(ticket._id)}>
-									Передать
-								</Button>,
-							]}>
+							hoverable // Добавляет эффект при наведении
+							onClick={() => handleCardClick(ticket._id)}>
 							<p>
 								<strong>Автор:</strong> {ticket.author?.username}
 							</p>
@@ -97,22 +94,6 @@ const TicketsListPage = () => {
 					</List.Item>
 				)}
 			/>
-
-			<Modal
-				title="Передать заявку"
-				open={isModalVisible}
-				onOk={handleTransfer}
-				onCancel={handleCancel}
-				okText="Передать"
-				cancelText="Отмена">
-				<Select
-					style={{ width: '100%' }}
-					placeholder="Выберите нового исполнителя"
-					options={userOptions}
-					onChange={(value) => setNewAssignedTo(value)}
-					value={newAssignedTo}
-				/>
-			</Modal>
 		</div>
 	);
 };
