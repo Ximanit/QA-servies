@@ -24,8 +24,11 @@ const MainLayout = () => {
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading: userTicketsLoading } =
 		useGetUserTicketsQuery(userId);
-	const { data: notifications, isLoading: notificationsLoading } =
-		useGetUserNotificationsQuery();
+	const {
+		data: notifications,
+		isLoading: notificationsLoading,
+		refetch: refetchNotifications,
+	} = useGetUserNotificationsQuery();
 	const [newMessages, setNewMessages] = useState({});
 
 	useEffect(() => {
@@ -46,28 +49,30 @@ const MainLayout = () => {
 				}));
 			}
 		});
-		socket.on('notificationsReset', ({ ticketId, userId: resetUserId }) => {
-			if (resetUserId === userId) {
-				setNewMessages((prev) => {
-					const updated = { ...prev };
-					delete updated[ticketId];
-					return updated;
-				});
-			}
-		});
 		socket.on('connect_error', (error) => {
 			console.error('Socket.IO connection error:', error);
 		});
 		return () => socket.disconnect();
 	}, [userId]);
 
+	// Периодический запрос уведомлений каждые 10 секунд
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refetchNotifications();
+		}, 10000); // 10 секунд
+		return () => clearInterval(interval);
+	}, [refetchNotifications]);
+
+	// Синхронизация newMessages с notifications
 	useEffect(() => {
 		if (notifications) {
 			const notificationCount = notifications.reduce((acc, notif) => {
 				acc[notif.ticket._id] = (acc[notif.ticket._id] || 0) + 1;
 				return acc;
 			}, {});
-			setNewMessages(notificationCount);
+			setNewMessages(notificationCount); // Полностью заменяем состояние
+		} else {
+			setNewMessages({}); // Если уведомлений нет, очищаем состояние
 		}
 	}, [notifications]);
 
@@ -86,6 +91,19 @@ const MainLayout = () => {
 				ticket.status === 'Открыта' && ticket.assignedTo?._id === userId
 		) || [];
 	const openTicketsCount = openTicketsForUser.length;
+
+	const inProgressTickets =
+		userTickets?.filter((ticket) => ticket.status === 'В работе') || [];
+	const createdTickets =
+		userTickets?.filter((ticket) => ticket.author._id === userId) || [];
+	const inProgressNewMessages = inProgressTickets.reduce(
+		(acc, ticket) => acc + (newMessages[ticket._id] || 0),
+		0
+	);
+	const createdNewMessages = createdTickets.reduce(
+		(acc, ticket) => acc + (newMessages[ticket._id] || 0),
+		0
+	);
 
 	const updatedItems = items.map((item) => {
 		if (item.key === 'open') {
@@ -118,14 +136,55 @@ const MainLayout = () => {
 				}),
 			};
 		}
-		if (item.key === 'inProgress' || item.key === 'created') {
+		if (item.key === 'inProgress') {
 			return {
 				...item,
+				label: (
+					<>
+						В работе{' '}
+						{inProgressNewMessages > 0 && (
+							<Badge
+								count={inProgressNewMessages}
+								style={{ backgroundColor: '#52c41a' }}
+							/>
+						)}
+					</>
+				),
 				children: item.children.map((child) => ({
 					...child,
 					label: (
 						<>
-							{child.label}{' '}
+							<Link to={`/tickets/${child.key}`}>{child.label}</Link>{' '}
+							{newMessages[child.key] > 0 && (
+								<Badge
+									count={newMessages[child.key]}
+									style={{ backgroundColor: '#52c41a' }}
+								/>
+							)}
+						</>
+					),
+				})),
+			};
+		}
+		if (item.key === 'created') {
+			return {
+				...item,
+				label: (
+					<>
+						Созданные{' '}
+						{createdNewMessages > 0 && (
+							<Badge
+								count={createdNewMessages}
+								style={{ backgroundColor: '#52c41a' }}
+							/>
+						)}
+					</>
+				),
+				children: item.children.map((child) => ({
+					...child,
+					label: (
+						<>
+							<Link to={`/tickets/${child.key}`}>{child.label}</Link>{' '}
 							{newMessages[child.key] > 0 && (
 								<Badge
 									count={newMessages[child.key]}

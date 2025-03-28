@@ -59,6 +59,7 @@ const TicketPage = () => {
 		// Отмечаем уведомления как прочитанные
 		markNotificationsAsRead(id)
 			.unwrap()
+			.then(() => console.log('Notifications marked as read for ticket:', id))
 			.catch((error) => console.error('Ошибка при сбросе уведомлений:', error));
 	}, [messages, id, markNotificationsAsRead]);
 
