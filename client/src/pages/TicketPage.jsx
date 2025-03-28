@@ -9,6 +9,7 @@ import {
 	useGetMessagesQuery,
 	useAddMessageMutation,
 	useUpdateTicketMutation,
+	useMarkNotificationsAsReadMutation,
 } from '../store/api/ticketsApi';
 import { API_URL } from '../constants';
 
@@ -21,6 +22,7 @@ const TicketPage = () => {
 		useGetMessagesQuery(id);
 	const [addMessage, { isLoading: isAdding }] = useAddMessageMutation();
 	const [updateTicket] = useUpdateTicketMutation();
+	const [markNotificationsAsRead] = useMarkNotificationsAsReadMutation();
 	const userId = useSelector((state) => state.auth.id);
 	const [fileList, setFileList] = useState([]);
 	const [chatMessages, setChatMessages] = useState([]);
@@ -54,10 +56,11 @@ const TicketPage = () => {
 
 	useEffect(() => {
 		if (messages) setChatMessages(messages);
-		// Сбрасываем уведомления при открытии страницы
-		const socket = io(API_URL);
-		socket.emit('resetNotifications', { ticketId: id, userId });
-	}, [messages, id, userId]);
+		// Отмечаем уведомления как прочитанные
+		markNotificationsAsRead(id)
+			.unwrap()
+			.catch((error) => console.error('Ошибка при сбросе уведомлений:', error));
+	}, [messages, id, markNotificationsAsRead]);
 
 	const uploadProps = {
 		onChange: ({ fileList: newFileList }) => {

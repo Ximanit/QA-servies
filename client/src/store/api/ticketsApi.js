@@ -23,7 +23,7 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
 export const ticketsApi = createApi({
 	reducerPath: 'ticketsApi',
 	baseQuery: baseQueryWithAuth,
-	tagTypes: ['Tickets', 'TicketDetails', 'Messages'],
+	tagTypes: ['Tickets', 'TicketDetails', 'Messages', 'Notifications'],
 	endpoints: (builder) => ({
 		getTickets: builder.query({
 			query: () => '/ticket',
@@ -100,6 +100,17 @@ export const ticketsApi = createApi({
 			query: (userId) => `/ticket/user/${userId}`,
 			providesTags: ['Tickets'],
 		}),
+		getUserNotifications: builder.query({
+			query: () => '/notification',
+			providesTags: ['Notifications'],
+		}),
+		markNotificationsAsRead: builder.mutation({
+			query: (ticketId) => ({
+				url: `/notification/read/${ticketId}`,
+				method: 'PUT',
+			}),
+			invalidatesTags: ['Notifications'],
+		}),
 	}),
 });
 
@@ -111,4 +122,6 @@ export const {
 	useGetMessagesQuery,
 	useAddMessageMutation,
 	useGetUserTicketsQuery,
+	useGetUserNotificationsQuery,
+	useMarkNotificationsAsReadMutation,
 } = ticketsApi;

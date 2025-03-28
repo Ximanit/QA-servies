@@ -4,7 +4,10 @@ import { Layout, Menu, theme, Badge } from 'antd';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetUserTicketsQuery } from '../store/api/ticketsApi';
+import {
+	useGetUserTicketsQuery,
+	useGetUserNotificationsQuery,
+} from '../store/api/ticketsApi';
 import { formatMenuItems } from '../utils/utils';
 import { io } from 'socket.io-client';
 import { API_URL } from '../constants';
@@ -21,6 +24,8 @@ const MainLayout = () => {
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading: userTicketsLoading } =
 		useGetUserTicketsQuery(userId);
+	const { data: notifications, isLoading: notificationsLoading } =
+		useGetUserNotificationsQuery();
 	const [newMessages, setNewMessages] = useState({});
 
 	useEffect(() => {
@@ -35,11 +40,10 @@ const MainLayout = () => {
 				userId,
 			});
 			if (recipientId === userId) {
-				setNewMessages((prev) => {
-					const updated = { ...prev, [ticketId]: (prev[ticketId] || 0) + 1 };
-					console.log('Updated newMessages:', updated);
-					return updated;
-				});
+				setNewMessages((prev) => ({
+					...prev,
+					[ticketId]: (prev[ticketId] || 0) + 1,
+				}));
 			}
 		});
 		socket.on('notificationsReset', ({ ticketId, userId: resetUserId }) => {
@@ -57,12 +61,22 @@ const MainLayout = () => {
 		return () => socket.disconnect();
 	}, [userId]);
 
+	useEffect(() => {
+		if (notifications) {
+			const notificationCount = notifications.reduce((acc, notif) => {
+				acc[notif.ticket._id] = (acc[notif.ticket._id] || 0) + 1;
+				return acc;
+			}, {});
+			setNewMessages(notificationCount);
+		}
+	}, [notifications]);
+
 	const handleLogout = () => {
 		navigate('/auth/login');
 		dispatch(logoutUser());
 	};
 
-	if (userTicketsLoading) return <div>Загрузка...</div>;
+	if (userTicketsLoading || notificationsLoading) return <div>Загрузка...</div>;
 
 	const items = formatMenuItems(userTickets || [], userId);
 
