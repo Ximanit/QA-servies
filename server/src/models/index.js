@@ -4,6 +4,7 @@ const ticket = require('./Ticket');
 const message = require('./Message');
 const profile = require('./Profile');
 const category = require('./Category');
+const notification = require('./Notification');
 
 module.exports = {
 	usersauth,
@@ -12,4 +13,5 @@ module.exports = {
 	message,
 	profile,
 	category,
+	notification,
 };

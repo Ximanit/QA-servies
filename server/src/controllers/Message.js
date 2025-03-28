@@ -1,6 +1,6 @@
-// server/src/controllers/Message.js
 const Message = require('../models/Message');
 const Ticket = require('../models/Ticket');
+const Notification = require('../models/Notification'); // Добавляем модель Notification
 const boom = require('@hapi/boom');
 const logger = require('../logger');
 const multer = require('multer');
@@ -63,18 +63,23 @@ module.exports = {
 				const io = req.app.get('io');
 				io.to(ticketId).emit('newMessage', populatedMessage);
 
-				// Определяем получателя
+				// Определяем получателя и создаём уведомление
 				const recipientId =
 					author === ticket.author.toString()
 						? ticket.assignedTo.toString()
 						: ticket.author.toString();
+				const notification = new Notification({
+					ticket: ticketId,
+					recipient: recipientId,
+					message: savedMessage._id,
+				});
+				await notification.save();
+
 				logger.info('Sending newMessageNotification', {
 					ticketId,
 					recipientId,
 					messageId: savedMessage._id,
 				});
-
-				// Отправляем уведомление
 				io.to(ticketId).emit('newMessageNotification', {
 					ticketId,
 					recipientId,
