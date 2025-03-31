@@ -1,13 +1,15 @@
+// src/pages/RegisterPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, message } from 'antd';
-import { useRegisterMutation } from '../store/api/authApi';
+import { message } from 'antd';
+import { useRegisterMutation } from '../components/features/auth/authApi';
+import RegisterForm from '../components/features/auth/components/RegisterForm';
 
 const RegisterPage = () => {
 	const [register, { isLoading }] = useRegisterMutation();
 	const navigate = useNavigate();
 
-	const onFinish = async (values) => {
+	const onSubmit = async (values) => {
 		try {
 			await register(values).unwrap();
 			message.success('Вы успешно зарегистрированы!');
@@ -18,29 +20,8 @@ const RegisterPage = () => {
 	};
 
 	return (
-		<div className="register-page">
-			<Form onFinish={onFinish}>
-				<Form.Item
-					name="name"
-					rules={[{ required: true, message: 'Введите ваше ФИО!' }]}>
-					<Input placeholder="Фамилия Имя Отчество" />
-				</Form.Item>
-				<Form.Item
-					name="username"
-					rules={[{ required: true, message: 'Введите логин!' }]}>
-					<Input placeholder="Логин" />
-				</Form.Item>
-				<Form.Item
-					name="password"
-					rules={[{ required: true, message: 'Введите пароль!' }]}>
-					<Input.Password placeholder="Пароль" />
-				</Form.Item>
-				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={isLoading}>
-						Зарегистрироваться
-					</Button>
-				</Form.Item>
-			</Form>
+		<div>
+			<RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
 		</div>
 	);
 };

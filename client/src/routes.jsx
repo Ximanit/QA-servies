@@ -1,3 +1,4 @@
+// src/routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import AuthLayout from './layouts/AuthLayout';
@@ -12,6 +13,23 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const TicketsListPage = lazy(() => import('./pages/TicketsListPage'));
 
+const authRoutes = [
+	{ path: 'login', element: <LoginPage /> },
+	{ path: 'register', element: <RegisterPage /> },
+];
+
+const mainRoutes = [
+	{ index: true, element: <TicketsListPage /> },
+	{ path: 'tickets/:id', element: <TicketPage />, protected: true },
+	{
+		path: 'tickets/create-ticket',
+		element: <CreateTicketPage />,
+		protected: true,
+	},
+	{ path: 'tickets', element: <TicketsListPage />, protected: true },
+	{ path: 'profile', element: <ProfilePage />, protected: true },
+];
+
 export const router = createBrowserRouter([
 	{
 		path: '/',
@@ -21,77 +39,25 @@ export const router = createBrowserRouter([
 				<NotFound />
 			</Suspense>
 		),
-		children: [
-			{
-				index: true,
-				element: (
-					<Suspense fallback={<div>Загрузка...</div>}>
-						<TicketsListPage />
-					</Suspense>
-				),
-			},
-			{
-				path: 'tickets/:id',
-				element: (
-					<ProtectedRoute>
-						<Suspense fallback={<div>Загрузка...</div>}>
-							<TicketPage />
-						</Suspense>
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: 'tickets/create-ticket',
-				element: (
-					<ProtectedRoute>
-						<Suspense fallback={<div>Загрузка...</div>}>
-							<CreateTicketPage />
-						</Suspense>
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: 'tickets',
-				element: (
-					<ProtectedRoute>
-						<Suspense fallback={<div>Загрузка...</div>}>
-							<TicketsListPage />
-						</Suspense>
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: 'profile',
-				element: (
-					<ProtectedRoute>
-						<Suspense fallback={<div>Загрузка...</div>}>
-							<ProfilePage />
-						</Suspense>
-					</ProtectedRoute>
-				),
-			},
-		],
+		children: mainRoutes.map((route) => ({
+			...route,
+			element: route.protected ? (
+				<ProtectedRoute>
+					<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+				</ProtectedRoute>
+			) : (
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+			),
+		})),
 	},
 	{
 		path: '/auth',
 		element: <AuthLayout />,
-		children: [
-			{
-				path: 'login',
-				element: (
-					<Suspense fallback={<div>Загрузка...</div>}>
-						<LoginPage />
-					</Suspense>
-				),
-			},
-			{
-				path: 'register',
-				element: (
-					<Suspense fallback={<div>Загрузка...</div>}>
-						<RegisterPage />
-					</Suspense>
-				),
-			},
-		],
+		children: authRoutes.map((route) => ({
+			...route,
+			element: (
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+			),
+		})),
 	},
 ]);

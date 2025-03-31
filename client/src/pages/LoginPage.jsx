@@ -1,13 +1,15 @@
+// src/pages/LoginPage.jsx
 import React from 'react';
-import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import { useLoginMutation } from '../components/features/auth/authApi';
+import LoginForm from '../components/features/auth/components/LoginForm';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();
 	const navigate = useNavigate();
 
-	const onFinish = async (values) => {
+	const onSubmit = async (values) => {
 		try {
 			await login(values).unwrap();
 			message.success('Вы успешно вошли в систему!');
@@ -20,24 +22,8 @@ const LoginPage = () => {
 	};
 
 	return (
-		<div className="login-page">
-			<Form onFinish={onFinish}>
-				<Form.Item
-					name="username"
-					rules={[{ required: true, message: 'Введите имя пользователя!' }]}>
-					<Input placeholder="Имя пользователя" />
-				</Form.Item>
-				<Form.Item
-					name="password"
-					rules={[{ required: true, message: 'Введите пароль!' }]}>
-					<Input.Password placeholder="Пароль" />
-				</Form.Item>
-				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={isLoading}>
-						Войти
-					</Button>
-				</Form.Item>
-			</Form>
+		<div>
+			<LoginForm onSubmit={onSubmit} isLoading={isLoading} />
 		</div>
 	);
 };

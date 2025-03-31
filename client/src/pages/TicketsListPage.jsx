@@ -1,71 +1,17 @@
 // src/pages/TicketsListPage.jsx
-import React, { useState } from 'react';
-import { Card, List, Button, Modal, Select, message } from 'antd';
+import { Card, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import {
-	useGetTicketsQuery,
-	useUpdateTicketMutation,
-} from '../components/features/tickets/ticketsApi';
-import { useGetUsersQuery } from '../components/features/auth/authApi';
+import { useGetTicketsQuery } from '../components/features/tickets/ticketsApi';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();
 	const { data: tickets, isLoading: ticketsLoading } = useGetTicketsQuery();
-	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
-	const [updateTicket] = useUpdateTicketMutation();
-	const [isModalVisible, setIsModalVisible] = useState(false);
-	const [selectedTicketId, setSelectedTicketId] = useState(null);
-	const [newAssignedTo, setNewAssignedTo] = useState(null);
-
-	const handleAccept = async (ticketId) => {
-		try {
-			await updateTicket({ id: ticketId, status: 'В работе' }).unwrap();
-			message.success('Заявка принята!');
-		} catch (error) {
-			message.error('Ошибка при принятии заявки');
-		}
-	};
-
-	const showTransferModal = (ticketId) => {
-		setSelectedTicketId(ticketId);
-		setIsModalVisible(true);
-	};
-
-	const handleTransfer = async () => {
-		if (!newAssignedTo) {
-			message.error('Выберите нового исполнителя!');
-			return;
-		}
-		try {
-			await updateTicket({
-				id: selectedTicketId,
-				assignedTo: newAssignedTo,
-			}).unwrap();
-			message.success('Заявка передана!');
-			setIsModalVisible(false);
-			setNewAssignedTo(null);
-			setSelectedTicketId(null);
-		} catch (error) {
-			message.error('Ошибка при передаче заявки');
-		}
-	};
-
-	const handleCancel = () => {
-		setIsModalVisible(false);
-		setNewAssignedTo(null);
-		setSelectedTicketId(null);
-	};
 
 	const handleCardClick = (ticketId) => {
 		navigate(`/tickets/${ticketId}`);
 	};
 
-	if (ticketsLoading || usersLoading) return <div>Загрузка...</div>;
-
-	const userOptions = users?.map((user) => ({
-		label: user.username,
-		value: user._id,
-	}));
+	if (ticketsLoading) return <div>Загрузка...</div>;
 
 	return (
 		<div style={{ padding: '20px' }}>
