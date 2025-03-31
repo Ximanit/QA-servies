@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../store/api/authApi';
+import { useLoginMutation } from '../components/features/auth/authApi';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();

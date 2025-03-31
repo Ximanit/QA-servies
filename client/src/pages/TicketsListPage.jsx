@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import {
 	useGetTicketsQuery,
 	useUpdateTicketMutation,
-} from '../store/api/ticketsApi';
-import { useGetUsersQuery } from '../store/api/authApi';
+} from '../components/features/tickets/ticketsApi';
+import { useGetUsersQuery } from '../components/features/auth/authApi';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();

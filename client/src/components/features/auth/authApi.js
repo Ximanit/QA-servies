@@ -1,8 +1,8 @@
 // src/store/api/authApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { setUser } from '../slices/authSlice';
-import { API_URL } from '../../constants/constants';
-import { logoutUser } from '../actions/authActions';
+import { setUser } from '../../../store/slices/authSlice';
+import { API_URL } from '../../../constants/constants';
+import { logoutUser } from '../../../store/actions/authActions';
 
 // Кастомный baseQuery с обработкой 401
 const baseQuery = fetchBaseQuery({
