@@ -1,47 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, message, Upload, Select } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, message, Select } from 'antd';
 import { useCreateTicketMutation } from '../store/api/ticketsApi';
 import { useGetUsersQuery } from '../store/api/authApi';
+import FileUploader from '../components/Common/FileUploader';
 
 const CreateTicketPage = () => {
 	const [form] = Form.useForm();
 	const [createTicket, { isLoading }] = useCreateTicketMutation();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
 	const navigate = useNavigate();
-	const [fileList, setFileList] = useState([]);
-
-	const uploadProps = {
-		onChange: ({ fileList: newFileList }) => {
-			console.log('onChange - newFileList:', newFileList);
-			setFileList(newFileList);
-		},
-		onRemove: (file) => {
-			setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-		},
-		beforeUpload: () => false,
-		fileList,
-	};
+	const [files, setFiles] = useState([]);
 
 	const onFinish = async (values) => {
-		const validFiles = fileList
-			.filter((file) => file.originFileObj)
-			.map((file) => file.originFileObj);
-		console.log('Valid files:', validFiles);
 		try {
-			const ticketData = {
-				...values,
-				files: validFiles,
-			};
+			const ticketData = { ...values, files };
 			const newTicket = await createTicket(ticketData).unwrap();
 			message.success('Заявка успешно создана!');
 			form.resetFields();
-			setFileList([]);
+			setFiles([]);
 			navigate(`/tickets/${newTicket._id}`);
 		} catch (error) {
 			message.error('Ошибка при создании заявки');
-			console.error('Error:', error);
 		}
 	};
 
@@ -82,9 +62,7 @@ const CreateTicketPage = () => {
 					<Select options={userOptions} placeholder="Выберите исполнителя" />
 				</Form.Item>
 				<Form.Item label="Файлы">
-					<Upload {...uploadProps}>
-						<Button icon={<UploadOutlined />}>Загрузить файлы</Button>
-					</Upload>
+					<FileUploader onFilesChange={setFiles} />
 				</Form.Item>
 				<Form.Item>
 					<Button type="primary" htmlType="submit" loading={isLoading}>

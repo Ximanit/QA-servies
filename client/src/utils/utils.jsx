@@ -1,18 +1,26 @@
-// src/utils.js
 import { Link } from 'react-router-dom';
+import { Badge } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
-export const formatMenuItems = (tickets, userId) => {
-	// Функция сортировки по дате создания (от новых к старым)
+export const formatMenuItems = (
+	tickets,
+	userId,
+	newMessages = {},
+	notifications = []
+) => {
 	const sortByDate = (tickets) =>
 		tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-	// Функция для формирования элементов меню, включая заглушку с иконкой
 	const getChildren = (ticketList) => {
 		return ticketList.length > 0
 			? ticketList.map((t) => ({
 					key: t._id,
-					label: <Link to={`/tickets/${t._id}`}>{t.title}</Link>,
+					label: (
+						<>
+							<Link to={`/tickets/${t._id}`}>{t.title}</Link>
+							{newMessages[t._id] > 0 && <Badge count={newMessages[t._id]} />}
+						</>
+					),
 			  }))
 			: [
 					{
@@ -27,7 +35,6 @@ export const formatMenuItems = (tickets, userId) => {
 			  ];
 	};
 
-	// Фильтрация и сортировка заявок
 	const openTickets = sortByDate(tickets.filter((t) => t.status === 'Открыта'));
 	const inProgressTickets = sortByDate(
 		tickets.filter((t) => t.status === 'В работе')
@@ -40,21 +47,13 @@ export const formatMenuItems = (tickets, userId) => {
 	);
 
 	return [
-		{
-			key: 'open',
-			label: 'Открытые',
-			children: getChildren(openTickets),
-		},
+		{ key: 'open', label: 'Открытые', children: getChildren(openTickets) },
 		{
 			key: 'inProgress',
 			label: 'В работе',
 			children: getChildren(inProgressTickets),
 		},
-		{
-			key: 'closed',
-			label: 'Закрытые',
-			children: getChildren(closedTickets),
-		},
+		{ key: 'closed', label: 'Закрытые', children: getChildren(closedTickets) },
 		{
 			key: 'created',
 			label: 'Созданные',

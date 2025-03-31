@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Form, Button, Input, Card, message, Upload, List } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Form, Button, Card, message, List, Input } from 'antd';
 import { io } from 'socket.io-client';
 import {
 	useGetTicketDetailsQuery,
@@ -11,7 +10,8 @@ import {
 	useUpdateTicketMutation,
 	useMarkNotificationsAsReadMutation,
 } from '../store/api/ticketsApi';
-import { API_URL } from '../constants';
+import { API_URL } from '../constants/constants';
+import FileUploader from '../components/Common/FileUploader';
 
 const TicketPage = () => {
 	const { id } = useParams();
@@ -24,7 +24,7 @@ const TicketPage = () => {
 	const [updateTicket] = useUpdateTicketMutation();
 	const [markNotificationsAsRead] = useMarkNotificationsAsReadMutation();
 	const userId = useSelector((state) => state.auth.id);
-	const [fileList, setFileList] = useState([]);
+	const [files, setFiles] = useState([]);
 	const [chatMessages, setChatMessages] = useState([]);
 
 	useEffect(() => {
@@ -36,62 +36,33 @@ const TicketPage = () => {
 			updateTicket({ id, status: 'В работе' })
 				.unwrap()
 				.then(() => message.success('Заявка переведена в статус "В работе"'))
-				.catch((error) => message.error('Ошибка при обновлении статуса'));
+				.catch(() => message.error('Ошибка при обновлении статуса'));
 		}
 	}, [ticketDetails, id, updateTicket, userId]);
 
 	useEffect(() => {
 		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
-		socket.on('connect', () => {
-			socket.emit('joinTicket', id);
-		});
-		socket.on('newMessage', (message) => {
-			setChatMessages((prev) => [...prev, message]);
-		});
-		socket.on('connect_error', (error) => {
-			console.error('Socket.IO connection error:', error);
-		});
+		socket.on('connect', () => socket.emit('joinTicket', id));
+		socket.on('newMessage', (message) =>
+			setChatMessages((prev) => [...prev, message])
+		);
 		return () => socket.disconnect();
 	}, [id]);
 
 	useEffect(() => {
 		if (messages) setChatMessages(messages);
-		// Отмечаем уведомления как прочитанные
-		markNotificationsAsRead(id)
-			.unwrap()
-			.then(() => console.log('Notifications marked as read for ticket:', id))
-			.catch((error) => console.error('Ошибка при сбросе уведомлений:', error));
+		markNotificationsAsRead(id);
 	}, [messages, id, markNotificationsAsRead]);
 
-	const uploadProps = {
-		onChange: ({ fileList: newFileList }) => {
-			setFileList(newFileList);
-		},
-		onRemove: (file) => {
-			setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-		},
-		beforeUpload: () => false,
-		fileList,
-	};
-
 	const onFinish = async (values) => {
-		const validFiles = fileList
-			.filter((file) => file.originFileObj)
-			.map((file) => file.originFileObj);
-
 		try {
-			const messageData = {
-				ticketId: id,
-				content: values.content,
-				files: validFiles,
-			};
+			const messageData = { ticketId: id, content: values.content, files };
 			await addMessage(messageData).unwrap();
 			form.resetFields();
-			setFileList([]);
+			setFiles([]);
 			message.success('Сообщение отправлено!');
 		} catch (error) {
 			message.error('Ошибка при отправке сообщения');
-			console.error('Error:', error);
 		}
 	};
 
@@ -177,9 +148,7 @@ const TicketPage = () => {
 						<Input.TextArea rows={4} placeholder="Введите сообщение" />
 					</Form.Item>
 					<Form.Item>
-						<Upload {...uploadProps}>
-							<Button icon={<UploadOutlined />}>Прикрепить файлы</Button>
-						</Upload>
+						<FileUploader onFilesChange={setFiles} />
 					</Form.Item>
 					<Form.Item>
 						<Button type="primary" htmlType="submit" loading={isAdding}>

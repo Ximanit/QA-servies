@@ -1,70 +1,97 @@
-// src/routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import TicketPage from './pages/TicketPage';
-import CreateTicketPage from './pages/CreateTicketPage';
-import NotFound from './pages/NotFound';
-import EmptyPage from './pages/EmptyPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import ProfilePage from './pages/ProfilePage';
-import TicketsListPage from './pages/TicketsListPage';
+
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const TicketPage = lazy(() => import('./pages/TicketPage'));
+const CreateTicketPage = lazy(() => import('./pages/CreateTicketPage'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const TicketsListPage = lazy(() => import('./pages/TicketsListPage'));
 
 export const router = createBrowserRouter([
 	{
 		path: '/',
 		element: <MainLayout />,
-		errorElement: <NotFound />,
+		errorElement: (
+			<Suspense fallback={<div>Загрузка...</div>}>
+				<NotFound />
+			</Suspense>
+		),
 		children: [
 			{
-				errorElement: <NotFound />,
-				children: [
-					{ index: true, element: <TicketsListPage /> },
-					{
-						path: 'tickets/:id',
-						element: (
-							<ProtectedRoute>
-								<TicketPage />
-							</ProtectedRoute>
-						),
-					},
-					{
-						path: 'tickets/create-ticket',
-						element: (
-							<ProtectedRoute>
-								<CreateTicketPage />
-							</ProtectedRoute>
-						),
-					},
-					{
-						path: 'tickets',
-						element: (
-							<ProtectedRoute>
-								<TicketsListPage />
-							</ProtectedRoute>
-						),
-					},
-					{
-						path: 'profile',
-						element: (
-							<ProtectedRoute>
-								<ProfilePage />
-							</ProtectedRoute>
-						),
-					},
-				],
+				index: true,
+				element: (
+					<Suspense fallback={<div>Загрузка...</div>}>
+						<TicketsListPage />
+					</Suspense>
+				),
+			},
+			{
+				path: 'tickets/:id',
+				element: (
+					<ProtectedRoute>
+						<Suspense fallback={<div>Загрузка...</div>}>
+							<TicketPage />
+						</Suspense>
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'tickets/create-ticket',
+				element: (
+					<ProtectedRoute>
+						<Suspense fallback={<div>Загрузка...</div>}>
+							<CreateTicketPage />
+						</Suspense>
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'tickets',
+				element: (
+					<ProtectedRoute>
+						<Suspense fallback={<div>Загрузка...</div>}>
+							<TicketsListPage />
+						</Suspense>
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: 'profile',
+				element: (
+					<ProtectedRoute>
+						<Suspense fallback={<div>Загрузка...</div>}>
+							<ProfilePage />
+						</Suspense>
+					</ProtectedRoute>
+				),
 			},
 		],
 	},
 	{
 		path: '/auth',
 		element: <AuthLayout />,
-		errorElement: <NotFound />,
 		children: [
-			{ path: 'login', element: <LoginPage /> },
-			{ path: 'register', element: <RegisterPage /> },
+			{
+				path: 'login',
+				element: (
+					<Suspense fallback={<div>Загрузка...</div>}>
+						<LoginPage />
+					</Suspense>
+				),
+			},
+			{
+				path: 'register',
+				element: (
+					<Suspense fallback={<div>Загрузка...</div>}>
+						<RegisterPage />
+					</Suspense>
+				),
+			},
 		],
 	},
 ]);
