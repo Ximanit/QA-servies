@@ -2,9 +2,9 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card } from 'antd';
-import { useTicket } from '../components/features/tickets/hooks/useTicket';
-import TicketDetails from '../components/features/tickets/components/TicketDetails';
-import TicketChat from '../components/features/tickets/components/TicketChat';
+import { useTicket } from '../../components/features/tickets/hooks/useTicket';
+import TicketDetails from '../../components/features/tickets/components/TicketDetails';
+import TicketChat from '../../components/features/tickets/components/TicketChat';
 
 const TicketPage = () => {
 	const { id } = useParams();

@@ -1,7 +1,7 @@
 // src/pages/TicketsListPage.jsx
 import { Card, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useGetTicketsQuery } from '../components/features/tickets/ticketsApi';
+import { useGetTicketsQuery } from '../../components/features/tickets/ticketsApi';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();

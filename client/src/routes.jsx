@@ -5,13 +5,13 @@ import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const TicketPage = lazy(() => import('./pages/TicketPage'));
-const CreateTicketPage = lazy(() => import('./pages/CreateTicketPage'));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
+const TicketPage = lazy(() => import('./pages/tickets/TicketPage'));
+const CreateTicketPage = lazy(() => import('./pages/tickets/CreateTicketPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const TicketsListPage = lazy(() => import('./pages/TicketsListPage'));
+const TicketsListPage = lazy(() => import('./pages/tickets/TicketsListPage'));
 
 const authRoutes = [
 	{ path: 'login', element: <LoginPage /> },
