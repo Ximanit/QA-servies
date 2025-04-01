@@ -1,4 +1,4 @@
-// src/features/tickets/hooks/useTicket.js
+// src/components/features/tickets/hooks/useTicket.js
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { message } from 'antd';
@@ -14,22 +14,18 @@ import { useSocket } from '../../../../hooks/useSocket';
 export const useTicket = (ticketId) => {
 	const userId = useSelector((state) => state.auth.id);
 
-	// Загрузка данных
 	const { data: ticketDetails, isLoading: ticketLoading } =
 		useGetTicketDetailsQuery(ticketId);
 	const { data: initialMessages, isLoading: messagesLoading } =
 		useGetMessagesQuery(ticketId);
 
-	// Мутации
 	const [addMessage, { isLoading: isAdding }] = useAddMessageMutation();
 	const [updateTicket] = useUpdateTicketMutation();
 	const [markNotificationsAsRead] = useMarkNotificationsAsReadMutation();
 
-	// Сообщения из сокетов
 	const socketMessages = useSocket(ticketId, userId);
 	const [messages, setMessages] = useState(initialMessages || []);
 
-	// Синхронизация сообщений
 	useEffect(() => {
 		if (initialMessages) {
 			setMessages(initialMessages);
@@ -45,7 +41,6 @@ export const useTicket = (ticketId) => {
 		}
 	}, [socketMessages]);
 
-	// Обновление статуса
 	useEffect(() => {
 		if (
 			ticketDetails &&
@@ -59,14 +54,12 @@ export const useTicket = (ticketId) => {
 		}
 	}, [ticketDetails, ticketId, updateTicket, userId]);
 
-	// Пометка уведомлений как прочитанных
 	useEffect(() => {
 		if (messages) {
 			markNotificationsAsRead(ticketId);
 		}
 	}, [messages, ticketId, markNotificationsAsRead]);
 
-	// Отправка сообщения
 	const sendMessage = async ({ content, files }) => {
 		try {
 			const messageData = { ticketId, content, files };
@@ -77,6 +70,26 @@ export const useTicket = (ticketId) => {
 		}
 	};
 
+	// Новая функция для передачи заявки другому исполнителю
+	const assignTicket = async (newAssignedTo) => {
+		try {
+			await updateTicket({ id: ticketId, assignedTo: newAssignedTo }).unwrap();
+			message.success('Заявка передана другому исполнителю!');
+		} catch (error) {
+			message.error('Ошибка при передаче заявки');
+		}
+	};
+
+	// Новая функция для завершения заявки
+	const completeTicket = async () => {
+		try {
+			await updateTicket({ id: ticketId, status: 'Закрыта' }).unwrap();
+			message.success('Заявка завершена!');
+		} catch (error) {
+			message.error('Ошибка при завершении заявки');
+		}
+	};
+
 	return {
 		ticketDetails,
 		messages,
@@ -84,5 +97,7 @@ export const useTicket = (ticketId) => {
 		isLoading: ticketLoading || messagesLoading,
 		isAdding,
 		sendMessage,
+		assignTicket, // Добавляем в возвращаемый объект
+		completeTicket, // Добавляем в возвращаемый объект
 	};
 };
