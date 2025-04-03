@@ -59,7 +59,10 @@ module.exports = {
 		try {
 			const { fio } = req.body;
 
-			const profile = await Profile.findByIdAndUpdate(req.params.id, { fio });
+			const profile = await Profile.findOneAndUpdate(
+				{ userId: req.params.id },
+				{ fio: fio }
+			);
 			if (!profile) {
 				throw boom.notFound('Профиль не найден');
 			}
