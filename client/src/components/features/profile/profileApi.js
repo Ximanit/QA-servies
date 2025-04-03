@@ -29,9 +29,9 @@ export const profileApi = createApi({
 			providesTags: ['Profile'],
 		}),
 		updateProfile: builder.mutation({
-			query: (profileData) => ({
-				url: '/profile',
-				method: 'PATCH',
+			query: ({ id, profileData }) => ({
+				url: `/profile/${id}`,
+				method: 'PUT',
 				body: profileData,
 			}),
 			invalidatesTags: ['Profile'],
