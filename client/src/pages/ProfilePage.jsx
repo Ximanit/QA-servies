@@ -46,6 +46,7 @@ const ProfilePage = () => {
 
 	const onFinish = async (values) => {
 		try {
+			console.log(values.fio);
 			await updateProfile({ id: userId, fio: values.fio }).unwrap();
 			message.success('Профиль успешно обновлен!');
 			setIsEditing(false);
