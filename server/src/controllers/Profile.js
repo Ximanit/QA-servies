@@ -5,7 +5,6 @@ const logger = require('../logger');
 module.exports = {
 	async createProfile(req, res, next) {
 		try {
-			//TODO добавить обработку массива категорий при регистрации
 			const { fio } = req.body;
 
 			const userId = req.user.id;
@@ -58,7 +57,6 @@ module.exports = {
 
 	async updateProfile(req, res, next) {
 		try {
-			//TODO добавить обработку массива категорий
 			const { fio } = req.body;
 
 			const profile = await Profile.findByIdAndUpdate(req.params.id, { fio });

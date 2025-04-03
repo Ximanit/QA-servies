@@ -13,12 +13,6 @@ const ProfileSchema = new Schema({
 		type: Number,
 		default: 0,
 	},
-	category: [
-		{
-			type: String,
-			ref: 'Category',
-		},
-	],
 	created: {
 		type: Date,
 		default: Date.now,
