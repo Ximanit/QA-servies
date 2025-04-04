@@ -5,6 +5,8 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);
 
+router.route('/stats').get(controller.getTicketStats);
+
 router.route('/').post(controller.createTicket).get(controller.getTickets);
 
 router
@@ -14,7 +16,5 @@ router
 	.delete(controller.deleteTicket);
 
 router.route('/user/:userId').get(controller.getTicketsByUserId);
-
-router.route('/stats').get(controller.getTicketStats);
 
 module.exports = router;

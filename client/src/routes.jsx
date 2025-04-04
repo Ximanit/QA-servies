@@ -12,6 +12,7 @@ const CreateTicketPage = lazy(() => import('./pages/tickets/CreateTicketPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const TicketsListPage = lazy(() => import('./pages/tickets/TicketsListPage'));
+const StatsPage = lazy(() => import('./pages/StatsPage'));
 
 const authRoutes = [
 	{ path: 'login', element: <LoginPage /> },
@@ -28,6 +29,7 @@ const mainRoutes = [
 	},
 	{ path: 'tickets', element: <TicketsListPage />, protected: true },
 	{ path: 'profile', element: <ProfilePage />, protected: true },
+	{ path: 'stats', element: <StatsPage />, protected: true },
 ];
 
 export const router = createBrowserRouter([
