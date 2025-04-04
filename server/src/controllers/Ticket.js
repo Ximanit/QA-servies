@@ -3,6 +3,7 @@ const boom = require('@hapi/boom');
 const logger = require('../logger');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const storage = multer.diskStorage({
 	destination: './uploads/',

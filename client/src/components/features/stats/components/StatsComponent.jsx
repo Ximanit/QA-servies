@@ -1,8 +1,27 @@
 // client/src/components/features/stats/StatsComponent.jsx
 import React, { useState } from 'react';
-import { Card, Select, DatePicker, Button, Statistic } from 'antd';
+import { Card, Select, DatePicker, Button } from 'antd';
+import { Bar } from 'react-chartjs-2';
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	Title,
+	Tooltip,
+	Legend,
+} from 'chart.js';
 import { useGetTicketStatsQuery } from '../../tickets/ticketsApi';
 import moment from 'moment';
+
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	Title,
+	Tooltip,
+	Legend
+);
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -29,10 +48,49 @@ const StatsComponent = () => {
 		setCustomRange(dates);
 	};
 
+	// Подготовка данных для графика
+	const labels = stats?.createdTickets.map((item) => item.date) || [];
+	const createdData = stats?.createdTickets.map((item) => item.count) || [];
+	const completedData = stats?.completedTickets.map((item) => item.count) || [];
+
+	const chartData = {
+		labels,
+		datasets: [
+			{
+				label: 'Сформировано заявок',
+				data: createdData,
+				backgroundColor: 'rgba(75, 192, 192, 0.6)',
+			},
+			{
+				label: 'Решено заявок',
+				data: completedData,
+				backgroundColor: 'rgba(153, 102, 255, 0.6)',
+			},
+		],
+	};
+
+	const options = {
+		responsive: true,
+		plugins: {
+			legend: {
+				position: 'top',
+			},
+			title: {
+				display: true,
+				text: 'Статистика заявок',
+			},
+		},
+		scales: {
+			y: {
+				beginAtZero: true,
+			},
+		},
+	};
+
 	return (
 		<Card
 			title="Статистика заявок"
-			style={{ maxWidth: 600, margin: '20px auto' }}>
+			style={{ maxWidth: 800, margin: '20px auto' }}>
 			<div style={{ marginBottom: 20 }}>
 				<Select
 					value={period}
@@ -55,16 +113,7 @@ const StatsComponent = () => {
 			{isLoading ? (
 				<p>Загрузка...</p>
 			) : (
-				<div style={{ display: 'flex', justifyContent: 'space-around' }}>
-					<Statistic
-						title="Сформировано заявок"
-						value={stats?.createdTickets || 0}
-					/>
-					<Statistic
-						title="Решено заявок"
-						value={stats?.completedTickets || 0}
-					/>
-				</div>
+				<Bar data={chartData} options={options} />
 			)}
 		</Card>
 	);
