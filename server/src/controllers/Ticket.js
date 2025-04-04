@@ -184,4 +184,99 @@ module.exports = {
 			next(error);
 		}
 	},
+	async getTicketStats(req, res, next) {
+		try {
+			const { period, startDate, endDate } = req.query;
+			const userId = req.user.id;
+
+			let dateFilter = {};
+			const now = new Date();
+
+			switch (period) {
+				case 'day':
+					dateFilter = {
+						createdAt: {
+							$gte: new Date(now.setHours(0, 0, 0, 0)),
+							$lte: new Date(now.setHours(23, 59, 59, 999)),
+						},
+					};
+					break;
+				case 'week':
+					const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+					dateFilter = {
+						createdAt: {
+							$gte: new Date(weekStart.setHours(0, 0, 0, 0)),
+							$lte: new Date(now.setHours(23, 59, 59, 999)),
+						},
+					};
+					break;
+				case 'month':
+					dateFilter = {
+						createdAt: {
+							$gte: new Date(now.getFullYear(), now.getMonth(), 1),
+							$lte: new Date(
+								now.getFullYear(),
+								now.getMonth() + 1,
+								0,
+								23,
+								59,
+								59,
+								999
+							),
+						},
+					};
+					break;
+				case 'year':
+					dateFilter = {
+						createdAt: {
+							$gte: new Date(now.getFullYear(), 0, 1),
+							$lte: new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999),
+						},
+					};
+					break;
+				case 'custom':
+					if (!startDate || !endDate) {
+						throw boom.badRequest(
+							'Для пользовательского периода нужны startDate и endDate'
+						);
+					}
+					dateFilter = {
+						createdAt: {
+							$gte: new Date(startDate),
+							$lte: new Date(endDate),
+						},
+					};
+					break;
+				default:
+					throw boom.badRequest('Неверный период');
+			}
+
+			const createdTickets = await Ticket.countDocuments({
+				author: userId,
+				...dateFilter,
+			});
+
+			const completedTickets = await Ticket.countDocuments({
+				assignedTo: userId,
+				status: 'Закрыта',
+				...dateFilter,
+			});
+
+			const stats = {
+				createdTickets,
+				completedTickets,
+				period,
+				...(period === 'custom' && { startDate, endDate }),
+			};
+
+			logger.info('Статистика заявок успешно получена', { stats, userId });
+			res.status(200).json(stats);
+		} catch (error) {
+			logger.error('Ошибка получения статистики заявок', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
+		}
+	},
 };

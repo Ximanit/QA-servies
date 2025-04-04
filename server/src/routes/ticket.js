@@ -15,4 +15,6 @@ router
 
 router.route('/user/:userId').get(controller.getTicketsByUserId);
 
+router.route('/stats').get(controller.getTicketStats);
+
 module.exports = router;
