@@ -1,4 +1,4 @@
-// src/store/authSlice.js
+// src/store/slices/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -23,11 +23,14 @@ const authSlice = createSlice({
 			localStorage.setItem('id', action.payload.data.id);
 		},
 		logout: (state) => {
-			state.isAuthenticated = false;
 			state.user = null;
 			state.token = null;
+			state.roles = null;
+			state.id = null;
 			localStorage.removeItem('user');
 			localStorage.removeItem('token');
+			localStorage.removeItem('roles');
+			localStorage.removeItem('id');
 		},
 	},
 });

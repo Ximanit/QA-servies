@@ -1,3 +1,3 @@
 module.exports = {
-	routes: ['auth', 'answer', 'question'],
+	routes: ['auth', 'ticket', 'message', 'profile', 'category', 'notification'],
 };
