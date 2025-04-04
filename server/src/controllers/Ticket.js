@@ -184,6 +184,7 @@ module.exports = {
 			next(error);
 		}
 	},
+
 	async getTicketStats(req, res, next) {
 		try {
 			const { period, startDate, endDate } = req.query;
@@ -251,20 +252,49 @@ module.exports = {
 					throw boom.badRequest('Неверный период');
 			}
 
-			const createdTickets = await Ticket.countDocuments({
-				author: userId,
-				...dateFilter,
-			});
+			// Агрегация данных по дням
+			const createdTicketsAgg = await Ticket.aggregate([
+				{
+					$match: {
+						author: new mongoose.Types.ObjectId(userId),
+						...dateFilter,
+					},
+				},
+				{
+					$group: {
+						_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+						count: { $sum: 1 },
+					},
+				},
+				{ $sort: { _id: 1 } },
+			]);
 
-			const completedTickets = await Ticket.countDocuments({
-				assignedTo: userId,
-				status: 'Закрыта',
-				...dateFilter,
-			});
+			const completedTicketsAgg = await Ticket.aggregate([
+				{
+					$match: {
+						assignedTo: new mongoose.Types.ObjectId(userId),
+						status: 'Закрыта',
+						...dateFilter,
+					},
+				},
+				{
+					$group: {
+						_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+						count: { $sum: 1 },
+					},
+				},
+				{ $sort: { _id: 1 } },
+			]);
 
 			const stats = {
-				createdTickets,
-				completedTickets,
+				createdTickets: createdTicketsAgg.map((item) => ({
+					date: item._id,
+					count: item.count,
+				})),
+				completedTickets: completedTicketsAgg.map((item) => ({
+					date: item._id,
+					count: item.count,
+				})),
 				period,
 				...(period === 'custom' && { startDate, endDate }),
 			};
