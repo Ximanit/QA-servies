@@ -253,49 +253,21 @@ module.exports = {
 					throw boom.badRequest('Неверный период');
 			}
 
-			// Агрегация данных по дням
-			const createdTicketsAgg = await Ticket.aggregate([
-				{
-					$match: {
-						author: new mongoose.Types.ObjectId(userId),
-						...dateFilter,
-					},
-				},
-				{
-					$group: {
-						_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-						count: { $sum: 1 },
-					},
-				},
-				{ $sort: { _id: 1 } },
-			]);
+			// Заявки, созданные пользователем
+			const createdTickets = await Ticket.find({
+				author: new mongoose.Types.ObjectId(userId),
+				...dateFilter,
+			});
 
-			const completedTicketsAgg = await Ticket.aggregate([
-				{
-					$match: {
-						assignedTo: new mongoose.Types.ObjectId(userId),
-						status: 'Закрыта',
-						...dateFilter,
-					},
-				},
-				{
-					$group: {
-						_id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-						count: { $sum: 1 },
-					},
-				},
-				{ $sort: { _id: 1 } },
-			]);
+			// Заявки, направленные пользователю
+			const assignedTickets = await Ticket.find({
+				assignedTo: new mongoose.Types.ObjectId(userId),
+				...dateFilter,
+			});
 
 			const stats = {
-				createdTickets: createdTicketsAgg.map((item) => ({
-					date: item._id,
-					count: item.count,
-				})),
-				completedTickets: completedTicketsAgg.map((item) => ({
-					date: item._id,
-					count: item.count,
-				})),
+				createdTickets,
+				assignedTickets,
 				period,
 				...(period === 'custom' && { startDate, endDate }),
 			};
