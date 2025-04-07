@@ -112,15 +112,13 @@ export const ticketsApi = createApi({
 			invalidatesTags: ['Notifications'],
 		}),
 		getTicketStats: builder.query({
-			query: ({ period, startDate, endDate }) => ({
-				url: '/ticket/stats',
-				params: {
-					period,
-					...(startDate && { startDate }),
-					...(endDate && { endDate }),
+			query: ({ userId, period }) => ({
+				url: `/ticket/stats?period=${period}`,
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
 				},
 			}),
-			providesTags: ['TicketStats'],
+			providesTags: ['Tickets'],
 		}),
 	}),
 });
