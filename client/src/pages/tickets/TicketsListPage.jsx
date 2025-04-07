@@ -1,11 +1,14 @@
-// src/pages/TicketsListPage.jsx
+// src/pages/tickets/TicketsListPage.jsx
 import { Card, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useGetTicketsQuery } from '../../components/features/tickets/ticketsApi';
+import { useSelector } from 'react-redux';
+import { useGetUserTicketsQuery } from '../../components/features/tickets/ticketsApi';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();
-	const { data: tickets, isLoading: ticketsLoading } = useGetTicketsQuery();
+	const userId = useSelector((state) => state.auth.id); // Получаем ID текущего пользователя
+	const { data: tickets, isLoading: ticketsLoading } =
+		useGetUserTicketsQuery(userId);
 
 	const handleCardClick = (ticketId) => {
 		navigate(`/tickets/${ticketId}`);
@@ -13,18 +16,25 @@ const TicketsListPage = () => {
 
 	if (ticketsLoading) return <div>Загрузка...</div>;
 
+	// Фильтруем заявки: только "В работе" и где пользователь — исполнитель
+	const inProgressTickets =
+		tickets?.filter(
+			(ticket) =>
+				ticket.status === 'В работе' && ticket.assignedTo?._id === userId
+		) || [];
+
 	return (
 		<div style={{ padding: '20px' }}>
 			<h2>Заявки в работе</h2>
 			<List
 				grid={{ gutter: 16, column: 3 }}
-				dataSource={tickets?.filter((ticket) => ticket.status !== 'Closed')}
+				dataSource={inProgressTickets}
 				renderItem={(ticket) => (
 					<List.Item>
 						<Card
 							title={ticket.title}
 							extra={<span>{ticket.status}</span>}
-							hoverable // Добавляет эффект при наведении
+							hoverable
 							onClick={() => handleCardClick(ticket._id)}>
 							<p>
 								<strong>Автор:</strong> {ticket.author?.username}

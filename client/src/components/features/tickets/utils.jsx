@@ -38,13 +38,21 @@ export const formatMenuItems = (
 			  ];
 	};
 
-	const openTickets = sortByDate(tickets.filter((t) => t.status === 'Открыта'));
+	// Фильтрация заявок, где пользователь является исполнителем (assignedTo)
+	const assignedTickets = tickets.filter((t) => t.assignedTo?._id === userId);
+
+	// Заявки, где пользователь — исполнитель, по статусам
+	const openTickets = sortByDate(
+		assignedTickets.filter((t) => t.status === 'Открыта')
+	);
 	const inProgressTickets = sortByDate(
-		tickets.filter((t) => t.status === 'В работе')
+		assignedTickets.filter((t) => t.status === 'В работе')
 	);
 	const closedTickets = sortByDate(
-		tickets.filter((t) => t.status === 'Закрыта')
+		assignedTickets.filter((t) => t.status === 'Закрыта')
 	);
+
+	// Заявки, где пользователь — автор (author)
 	const createdTickets = sortByDate(
 		tickets.filter((t) => t.author?._id === userId)
 	);
