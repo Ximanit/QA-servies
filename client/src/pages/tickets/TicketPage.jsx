@@ -1,15 +1,13 @@
 // src/pages/tickets/TicketPage.jsx
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
 import { Card } from 'antd';
-
 import { useTicketDetails } from '../../components/features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../components/features/tickets/hooks/useTicketMessages';
 import { useTicketStatus } from '../../components/features/tickets/hooks/useTicketStatus';
 import { useTicketAssignment } from '../../components/features/tickets/hooks/useTicketAssignment';
+import { useTicketAcceptance } from '../../components/features/tickets/hooks/useTicketAcceptance';
 import { useTicketNotifications } from '../../components/features/tickets/hooks/useTicketNotifications';
-
 import TicketDetails from '../../components/features/tickets/components/TicketDetails';
 import TicketChat from '../../components/features/tickets/components/TicketChat';
 import TicketActions from '../../components/features/tickets/components/TicketActions';
@@ -25,10 +23,11 @@ const TicketPage = () => {
 		isAdding,
 		sendMessage,
 	} = useTicketMessages(id, userId);
-	const { completeTicket } = useTicketStatus(id, ticketDetails);
+	const { completeTicket } = useTicketStatus(id);
 	const { assignTicket } = useTicketAssignment(id);
+	const { acceptTicket } = useTicketAcceptance(id);
 
-	useTicketNotifications(id, messages); // Хук без возвращаемых значений, просто выполняет эффект
+	useTicketNotifications(id, messages); // Хук для уведомлений
 
 	if (detailsLoading || messagesLoading) return <div>Загрузка...</div>;
 
@@ -38,14 +37,17 @@ const TicketPage = () => {
 			<TicketActions
 				ticket={ticketDetails}
 				onAssign={assignTicket}
+				onAccept={acceptTicket}
 				onComplete={completeTicket}
 			/>
-			<TicketChat
-				messages={messages}
-				onSendMessage={sendMessage}
-				userId={userId}
-				isLoading={isAdding}
-			/>
+			{ticketDetails?.status !== 'Открыта' && (
+				<TicketChat
+					messages={messages}
+					onSendMessage={sendMessage}
+					userId={userId}
+					isLoading={isAdding}
+				/>
+			)}
 		</Card>
 	);
 };
