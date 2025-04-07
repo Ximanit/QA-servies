@@ -1,3 +1,4 @@
+// src/components/features/tickets/utils.jsx
 import { Link } from 'react-router-dom';
 import { Badge } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
@@ -18,7 +19,9 @@ export const formatMenuItems = (
 					label: (
 						<>
 							<Link to={`/tickets/${t._id}`}>{t.title}</Link>
-							{newMessages[t._id] > 0 && <Badge count={newMessages[t._id]} />}
+							{newMessages[t._id] > 0 && (
+								<Badge count={newMessages[t._id]} style={{ marginLeft: 5 }} />
+							)}
 						</>
 					),
 			  }))

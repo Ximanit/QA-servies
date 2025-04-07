@@ -1,3 +1,4 @@
+// src/layouts/MainLayout.jsx
 import React from 'react';
 import { Layout } from 'antd';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
@@ -18,8 +19,8 @@ const MainLayout = () => {
 	const location = useLocation();
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets, isLoading } = useGetUserTicketsQuery(userId);
-	const newMessages = useSocket(userId);
-	const notifications = useNotifications();
+	const { notifications: socketNotifications } = useSocket(null, userId);
+	const apiNotifications = useNotifications();
 
 	if (isLoading) return <div>Загрузка...</div>;
 
@@ -28,11 +29,21 @@ const MainLayout = () => {
 		navigate('/auth/login');
 	};
 
+	// Синхронизация уведомлений из API и WebSocket
+	const combinedNotifications = {
+		...socketNotifications,
+		...(apiNotifications?.reduce((acc, notif) => {
+			acc[notif.ticket._id] = (acc[notif.ticket._id] || 0) + 1;
+			return acc;
+		}, {}) || {}),
+	};
+	console.log('Combined notifications:', combinedNotifications);
+
 	const menuItems = formatMenuItems(
 		userTickets || [],
 		userId,
-		newMessages,
-		notifications
+		combinedNotifications,
+		apiNotifications
 	);
 	const currentTicketId = location.pathname.split('/tickets/')[1];
 

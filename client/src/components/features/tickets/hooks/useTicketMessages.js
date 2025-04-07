@@ -8,7 +8,7 @@ export const useTicketMessages = (ticketId, userId) => {
 	const { data: initialMessages, isLoading: messagesLoading } =
 		useGetMessagesQuery(ticketId);
 	const [addMessage, { isLoading: isAdding }] = useAddMessageMutation();
-	const socketMessages = useSocket(ticketId, userId);
+	const { newMessages: socketMessages } = useSocket(ticketId, userId);
 	const [messages, setMessages] = useState(initialMessages || []);
 
 	useEffect(() => {
