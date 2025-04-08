@@ -1,4 +1,4 @@
-// src/store/api/ticketsApi.js
+// src/components/features/tickets/ticketsApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_URL } from '../../../constants/constants';
 import { logoutUser } from '../../../store/actions/authActions';
@@ -26,8 +26,10 @@ export const ticketsApi = createApi({
 	tagTypes: ['Tickets', 'TicketDetails', 'Messages', 'Notifications'],
 	endpoints: (builder) => ({
 		getTickets: builder.query({
-			query: () => '/ticket',
+			query: ({ page = 1, limit = 50 } = {}) =>
+				`/ticket?page=${page}&limit=${limit}`, // Увеличиваем limit по умолчанию
 			providesTags: ['Tickets'],
+			transformResponse: (response) => response.tickets || [], // Извлекаем только массив tickets
 		}),
 		getTicketDetails: builder.query({
 			query: (id) => `/ticket/${id}`,
@@ -57,7 +59,6 @@ export const ticketsApi = createApi({
 				if (ticketData.status) formData.append('status', ticketData.status);
 				if (ticketData.assignedTo)
 					formData.append('assignedTo', ticketData.assignedTo);
-				// Поддержка файлов при необходимости
 				if (ticketData.files) {
 					ticketData.files.forEach((file) => formData.append('files', file));
 				}
@@ -97,8 +98,10 @@ export const ticketsApi = createApi({
 			],
 		}),
 		getUserTickets: builder.query({
-			query: (userId) => `/ticket/user/${userId}`,
+			query: (userId, { page = 1, limit = 50 } = {}) =>
+				`/ticket/user/${userId}?page=${page}&limit=${limit}`,
 			providesTags: ['Tickets'],
+			transformResponse: (response) => response.tickets || [], // Извлекаем только массив tickets
 		}),
 		getUserNotifications: builder.query({
 			query: () => '/notification',
@@ -119,6 +122,10 @@ export const ticketsApi = createApi({
 				},
 			}),
 			providesTags: ['Tickets'],
+			transformResponse: (response) => ({
+				createdStats: response.createdStats || [],
+				assignedStats: response.assignedStats || [],
+			}), // Приводим статистику к новому формату
 		}),
 	}),
 });

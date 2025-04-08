@@ -4,13 +4,13 @@ import { Badge } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
 export const formatMenuItems = (
-	tickets,
+	tickets = [],
 	userId,
 	newMessages = {},
 	notifications = []
 ) => {
-	const sortByDate = (tickets) =>
-		tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+	const sortByDate = (ticketList) =>
+		ticketList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
 	const getChildren = (ticketList) => {
 		return ticketList.length > 0
@@ -38,10 +38,8 @@ export const formatMenuItems = (
 			  ];
 	};
 
-	// Фильтрация заявок, где пользователь является исполнителем (assignedTo)
 	const assignedTickets = tickets.filter((t) => t.assignedTo?._id === userId);
 
-	// Заявки, где пользователь — исполнитель, по статусам
 	const openTickets = sortByDate(
 		assignedTickets.filter((t) => t.status === 'Открыта')
 	);
@@ -51,8 +49,6 @@ export const formatMenuItems = (
 	const closedTickets = sortByDate(
 		assignedTickets.filter((t) => t.status === 'Закрыта')
 	);
-
-	// Заявки, где пользователь — автор (author)
 	const createdTickets = sortByDate(
 		tickets.filter((t) => t.author?._id === userId)
 	);

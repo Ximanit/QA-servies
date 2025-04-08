@@ -1,6 +1,6 @@
 // client/src/components/features/stats/StatsComponent.jsx
 import React, { useState } from 'react';
-import { Card, Select, DatePicker, Button } from 'antd';
+import { Card, Select, DatePicker } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -30,14 +30,15 @@ const StatsComponent = () => {
 	const [period, setPeriod] = useState('day');
 	const [customRange, setCustomRange] = useState(null);
 
-	const { data: stats, isLoading } = useGetTicketStatsQuery({
-		period: period === 'custom' && customRange ? 'custom' : period,
-		...(period === 'custom' &&
-			customRange && {
-				startDate: customRange[0].toISOString(),
-				endDate: customRange[1].toISOString(),
-			}),
-	});
+	const { data: stats = { createdStats: [], assignedStats: [] }, isLoading } =
+		useGetTicketStatsQuery({
+			period: period === 'custom' && customRange ? 'custom' : period,
+			...(period === 'custom' &&
+				customRange && {
+					startDate: customRange[0].toISOString(),
+					endDate: customRange[1].toISOString(),
+				}),
+		});
 
 	const handlePeriodChange = (value) => {
 		setPeriod(value);
@@ -48,10 +49,9 @@ const StatsComponent = () => {
 		setCustomRange(dates);
 	};
 
-	// Подготовка данных для графика
-	const labels = stats?.createdTickets.map((item) => item.date) || [];
-	const createdData = stats?.createdTickets.map((item) => item.count) || [];
-	const completedData = stats?.completedTickets.map((item) => item.count) || [];
+	const labels = stats.createdStats.map((item) => item.date || item._id) || [];
+	const createdData = stats.createdStats.map((item) => item.count) || [];
+	const completedData = stats.assignedStats.map((item) => item.count) || [];
 
 	const chartData = {
 		labels,
@@ -72,19 +72,10 @@ const StatsComponent = () => {
 	const options = {
 		responsive: true,
 		plugins: {
-			legend: {
-				position: 'top',
-			},
-			title: {
-				display: true,
-				text: 'Статистика заявок',
-			},
+			legend: { position: 'top' },
+			title: { display: true, text: 'Статистика заявок' },
 		},
-		scales: {
-			y: {
-				beginAtZero: true,
-			},
-		},
+		scales: { y: { beginAtZero: true } },
 	};
 
 	return (

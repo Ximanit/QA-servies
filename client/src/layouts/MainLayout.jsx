@@ -18,7 +18,7 @@ const MainLayout = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const userId = useSelector((state) => state.auth.id);
-	const { data: userTickets, isLoading } = useGetUserTicketsQuery(userId);
+	const { data: userTickets = [], isLoading } = useGetUserTicketsQuery(userId); // Массив по умолчанию
 	const { notifications: socketNotifications } = useSocket(null, userId);
 	const apiNotifications = useNotifications();
 
@@ -29,7 +29,6 @@ const MainLayout = () => {
 		navigate('/auth/login');
 	};
 
-	// Синхронизация уведомлений из API и WebSocket
 	const combinedNotifications = {
 		...socketNotifications,
 		...(apiNotifications?.reduce((acc, notif) => {
@@ -37,10 +36,9 @@ const MainLayout = () => {
 			return acc;
 		}, {}) || {}),
 	};
-	console.log('Combined notifications:', combinedNotifications);
 
 	const menuItems = formatMenuItems(
-		userTickets || [],
+		userTickets,
 		userId,
 		combinedNotifications,
 		apiNotifications

@@ -19,24 +19,25 @@ export const useProfile = () => {
 	const [updateProfile, { isLoading: updateLoading }] =
 		useUpdateProfileMutation();
 	const {
-		data: userTickets,
+		data: userTickets = [],
 		isLoading: ticketsLoading,
 		error: ticketsError,
 	} = useGetUserTicketsQuery(userId);
 
 	const profile = profileData?.[0];
-	const createdTicketsCount = userTickets?.length || 0;
-	const completedTicketsCount =
-		userTickets?.filter((ticket) => ticket.status === 'Закрыта').length || 0;
+	const createdTicketsCount = userTickets.length;
+	const completedTicketsCount = userTickets.filter(
+		(ticket) => ticket.status === 'Закрыта'
+	).length;
 
 	const updateProfileData = async (values) => {
 		try {
 			await updateProfile({ id: userId, fio: values.fio }).unwrap();
 			message.success('Профиль успешно обновлен!');
-			return true; // Успех
+			return true;
 		} catch (error) {
 			message.error('Ошибка при обновлении профиля');
-			return false; // Ошибка
+			return false;
 		}
 	};
 

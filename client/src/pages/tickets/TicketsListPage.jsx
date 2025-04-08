@@ -6,8 +6,8 @@ import { useGetUserTicketsQuery } from '../../components/features/tickets/ticket
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();
-	const userId = useSelector((state) => state.auth.id); // Получаем ID текущего пользователя
-	const { data: tickets, isLoading: ticketsLoading } =
+	const userId = useSelector((state) => state.auth.id);
+	const { data: tickets = [], isLoading: ticketsLoading } =
 		useGetUserTicketsQuery(userId);
 
 	const handleCardClick = (ticketId) => {
@@ -16,12 +16,10 @@ const TicketsListPage = () => {
 
 	if (ticketsLoading) return <div>Загрузка...</div>;
 
-	// Фильтруем заявки: только "В работе" и где пользователь — исполнитель
-	const inProgressTickets =
-		tickets?.filter(
-			(ticket) =>
-				ticket.status === 'В работе' && ticket.assignedTo?._id === userId
-		) || [];
+	const inProgressTickets = tickets.filter(
+		(ticket) =>
+			ticket.status === 'В работе' && ticket.assignedTo?._id === userId
+	);
 
 	return (
 		<div style={{ padding: '20px' }}>

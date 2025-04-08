@@ -22,108 +22,72 @@ const StatsPage = () => {
 	const userId = useSelector((state) => state.auth.id);
 	const [period, setPeriod] = useState('month');
 
-	const { data: stats, isLoading } = useGetTicketStatsQuery({ userId, period });
+	const { data: stats = { createdStats: [], assignedStats: [] }, isLoading } =
+		useGetTicketStatsQuery({ userId, period });
 
 	if (isLoading)
 		return (
 			<div style={{ textAlign: 'center', padding: '20px' }}>Загрузка...</div>
 		);
 
-	// Разделяем заявки на созданные и направленные пользователю
-	const createdTickets = stats?.createdTickets || [];
-	const assignedTickets = stats?.completedTickets || [];
+	// Подсчет статистики из агрегированных данных
+	const totalCreated = stats.createdStats.reduce(
+		(sum, stat) => sum + stat.count,
+		0
+	);
+	const pendingCreated =
+		stats.createdStats.find((s) => s._id === 'Открыта')?.count || 0;
+	const resolvedCreated =
+		stats.createdStats.find((s) => s._id === 'Закрыта')?.count || 0;
 
-	// Статистика по созданным заявкам
-	const totalCreated = createdTickets.length;
-	const pendingCreated = createdTickets.filter(
-		(t) => t.status === 'Открыта'
-	).length;
-	const resolvedCreated = createdTickets.filter(
-		(t) => t.status === 'Закрыта'
-	).length;
+	const totalAssigned = stats.assignedStats.reduce(
+		(sum, stat) => sum + stat.count,
+		0
+	);
+	const pendingAssigned =
+		stats.assignedStats.find((s) => s._id === 'Открыта')?.count || 0;
+	const resolvedAssigned =
+		stats.assignedStats.find((s) => s._id === 'Закрыта')?.count || 0;
 
-	// Статистика по направленным заявкам
-	const totalAssigned = assignedTickets.length;
-	const pendingAssigned = assignedTickets.filter(
-		(t) => t.status === 'Открыта'
-	).length;
-	const resolvedAssigned = assignedTickets.filter(
-		(t) => t.status === 'Закрыта'
-	).length;
+	const statusDataCreated = stats.createdStats
+		.map((stat) => ({
+			name:
+				stat._id === 'Открыта'
+					? 'Новые'
+					: stat._id === 'В работе'
+					? 'В работе'
+					: 'Решённые',
+			value: stat.count,
+		}))
+		.filter((item) => item.value > 0);
 
-	// Данные для круговой диаграммы (статусы заявок) - Созданные
-	const statusDataCreated = [
-		{
-			name: 'Новые',
-			value: createdTickets.filter((t) => t.status === 'Открыта').length,
-		},
-		{
-			name: 'В работе',
-			value: createdTickets.filter((t) => t.status === 'В работе').length,
-		},
-		{
-			name: 'Решённые',
-			value: createdTickets.filter((t) => t.status === 'Закрыта').length,
-		},
-	].filter((item) => item.value > 0);
+	const statusDataAssigned = stats.assignedStats
+		.map((stat) => ({
+			name:
+				stat._id === 'Открыта'
+					? 'Новые'
+					: stat._id === 'В работе'
+					? 'В работе'
+					: 'Решённые',
+			value: stat.count,
+		}))
+		.filter((item) => item.value > 0);
 
-	// Данные для круговой диаграммы (статусы заявок) - Направленные
-	const statusDataAssigned = [
-		{
-			name: 'Новые',
-			value: assignedTickets.filter((t) => t.status === 'Открыта').length,
-		},
-		{
-			name: 'В работе',
-			value: assignedTickets.filter((t) => t.status === 'В работе').length,
-		},
-		{
-			name: 'Закрыта',
-			value: assignedTickets.filter((t) => t.status === 'Закрыта').length,
-		},
-	].filter((item) => item.value > 0);
+	const getPriorityData = (statsArray) => {
+		const priorities = { Низкий: 0, Средний: 0, Высокий: 0, Срочный: 0 };
+		statsArray.forEach((stat) => {
+			stat.tickets.forEach((ticket) => {
+				priorities[ticket.priority] = (priorities[ticket.priority] || 0) + 1;
+			});
+		});
+		return Object.entries(priorities)
+			.map(([name, value]) => ({ name, value }))
+			.filter((item) => item.value > 0);
+	};
 
-	// Данные для гистограммы (приоритеты) - Созданные
-	const priorityDataCreated = [
-		{
-			name: 'Низкий',
-			value: createdTickets.filter((t) => t.priority === 'Низкий').length,
-		},
-		{
-			name: 'Средний',
-			value: createdTickets.filter((t) => t.priority === 'Средний').length,
-		},
-		{
-			name: 'Высокий',
-			value: createdTickets.filter((t) => t.priority === 'Высокий').length,
-		},
-		{
-			name: 'Срочный',
-			value: createdTickets.filter((t) => t.priority === 'Срочный').length,
-		},
-	].filter((item) => item.value > 0);
+	const priorityDataCreated = getPriorityData(stats.createdStats);
+	const priorityDataAssigned = getPriorityData(stats.assignedStats);
 
-	// Данные для гистограммы (приоритеты) - Направленные
-	const priorityDataAssigned = [
-		{
-			name: 'Низкий',
-			value: assignedTickets.filter((t) => t.priority === 'Низкий').length,
-		},
-		{
-			name: 'Средний',
-			value: assignedTickets.filter((t) => t.priority === 'Средний').length,
-		},
-		{
-			name: 'Высокий',
-			value: assignedTickets.filter((t) => t.priority === 'Высокий').length,
-		},
-		{
-			name: 'Срочный',
-			value: assignedTickets.filter((t) => t.priority === 'Срочный').length,
-		},
-	].filter((item) => item.value > 0);
-
-	// Компонент для отображения статистики
 	const StatsContent = ({ type }) => {
 		const isCreated = type === 'created';
 		const total = isCreated ? totalCreated : totalAssigned;
