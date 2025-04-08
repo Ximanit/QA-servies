@@ -27,7 +27,7 @@ const TicketPage = () => {
 	const { assignTicket } = useTicketAssignment(id);
 	const { acceptTicket } = useTicketAcceptance(id);
 
-	useTicketNotifications(id, messages); // Хук для уведомлений
+	useTicketNotifications(id, messages);
 
 	if (detailsLoading || messagesLoading) return <div>Загрузка...</div>;
 
@@ -46,6 +46,7 @@ const TicketPage = () => {
 					onSendMessage={sendMessage}
 					userId={userId}
 					isLoading={isAdding}
+					isClosed={ticketDetails?.status === 'Закрыта'} // Передаем флаг закрытия
 				/>
 			)}
 		</Card>

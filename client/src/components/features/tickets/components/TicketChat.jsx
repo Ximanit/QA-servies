@@ -1,9 +1,15 @@
-// src/features/tickets/components/TicketChat.jsx
+// src/components/features/tickets/components/TicketChat.jsx
 import React, { useState } from 'react';
 import { Form, Button, List, Input } from 'antd';
 import FileUploader from '../../../Common/FileUploader';
 
-const TicketChat = ({ messages, onSendMessage, userId, isLoading }) => {
+const TicketChat = ({
+	messages,
+	onSendMessage,
+	userId,
+	isLoading,
+	isClosed,
+}) => {
 	const [form] = Form.useForm();
 	const [files, setFiles] = useState([]);
 
@@ -45,25 +51,31 @@ const TicketChat = ({ messages, onSendMessage, userId, isLoading }) => {
 					</List.Item>
 				)}
 			/>
-			<Form
-				form={form}
-				onFinish={handleSubmit}
-				layout="vertical"
-				style={{ marginTop: 20 }}>
-				<Form.Item
-					name="content"
-					rules={[{ required: true, message: 'Введите сообщение!' }]}>
-					<Input.TextArea rows={4} placeholder="Введите сообщение" />
-				</Form.Item>
-				<Form.Item>
-					<FileUploader onFilesChange={setFiles} />
-				</Form.Item>
-				<Form.Item>
-					<Button type="primary" htmlType="submit" loading={isLoading}>
-						Отправить
-					</Button>
-				</Form.Item>
-			</Form>
+			{!isClosed ? (
+				<Form
+					form={form}
+					onFinish={handleSubmit}
+					layout="vertical"
+					style={{ marginTop: 20 }}>
+					<Form.Item
+						name="content"
+						rules={[{ required: true, message: 'Введите сообщение!' }]}>
+						<Input.TextArea rows={4} placeholder="Введите сообщение" />
+					</Form.Item>
+					<Form.Item>
+						<FileUploader onFilesChange={setFiles} />
+					</Form.Item>
+					<Form.Item>
+						<Button type="primary" htmlType="submit" loading={isLoading}>
+							Отправить
+						</Button>
+					</Form.Item>
+				</Form>
+			) : (
+				<p style={{ marginTop: 10, color: '#888' }}>
+					Заявка закрыта. Чат доступен только для просмотра.
+				</p>
+			)}
 		</div>
 	);
 };
