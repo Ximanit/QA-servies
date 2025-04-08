@@ -1,26 +1,48 @@
+// server/src/controllers/Ticket.js
 const Ticket = require('../models/Ticket');
 const boom = require('@hapi/boom');
 const logger = require('../logger');
 const multer = require('multer');
 const path = require('path');
 const mongoose = require('mongoose');
+const sanitizeFilename = require('sanitize-filename');
+const ClamAV = require('clamav.js');
 
 const storage = multer.diskStorage({
 	destination: './uploads/',
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname));
+		const sanitizedName = sanitizeFilename(file.originalname);
+		cb(null, `${Date.now()}-${sanitizedName}`); // Уникальный префикс + очищенное имя
 	},
 });
 
 const upload = multer({
 	storage: storage,
 	limits: { fileSize: 10000000 },
-	fileFilter: (req, file, cb) => {
+	fileFilter: async (req, file, cb) => {
 		const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 		if (!allowedTypes.includes(file.mimetype)) {
 			return cb(new Error('Недопустимый тип файла'));
 		}
-		cb(null, true);
+
+		// Проверка на вирусы (требует установленного ClamAV)
+		try {
+			const clamscan = ClamAV.createScanner(3310, 'localhost'); // Настройте под ваш сервер ClamAV
+			const stream = require('stream');
+			const bufferStream = new stream.PassThrough();
+			bufferStream.end(file.buffer || file);
+			const isClean = await new Promise((resolve) => {
+				clamscan.scan(bufferStream, (err, object, malicious) => {
+					resolve(!malicious);
+				});
+			});
+			if (!isClean) {
+				return cb(new Error('Файл содержит вредоносный контент'));
+			}
+			cb(null, true);
+		} catch (err) {
+			cb(new Error('Ошибка проверки файла на вирусы'));
+		}
 	},
 }).array('files', 5);
 
@@ -28,7 +50,7 @@ module.exports = {
 	async createTicket(req, res, next) {
 		upload(req, res, async (err) => {
 			try {
-				if (err) throw boom.badRequest('Ошибка загрузки файлов');
+				if (err) throw boom.badRequest(err.message || 'Ошибка загрузки файлов');
 
 				const { title, description, category, priority, assignedTo } = req.body;
 				if (!title || !description) {
@@ -69,11 +91,17 @@ module.exports = {
 
 	async getTickets(req, res, next) {
 		try {
+			const { page = 1, limit = 10 } = req.query;
+			const skip = (page - 1) * limit;
 			const tickets = await Ticket.find()
 				.populate('author', 'username')
-				.populate('assignedTo', 'username');
-			logger.info('Заявки успешно получены', { tickets });
-			res.status(200).json(tickets);
+				.populate('assignedTo', 'username')
+				.skip(skip)
+				.limit(parseInt(limit));
+			const total = await Ticket.countDocuments();
+
+			logger.info('Заявки успешно получены', { page, limit, total });
+			res.status(200).json({ tickets, total, page, limit });
 		} catch (error) {
 			logger.error('Ошибка получения заявок', {
 				error: error.message,
@@ -89,7 +117,7 @@ module.exports = {
 				.populate('author', 'username')
 				.populate('assignedTo', 'username');
 			if (!ticket) throw boom.notFound('Заявка не найдена');
-			logger.info('Заявка по id  успешно получены', { ticket });
+			logger.info('Заявка по id успешно получена', { ticket });
 			res.status(200).json(ticket);
 		} catch (error) {
 			logger.error('Ошибка получения заявки по id', {
@@ -103,17 +131,27 @@ module.exports = {
 	async getTicketsByUserId(req, res, next) {
 		try {
 			const { userId } = req.params;
+			const { page = 1, limit = 10 } = req.query;
+			const skip = (page - 1) * limit;
 			const tickets = await Ticket.find({
 				$or: [{ author: userId }, { assignedTo: userId }],
 			})
 				.populate('author', 'username')
-				.populate('assignedTo', 'username');
+				.populate('assignedTo', 'username')
+				.skip(skip)
+				.limit(parseInt(limit));
+			const total = await Ticket.countDocuments({
+				$or: [{ author: userId }, { assignedTo: userId }],
+			});
 
 			logger.info('Заявки пользователя успешно получены', {
 				userId,
 				ticketCount: tickets.length,
+				page,
+				limit,
+				total,
 			});
-			res.status(200).json(tickets);
+			res.status(200).json({ tickets, total, page, limit });
 		} catch (error) {
 			logger.error('Ошибка получения заявок пользователя', {
 				error: error.message,
@@ -126,7 +164,7 @@ module.exports = {
 	async updateTicket(req, res, next) {
 		upload(req, res, async (err) => {
 			try {
-				if (err) throw boom.badRequest('Ошибка загрузки файлов');
+				if (err) throw boom.badRequest(err.message || 'Ошибка загрузки файлов');
 
 				const { title, description, category, status, assignedTo } = req.body;
 				const files =
@@ -253,21 +291,57 @@ module.exports = {
 					throw boom.badRequest('Неверный период');
 			}
 
-			// Заявки, созданные пользователем
-			const createdTickets = await Ticket.find({
-				author: new mongoose.Types.ObjectId(userId),
-				...dateFilter,
-			});
+			// Агрегация для созданных заявок
+			const createdStats = await Ticket.aggregate([
+				{
+					$match: {
+						author: new mongoose.Types.ObjectId(userId),
+						...dateFilter,
+					},
+				},
+				{
+					$group: {
+						_id: '$status',
+						count: { $sum: 1 },
+						tickets: {
+							$push: {
+								_id: '$_id',
+								title: '$title',
+								status: '$status',
+								priority: '$priority',
+							},
+						},
+					},
+				},
+			]);
 
-			// Заявки, направленные пользователю
-			const assignedTickets = await Ticket.find({
-				assignedTo: new mongoose.Types.ObjectId(userId),
-				...dateFilter,
-			});
+			// Агрегация для направленных заявок
+			const assignedStats = await Ticket.aggregate([
+				{
+					$match: {
+						assignedTo: new mongoose.Types.ObjectId(userId),
+						...dateFilter,
+					},
+				},
+				{
+					$group: {
+						_id: '$status',
+						count: { $sum: 1 },
+						tickets: {
+							$push: {
+								_id: '$_id',
+								title: '$title',
+								status: '$status',
+								priority: '$priority',
+							},
+						},
+					},
+				},
+			]);
 
 			const stats = {
-				createdTickets,
-				assignedTickets,
+				createdStats,
+				assignedStats,
 				period,
 				...(period === 'custom' && { startDate, endDate }),
 			};

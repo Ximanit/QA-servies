@@ -18,6 +18,8 @@ module.exports = (err, req, res, next) => {
 	}
 
 	// Подробное логирование ошибки
+	const safeBody = { ...req.body };
+	if (safeBody.password) safeBody.password = '[REDACTED]';
 	logger.error('Request failed', {
 		method: req.method,
 		url: req.url,
@@ -25,7 +27,7 @@ module.exports = (err, req, res, next) => {
 		message,
 		stack: err.stack,
 		user: req.user ? req.user.id : 'unauthenticated',
-		body: req.body, // Логируем тело запроса (осторожно с чувствительными данными)
+		body: safeBody,
 	});
 
 	// Формируем ответ для клиента

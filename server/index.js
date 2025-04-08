@@ -1,6 +1,5 @@
 // server/index.js
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
@@ -32,7 +31,7 @@ const io = new Server(server, {
 	},
 });
 
-app.set('io', io); // Привязываем io к объекту app
+app.set('io', io);
 
 const corsOptions = {
 	origin: '*',
@@ -42,8 +41,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' })); // Ограничение размера тела запроса до 1 МБ
+app.use(express.urlencoded({ extended: true, limit: '1mb' })); // То же для URL-encoded данных
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(
@@ -67,7 +66,6 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('resetNotifications', ({ ticketId, userId }) => {
-		// Здесь можно добавить логику для сброса уведомлений на сервере, если нужно
 		io.to(ticketId).emit('notificationsReset', { ticketId, userId });
 	});
 
