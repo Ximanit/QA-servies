@@ -1,73 +1,58 @@
+// src/layouts/MainLayout.jsx
 import React from 'react';
-import { LogoutOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Layout } from 'antd';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetTicketsQuery } from '../store/api/ticketsApi';
-import { formatMenuItems } from '../utils/utils';
+import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
+import { useSocket } from '../hooks/useSocket';
+import { useNotifications } from '../hooks/useNotifications';
+import { formatMenuItems } from '../features/tickets/utils';
+import Header from '../components/layout/Header';
+import Sidebar from '../components/layout/Sidebar';
 
-const { Header, Content, Sider } = Layout;
+const { Content } = Layout;
 
 const MainLayout = () => {
-	const {
-		token: { colorBgContainer, borderRadiusLG },
-	} = theme.useToken();
 	const dispatch = useDispatch();
-	const { data: tickets, isLoading } = useGetTicketsQuery();
-	const user = useSelector((state) => state.auth.user);
 	const navigate = useNavigate();
-
-	const items = tickets ? formatMenuItems(tickets) : [];
-
-	const handleLogout = () => {
-		navigate('/auth/login');
-		dispatch(logoutUser());
-	};
+	const location = useLocation();
+	const userId = useSelector((state) => state.auth.id);
+	const { data: userTickets = [], isLoading } = useGetUserTicketsQuery(userId); // Массив по умолчанию
+	const { notifications: socketNotifications } = useSocket(null, userId);
+	const apiNotifications = useNotifications();
 
 	if (isLoading) return <div>Загрузка...</div>;
 
+	const handleLogout = () => {
+		dispatch(logoutUser());
+		navigate('/auth/login');
+	};
+
+	const combinedNotifications = {
+		...socketNotifications,
+		...(apiNotifications?.reduce((acc, notif) => {
+			acc[notif.ticket._id] = (acc[notif.ticket._id] || 0) + 1;
+			return acc;
+		}, {}) || {}),
+	};
+
+	const menuItems = formatMenuItems(
+		userTickets,
+		userId,
+		combinedNotifications,
+		apiNotifications
+	);
+	const currentTicketId = location.pathname.split('/tickets/')[1];
+
 	return (
 		<Layout style={{ minHeight: '100vh' }}>
-			<Header style={{ display: 'flex', alignItems: 'center' }}>
-				<h1 style={{ color: 'white' }}>Ticket Platform</h1>
-				<Menu theme="dark" mode="horizontal" style={{ width: '250px' }}>
-					<Menu.Item key="1">
-						<Link to="/">Home</Link>
-					</Menu.Item>
-					<Menu.Item key="2">
-						<Link to="tickets/create-ticket">Create Ticket</Link>
-					</Menu.Item>
-					<Menu.Item key="3">
-						<Link to="profile">Profile</Link>
-					</Menu.Item>
-					<Menu.Item key="4" onClick={handleLogout}>
-						<LogoutOutlined /> Logout
-					</Menu.Item>
-				</Menu>
-			</Header>
+			<Header onLogout={handleLogout} />
 			<Layout>
-				<Sider width={200} style={{ background: colorBgContainer }}>
-					<Menu
-						mode="inline"
-						defaultSelectedKeys={['1']}
-						defaultOpenKeys={['sub1']}
-						style={{ height: '100%', borderRight: 0 }}
-						items={items}
-					/>
-				</Sider>
-				<Layout style={{ padding: '24px' }}>
-					<Content
-						style={{
-							padding: 24,
-							margin: 0,
-							minHeight: 280,
-							background: colorBgContainer,
-							borderRadius: borderRadiusLG,
-						}}>
-						<Outlet />
-					</Content>
-				</Layout>
+				<Sidebar items={menuItems} selectedKeys={[currentTicketId]} />
+				<Content style={{ padding: '24px' }}>
+					<Outlet />
+				</Content>
 			</Layout>
 		</Layout>
 	);

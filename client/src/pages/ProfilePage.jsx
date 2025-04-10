@@ -1,76 +1,68 @@
-import { useState } from 'react';
+// src/pages/ProfilePage.jsx
+import React from 'react';
+import { Card, Spin } from 'antd';
+import { useProfile } from '../features/profile/hooks/useProfile';
+import ProfileForm from '../features/profile/components/ProfileForm';
 
-import { Form, Button, Input, Checkbox, Select } from 'antd';
+const ProfilePage = () => {
+	const {
+		profile,
+		createdTicketsCount,
+		completedTicketsCount,
+		isLoading,
+		profileError,
+		ticketsError,
+		updateProfile,
+		updateLoading,
+	} = useProfile();
 
-export default function ProfilePage() {
-	const [componentDisabled, setComponentDisabled] = useState(true);
-	const options = [
-		{
-			label: 'IT',
-			value: 'IT',
-		},
-		{
-			label: 'Сайт',
-			value: 'Работа сайта',
-		},
-		{
-			label: 'Мобильное приложение',
-			value: 'Работа мобильного приложения',
-		},
-	];
+	if (isLoading) {
+		return <Spin tip="Загрузка профиля..." />;
+	}
 
-	const handleChange = (value) => {
-		console.log(`selected ${value}`);
-	};
+	if (profileError) {
+		return (
+			<Card title="Ошибка">
+				<p>
+					Не удалось загрузить профиль: {profileError.status} -{' '}
+					{profileError.data?.message || 'Неизвестная ошибка'}
+				</p>
+			</Card>
+		);
+	}
+
+	if (ticketsError) {
+		return (
+			<Card title="Ошибка">
+				<p>
+					Не удалось загрузить заявки: {ticketsError.status} -{' '}
+					{ticketsError.data?.message || 'Неизвестная ошибка'}
+				</p>
+			</Card>
+		);
+	}
+
+	if (!profile) {
+		return (
+			<Card title="Ошибка">
+				<p>Данные профиля не найдены. Проверьте авторизацию.</p>
+			</Card>
+		);
+	}
+
 	return (
-		<>
-			{/* <div style={{ display: 'block' }}> */}
-			<Checkbox
-				checked={componentDisabled}
-				onChange={(e) => setComponentDisabled(e.target.checked)}></Checkbox>
-			<Form
-				labelCol={{
-					span: 4,
-				}}
-				wrapperCol={{
-					span: 14,
-				}}
-				layout="horizontal"
-				disabled={componentDisabled}
-				style={{
-					width: 600,
-				}}>
-				<Form.Item label="ФИО">
-					<Input />
-				</Form.Item>
-
-				<Form.Item label="Категории вопросов">
-					<Select
-						mode="multiple"
-						allowClear
-						style={{
-							width: '100%',
-						}}
-						placeholder="Please select"
-						onChange={handleChange}
-						options={options}
-					/>
-				</Form.Item>
-				<Form.Item label="Количество заданных вопросов">
-					<Input />
-				</Form.Item>
-				<Form.Item label="Количество данных ответов">
-					<Input />
-				</Form.Item>
-
-				<Form.Item>
-					<Button>Сохранить</Button>
-				</Form.Item>
-				<Form.Item>
-					<Button>Отменить</Button>
-				</Form.Item>
-			</Form>
-			{/* </div> */}
-		</>
+		<Card
+			title="Профиль пользователя"
+			style={{ maxWidth: 600, margin: '20px auto' }}>
+			<ProfileForm
+				profile={profile}
+				createdTicketsCount={createdTicketsCount}
+				completedTicketsCount={completedTicketsCount}
+				onUpdate={updateProfile}
+				updateLoading={updateLoading}
+			/>
+		</Card>
 	);
-}
+};
+
+export default ProfilePage;
