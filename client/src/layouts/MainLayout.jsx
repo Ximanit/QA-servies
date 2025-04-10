@@ -54,6 +54,8 @@ const MainLayout = () => {
 					flexGrow: 1,
 					p: 3,
 					mt: '64px', // Отступ для фиксированного хедера
+					backgroundColor: '#fafafa', // Лёгкий серый фон для карточки
+					boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', // Тень для глубины
 				}}>
 				<Outlet />
 			</Box>

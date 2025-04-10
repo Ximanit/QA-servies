@@ -12,10 +12,9 @@ import { Link } from 'react-router-dom';
 import { ExpandLess, ExpandMore, MailOutline } from '@mui/icons-material';
 
 const Sidebar = ({ items, selectedKeys }) => {
-	// Состояние для управления открытием/закрытием групп
 	const [openGroups, setOpenGroups] = React.useState(
 		items.reduce((acc, item) => {
-			acc[item.key] = true; // По умолчанию все группы открыты
+			acc[item.key] = true;
 			return acc;
 		}, {})
 	);
@@ -36,45 +35,40 @@ const Sidebar = ({ items, selectedKeys }) => {
 				'& .MuiDrawer-paper': {
 					width: 200,
 					boxSizing: 'border-box',
-					mt: '64px', // Отступ для фиксированного хедера
-					borderRight: 0, // Убираем границу, как в Ant Design
-					backgroundColor: '#fff', // Белый фон для всей боковой панели
+					mt: '64px',
+					borderRight: '1px solid #e0e0e0', // Добавляем правую границу
+					boxShadow: '2px 0 5px rgba(0, 0, 0, 0.05)', // Лёгкая тень для глубины
+					backgroundColor: '#fff',
 				},
 			}}>
 			<List disablePadding>
 				{items.map((item) => (
 					<React.Fragment key={item.key}>
-						{/* Заголовок группы */}
 						<ListItem
 							disablePadding
 							onClick={() => handleGroupClick(item.key)}
 							sx={{
-								backgroundColor: '#f0f2f5', // Серый фон для заголовков, как в первом скриншоте
+								backgroundColor: '#f0f2f5',
 								'&:hover': {
-									backgroundColor: '#e6e9ed', // Легкое затемнение при наведении
+									backgroundColor: '#e6e9ed',
 								},
 							}}>
-							<ListItemButton
-								sx={{
-									py: 0.5, // Компактный вертикальный отступ
-								}}>
+							<ListItemButton sx={{ py: 0.5 }}>
 								<ListItemText
 									primary={item.label}
 									primaryTypographyProps={{
 										fontWeight: 'bold',
-										fontSize: '0.8rem', // Меньший шрифт, как в первом скриншоте
-										color: '#000', // Черный текст
+										fontSize: '0.8rem',
+										color: '#000',
 									}}
 								/>
 								{openGroups[item.key] ? (
-									<ExpandLess sx={{ fontSize: '0.9rem', color: '#8c8c8c' }} /> // Серый цвет и меньший размер
+									<ExpandLess sx={{ fontSize: '0.9rem', color: '#8c8c8c' }} />
 								) : (
 									<ExpandMore sx={{ fontSize: '0.9rem', color: '#8c8c8c' }} />
 								)}
 							</ListItemButton>
 						</ListItem>
-
-						{/* Вложенные элементы */}
 						<Collapse in={openGroups[item.key]} timeout="auto" unmountOnExit>
 							<List component="div" disablePadding>
 								{item.children?.map((child) => (
@@ -83,9 +77,9 @@ const Sidebar = ({ items, selectedKeys }) => {
 										disablePadding
 										sx={{
 											'& .Mui-selected': {
-												backgroundColor: '#d9d9d9', // Серый фон для выбранного элемента, как в первом скриншоте
+												backgroundColor: '#d9d9d9',
 												'&:hover': {
-													backgroundColor: '#c7c7c7', // Легкое затемнение при наведении
+													backgroundColor: '#c7c7c7',
 												},
 											},
 										}}>
@@ -94,11 +88,11 @@ const Sidebar = ({ items, selectedKeys }) => {
 											to={child.path}
 											selected={selectedKeys?.includes(child.key)}
 											sx={{
-												pl: 3, // Меньший отступ для вложенных элементов
-												py: 0.3, // Очень компактный вертикальный отступ
-												backgroundColor: '#fff', // Белый фон для невыбранных элементов
+												pl: 3,
+												py: 0.3,
+												backgroundColor: '#fff',
 												'&:hover': {
-													backgroundColor: '#fafafa', // Легкий серый фон при наведении
+													backgroundColor: '#fafafa',
 												},
 											}}>
 											{child.label === 'Нет заявок' && (
@@ -106,16 +100,16 @@ const Sidebar = ({ items, selectedKeys }) => {
 													sx={{
 														fontSize: '0.9rem',
 														color: '#8c8c8c',
-														mr: 1, // Отступ справа от иконки
+														mr: 1,
 													}}
 												/>
 											)}
 											<ListItemText
 												primary={child.label}
 												primaryTypographyProps={{
-													fontSize: '0.8rem', // Меньший шрифт, как в первом скриншоте
+													fontSize: '0.8rem',
 													color:
-														child.label === 'Нет заявок' ? '#8c8c8c' : '#000', // Серый для "Нет заявок", черный для остальных
+														child.label === 'Нет заявок' ? '#8c8c8c' : '#000',
 												}}
 											/>
 										</ListItemButton>
