@@ -2,15 +2,15 @@
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Card } from 'antd';
-import { useTicketDetails } from '../../components/features/tickets/hooks/useTicketDetails';
-import { useTicketMessages } from '../../components/features/tickets/hooks/useTicketMessages';
-import { useTicketStatus } from '../../components/features/tickets/hooks/useTicketStatus';
-import { useTicketAssignment } from '../../components/features/tickets/hooks/useTicketAssignment';
-import { useTicketAcceptance } from '../../components/features/tickets/hooks/useTicketAcceptance';
-import { useTicketNotifications } from '../../components/features/tickets/hooks/useTicketNotifications';
-import TicketDetails from '../../components/features/tickets/components/TicketDetails';
-import TicketChat from '../../components/features/tickets/components/TicketChat';
-import TicketActions from '../../components/features/tickets/components/TicketActions';
+import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
+import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
+import { useTicketStatus } from '../../features/tickets/hooks/useTicketStatus';
+import { useTicketAssignment } from '../../features/tickets/hooks/useTicketAssignment';
+import { useTicketAcceptance } from '../../features/tickets/hooks/useTicketAcceptance';
+import { useTicketNotifications } from '../../features/tickets/hooks/useTicketNotifications';
+import TicketDetails from '../../features/tickets/components/TicketDetails';
+import TicketChat from '../../features/tickets/components/TicketChat';
+import TicketActions from '../../features/tickets/components/TicketActions';
 
 const TicketPage = () => {
 	const { id } = useParams();

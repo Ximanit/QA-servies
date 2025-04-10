@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useGetUserNotificationsQuery } from '../components/features/tickets/ticketsApi';
+import { useGetUserNotificationsQuery } from '../features/tickets/ticketsApi';
 
 export const useNotifications = () => {
 	const { data: notifications, refetch } = useGetUserNotificationsQuery();

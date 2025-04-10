@@ -1,8 +1,8 @@
 // src/pages/ProfilePage.jsx
 import React from 'react';
 import { Card, Spin } from 'antd';
-import { useProfile } from '../components/features/profile/hooks/useProfile';
-import ProfileForm from '../components/features/profile/components/ProfileForm';
+import { useProfile } from '../features/profile/hooks/useProfile';
+import ProfileForm from '../features/profile/components/ProfileForm';
 
 const ProfilePage = () => {
 	const {

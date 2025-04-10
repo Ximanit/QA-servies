@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
-import { useRegisterMutation } from '../components/features/auth/authApi';
-import RegisterForm from '../components/features/auth/components/RegisterForm';
+import { useRegisterMutation } from '../features/auth/authApi';
+import RegisterForm from '../features/auth/components/RegisterForm';
 
 const RegisterPage = () => {
 	const [register, { isLoading }] = useRegisterMutation();

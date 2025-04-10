@@ -14,7 +14,7 @@ import {
 	YAxis,
 	CartesianGrid,
 } from 'recharts';
-import { useGetTicketStatsQuery } from '../components/features/tickets/ticketsApi';
+import { useGetTicketStatsQuery } from '../features/tickets/ticketsApi';
 
 const COLORS = ['#9254DE', '#1890FF', '#52C41A', '#595959'];
 

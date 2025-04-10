@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { useGetMessagesQuery, useAddMessageMutation } from '../ticketsApi';
-import { useSocket } from '../../../../hooks/useSocket';
+import { useSocket } from '../../../hooks/useSocket';
 
 export const useTicketMessages = (ticketId, userId) => {
 	const { data: initialMessages, isLoading: messagesLoading } =

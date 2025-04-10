@@ -2,7 +2,7 @@
 import { Card, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useGetUserTicketsQuery } from '../../components/features/tickets/ticketsApi';
+import { useGetUserTicketsQuery } from '../../features/tickets/ticketsApi';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();

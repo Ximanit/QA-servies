@@ -4,10 +4,10 @@ import { Layout } from 'antd';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
-import { useGetUserTicketsQuery } from '../components/features/tickets/ticketsApi';
+import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
 import { useSocket } from '../hooks/useSocket';
 import { useNotifications } from '../hooks/useNotifications';
-import { formatMenuItems } from '../components/features/tickets/utils';
+import { formatMenuItems } from '../features/tickets/utils';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 

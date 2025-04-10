@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../../store/actions/authActions';
-import { useGetProfileQuery } from '../features/profile/profileApi'; // Для проверки токена
+import { useGetProfileQuery } from '../../features/profile/profileApi'; // Для проверки токена
 
 const ProtectedRoute = ({ children }) => {
 	const { token } = useSelector((state) => state.auth);

@@ -2,9 +2,9 @@
 import React from 'react';
 import { Card, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useCreateTicketMutation } from '../../components/features/tickets/ticketsApi';
-import { useGetUsersQuery } from '../../components/features/auth/authApi';
-import TicketForm from '../../components/features/tickets/components/TicketForm';
+import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
+import { useGetUsersQuery } from '../../features/auth/authApi';
+import TicketForm from '../../features/tickets/components/TicketForm';
 
 const CreateTicketPage = () => {
 	const navigate = useNavigate();

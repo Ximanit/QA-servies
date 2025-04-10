@@ -1,7 +1,7 @@
 // src/features/tickets/components/TicketDetails.jsx
 import React from 'react';
 import { List } from 'antd';
-import { API_URL } from '../../../../constants/constants';
+import { API_URL } from '../../../constants/constants';
 
 const TicketDetails = ({ ticket }) => (
 	<div>

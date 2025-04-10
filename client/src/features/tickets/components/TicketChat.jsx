@@ -1,7 +1,7 @@
 // src/components/features/tickets/components/TicketChat.jsx
 import React, { useState } from 'react';
 import { Form, Button, List, Input } from 'antd';
-import FileUploader from '../../../Common/FileUploader';
+import FileUploader from '../../../components/Common/FileUploader';
 
 const TicketChat = ({
 	messages,

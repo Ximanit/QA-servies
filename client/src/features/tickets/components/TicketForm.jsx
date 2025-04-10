@@ -1,7 +1,7 @@
 // src/features/tickets/components/TicketForm.jsx
 import React, { useState } from 'react';
 import { Form, Input, Button, Select } from 'antd';
-import FileUploader from '../../../Common/FileUploader';
+import FileUploader from '../../../components/Common/FileUploader';
 
 const TicketForm = ({ onSubmit, users, isLoading }) => {
 	const [form] = Form.useForm();
