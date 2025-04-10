@@ -1,26 +1,23 @@
+// src/layouts/AuthLayout.jsx
 import React from 'react';
-import { Layout, Card } from 'antd';
 import { Outlet } from 'react-router-dom';
+import { Container, Box } from '@mui/material';
 
-const { Content } = Layout;
-
-const AuthLayout = ({ children }) => {
+const AuthLayout = () => {
 	return (
-		<Layout
-			style={{
+		<Container
+			maxWidth="false"
+			sx={{
 				minHeight: '100vh',
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
 			}}>
-			<Content
-				style={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}>
-				<Card style={{ width: 400, textAlign: 'center', padding: '20px' }}>
-					<Outlet />
-				</Card>
-			</Content>
-		</Layout>
+			<Box sx={{ width: '100%', maxWidth: 450 }}>
+				<Outlet />
+			</Box>
+		</Container>
 	);
 };
 
