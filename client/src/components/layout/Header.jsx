@@ -1,29 +1,34 @@
+// src/components/layout/Header.jsx
 import React from 'react';
-import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
-import { LogoutOutlined } from '@ant-design/icons';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Header = ({ onLogout }) => (
-	<Layout.Header style={{ display: 'flex', alignItems: 'center' }}>
-		<h1 style={{ color: 'white' }}>Ticket Platform</h1>
-		<Menu theme="dark" mode="horizontal" style={{ width: '350px' }}>
-			<Menu.Item key="1">
-				<Link to="/">Home</Link>
-			</Menu.Item>
-			<Menu.Item key="2">
-				<Link to="tickets/create-ticket">Create Ticket</Link>
-			</Menu.Item>
-			<Menu.Item key="3">
-				<Link to="profile">Profile</Link>
-			</Menu.Item>
-			<Menu.Item key="4">
-				<Link to="stats">Statistics</Link>
-			</Menu.Item>
-			<Menu.Item key="5" onClick={onLogout}>
-				<LogoutOutlined /> Logout
-			</Menu.Item>
-		</Menu>
-	</Layout.Header>
+	<AppBar position="fixed">
+		<Toolbar>
+			<Typography variant="h6" sx={{ flexGrow: 1 }}>
+				Ticket Platform
+			</Typography>
+			<Box sx={{ display: 'flex', gap: 2 }}>
+				<Button color="inherit" component={Link} to="/">
+					Home
+				</Button>
+				<Button color="inherit" component={Link} to="/tickets/create-ticket">
+					Create Ticket
+				</Button>
+				<Button color="inherit" component={Link} to="/profile">
+					Profile
+				</Button>
+				<Button color="inherit" component={Link} to="/stats">
+					Statistics
+				</Button>
+				<Button color="inherit" onClick={onLogout} startIcon={<LogoutIcon />}>
+					Logout
+				</Button>
+			</Box>
+		</Toolbar>
+	</AppBar>
 );
 
 export default Header;
