@@ -1,7 +1,7 @@
 // src/components/features/profile/hooks/useProfile.js
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { message } from 'antd';
+// import { message } from 'antd';
 import {
 	useGetProfileQuery,
 	useUpdateProfileMutation,
@@ -10,6 +10,11 @@ import { useGetUserTicketsQuery } from '../../tickets/ticketsApi';
 
 export const useProfile = () => {
 	const userId = useSelector((state) => state.auth.id);
+	const [alert, setAlert] = useState({
+		open: false,
+		message: '',
+		severity: 'success',
+	});
 
 	const {
 		data: profileData,
@@ -33,10 +38,18 @@ export const useProfile = () => {
 	const updateProfileData = async (values) => {
 		try {
 			await updateProfile({ id: userId, fio: values.fio }).unwrap();
-			message.success('Профиль успешно обновлен!');
+			setAlert({
+				open: true,
+				message: 'Профиль успешно обновлен!',
+				severity: 'success',
+			});
 			return true;
 		} catch (error) {
-			message.error('Ошибка при обновлении профиля');
+			setAlert({
+				open: true,
+				message: 'Ошибка при обновлении',
+				severity: 'error',
+			});
 			return false;
 		}
 	};
@@ -51,5 +64,7 @@ export const useProfile = () => {
 		ticketsError,
 		updateProfile: updateProfileData,
 		updateLoading,
+		alert,
+		setAlert,
 	};
 };

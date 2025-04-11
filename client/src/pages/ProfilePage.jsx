@@ -6,6 +6,8 @@ import {
 	CircularProgress,
 	Typography,
 	Box,
+	Snackbar,
+	Alert,
 } from '@mui/material';
 import { useProfile } from '../features/profile/hooks/useProfile';
 import ProfileForm from '../features/profile/components/ProfileForm';
@@ -20,7 +22,17 @@ const ProfilePage = () => {
 		ticketsError,
 		updateProfile,
 		updateLoading,
+		alert,
+		setAlert,
 	} = useProfile();
+
+	const handleCloseAlert = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+
+		setAlert(false);
+	};
 
 	if (isLoading) {
 		return (
@@ -79,18 +91,32 @@ const ProfilePage = () => {
 	}
 
 	return (
-		<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
-			<CardHeader title="Профиль пользователя" />
-			<CardContent>
-				<ProfileForm
-					profile={profile}
-					createdTicketsCount={createdTicketsCount}
-					completedTicketsCount={completedTicketsCount}
-					onUpdate={updateProfile}
-					updateLoading={updateLoading}
-				/>
-			</CardContent>
-		</Card>
+		<>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+				<CardHeader title="Профиль пользователя" />
+				<CardContent>
+					<ProfileForm
+						profile={profile}
+						createdTicketsCount={createdTicketsCount}
+						completedTicketsCount={completedTicketsCount}
+						onUpdate={updateProfile}
+						updateLoading={updateLoading}
+					/>
+				</CardContent>
+			</Card>
+			<Snackbar
+				open={alert.open}
+				autoHideDuration={3000}
+				onClose={handleCloseAlert}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+				<Alert
+					onClose={handleCloseAlert}
+					severity={alert.severity}
+					sx={{ width: '100%' }}>
+					{alert.message}
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };
 
