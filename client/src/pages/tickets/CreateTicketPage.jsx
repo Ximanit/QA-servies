@@ -1,6 +1,13 @@
-// src/pages/CreateTicketPage.jsx
-import React from 'react';
-import { Card, message } from 'antd';
+import React, { useState } from 'react';
+import {
+	Card,
+	CardHeader,
+	CardContent,
+	CircularProgress,
+	Box,
+	Snackbar,
+	Alert,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
 import { useGetUsersQuery } from '../../features/auth/authApi';
@@ -10,23 +17,69 @@ const CreateTicketPage = () => {
 	const navigate = useNavigate();
 	const [createTicket, { isLoading }] = useCreateTicketMutation();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
+	const [alert, setAlert] = useState({
+		open: false,
+		message: '',
+		severity: 'success',
+	});
 
 	const onSubmit = async (values) => {
 		try {
 			const newTicket = await createTicket(values).unwrap();
-			message.success('Заявка успешно создана!');
+			setAlert({
+				open: true,
+				message: 'Заявка успешно создана!',
+				severity: 'success',
+			});
 			navigate(`/tickets/${newTicket._id}`);
 		} catch (error) {
-			message.error('Ошибка при создании заявки');
+			setAlert({
+				open: true,
+				message: 'Ошибка при создании заявки',
+				severity: 'error',
+			});
 		}
 	};
 
-	if (usersLoading) return <div>Загрузка пользователей...</div>;
+	const handleCloseAlert = () => {
+		setAlert({ ...alert, open: false });
+	};
+
+	if (usersLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+				}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	return (
-		<Card title="Создать заявку" style={{ maxWidth: 600, margin: 'auto' }}>
-			<TicketForm onSubmit={onSubmit} users={users} isLoading={isLoading} />
-		</Card>
+		<>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+				<CardHeader title="Создать заявку" />
+				<CardContent>
+					<TicketForm onSubmit={onSubmit} users={users} isLoading={isLoading} />
+				</CardContent>
+			</Card>
+			<Snackbar
+				open={alert.open}
+				autoHideDuration={6000}
+				onClose={handleCloseAlert}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+				<Alert
+					onClose={handleCloseAlert}
+					severity={alert.severity}
+					sx={{ width: '100%' }}>
+					{alert.message}
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };
 

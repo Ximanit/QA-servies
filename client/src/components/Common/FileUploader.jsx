@@ -1,28 +1,58 @@
 import React, { useState } from 'react';
-import { Upload, Button } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {
+	Button,
+	List,
+	ListItem,
+	ListItemText,
+	IconButton,
+	Box,
+} from '@mui/material';
+import { Upload, Delete } from '@mui/icons-material';
 
 const FileUploader = ({ onFilesChange }) => {
 	const [fileList, setFileList] = useState([]);
 
-	const uploadProps = {
-		onChange: ({ fileList: newFileList }) => {
-			setFileList(newFileList);
-			onFilesChange(
-				newFileList.map((file) => file.originFileObj).filter(Boolean)
-			);
-		},
-		onRemove: (file) => {
-			setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-		},
-		beforeUpload: () => false,
-		fileList,
+	const handleFileChange = (event) => {
+		const newFiles = Array.from(event.target.files);
+		const updatedFileList = [...fileList, ...newFiles].map((file, index) => ({
+			uid: `${index}-${file.name}`,
+			name: file.name,
+			originFileObj: file,
+		}));
+		setFileList(updatedFileList);
+		onFilesChange(updatedFileList.map((file) => file.originFileObj));
+	};
+
+	const handleRemove = (uid) => {
+		const updatedFileList = fileList.filter((file) => file.uid !== uid);
+		setFileList(updatedFileList);
+		onFilesChange(updatedFileList.map((file) => file.originFileObj));
 	};
 
 	return (
-		<Upload {...uploadProps}>
-			<Button icon={<UploadOutlined />}>Загрузить файлы</Button>
-		</Upload>
+		<Box>
+			<Button
+				variant="outlined"
+				component="label"
+				startIcon={<Upload />}
+				sx={{ mb: 1 }}>
+				Загрузить файлы
+				<input type="file" multiple hidden onChange={handleFileChange} />
+			</Button>
+			<List dense>
+				{fileList.map((file) => (
+					<ListItem
+						key={file.uid}
+						secondaryAction={
+							<IconButton edge="end" onClick={() => handleRemove(file.uid)}>
+								<Delete />
+							</IconButton>
+						}>
+						<ListItemText primary={file.name} />
+					</ListItem>
+				))}
+			</List>
+		</Box>
 	);
 };
 

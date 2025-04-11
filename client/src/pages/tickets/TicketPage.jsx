@@ -1,7 +1,13 @@
-// src/pages/tickets/TicketPage.jsx
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Card } from 'antd';
+import {
+	Card,
+	CardHeader,
+	CardContent,
+	Box,
+	CircularProgress,
+	Typography,
+} from '@mui/material';
 import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
 import { useTicketStatus } from '../../features/tickets/hooks/useTicketStatus';
@@ -29,26 +35,42 @@ const TicketPage = () => {
 
 	useTicketNotifications(id, messages);
 
-	if (detailsLoading || messagesLoading) return <div>Загрузка...</div>;
+	if (detailsLoading || messagesLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Загрузка...</Typography>
+			</Box>
+		);
+	}
 
 	return (
-		<Card title={`Заявка: ${ticketDetails?.title}`}>
-			<TicketDetails ticket={ticketDetails} />
-			<TicketActions
-				ticket={ticketDetails}
-				onAssign={assignTicket}
-				onAccept={acceptTicket}
-				onComplete={completeTicket}
-			/>
-			{ticketDetails?.status !== 'Открыта' && (
-				<TicketChat
-					messages={messages}
-					onSendMessage={sendMessage}
-					userId={userId}
-					isLoading={isAdding}
-					isClosed={ticketDetails?.status === 'Закрыта'} // Передаем флаг закрытия
+		<Card sx={{ maxWidth: 800, mx: 'auto', mt: 3 }}>
+			<CardHeader title={`Заявка: ${ticketDetails?.title}`} />
+			<CardContent>
+				<TicketDetails ticket={ticketDetails} />
+				<TicketActions
+					ticket={ticketDetails}
+					onAssign={assignTicket}
+					onAccept={acceptTicket}
+					onComplete={completeTicket}
 				/>
-			)}
+				{ticketDetails?.status !== 'Открыта' && (
+					<TicketChat
+						messages={messages}
+						onSendMessage={sendMessage}
+						userId={userId}
+						isLoading={isAdding}
+						isClosed={ticketDetails?.status === 'Закрыта'}
+					/>
+				)}
+			</CardContent>
 		</Card>
 	);
 };

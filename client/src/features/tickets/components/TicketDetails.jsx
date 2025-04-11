@@ -1,45 +1,51 @@
-// src/features/tickets/components/TicketDetails.jsx
 import React from 'react';
-import { List } from 'antd';
+import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+
 import { API_URL } from '../../../constants/constants';
 
 const TicketDetails = ({ ticket }) => (
-	<div>
-		<p>
+	<Box>
+		<Typography variant="body1" sx={{ mb: 1 }}>
 			<strong>Описание:</strong> {ticket?.description}
-		</p>
-		<p>
+		</Typography>
+		<Typography variant="body1" sx={{ mb: 1 }}>
 			<strong>Категория:</strong> {ticket?.category}
-		</p>
-		<p>
+		</Typography>
+		<Typography variant="body1" sx={{ mb: 1 }}>
 			<strong>Статус:</strong> {ticket?.status}
-		</p>
-		<p>
+		</Typography>
+		<Typography variant="body1" sx={{ mb: 1 }}>
 			<strong>Автор:</strong> {ticket?.author?.username}
-		</p>
-		<p>
+		</Typography>
+		<Typography variant="body1" sx={{ mb: 1 }}>
 			<strong>Дата создания:</strong>{' '}
 			{new Date(ticket?.createdAt).toLocaleString()}
-		</p>
+		</Typography>
 		{ticket?.files?.length > 0 && (
-			<div>
-				<strong>Файлы:</strong>
-				<List
-					dataSource={ticket.files}
-					renderItem={(file) => (
-						<List.Item>
-							<a
-								href={`${API_URL}/uploads/${file.filename}`}
-								target="_blank"
-								rel="noopener noreferrer">
-								{file.filename}
-							</a>
-						</List.Item>
-					)}
-				/>
-			</div>
+			<Box>
+				<Typography variant="body1" sx={{ mb: 1 }}>
+					<strong>Файлы:</strong>
+				</Typography>
+				<List dense>
+					{ticket.files.map((file) => (
+						<ListItem key={file.filename}>
+							<ListItemText
+								primary={
+									<a
+										href={`${API_URL}/uploads/${file.filename}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										style={{ color: '#1976d2' }}>
+										{file.filename}
+									</a>
+								}
+							/>
+						</ListItem>
+					))}
+				</List>
+			</Box>
 		)}
-	</div>
+	</Box>
 );
 
 export default TicketDetails;

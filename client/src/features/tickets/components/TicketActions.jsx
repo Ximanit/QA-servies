@@ -1,69 +1,100 @@
-// src/components/features/tickets/components/TicketActions.jsx
 import React, { useState } from 'react';
-import { Button, Select, Modal } from 'antd';
+import {
+	Box,
+	Button,
+	MenuItem,
+	Select,
+	InputLabel,
+	FormControl,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Typography,
+} from '@mui/material';
 import { useGetUsersQuery } from '../../auth/authApi';
-
-const { confirm } = Modal;
 
 const TicketActions = ({ ticket, onAssign, onAccept, onComplete }) => {
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
-	const [selectedUser, setSelectedUser] = useState(null); // Состояние для выбранного исполнителя
-
-	const userOptions = users?.map((user) => ({
-		label: user.username,
-		value: user._id,
-	}));
+	const [selectedUser, setSelectedUser] = useState(null);
+	const [openDialog, setOpenDialog] = useState(false);
 
 	const handleAssign = (value) => {
-		setSelectedUser(value); // Сохраняем выбранного пользователя
-		confirm({
-			title: 'Подтверждение передачи заявки',
-			content: (
-				<div>
-					Вы уверены, что хотите передать заявку пользователю{' '}
-					{users.find((u) => u._id === value)?.username}?
-				</div>
-			),
-			okText: 'Да, передать',
-			cancelText: 'Отмена',
-			onOk() {
-				onAssign(value); // Выполняем передачу после подтверждения
-				setSelectedUser(null); // Сбрасываем выбор
-			},
-			onCancel() {
-				setSelectedUser(null); // Сбрасываем выбор при отмене
-			},
-		});
+		setSelectedUser(value);
+		setOpenDialog(true);
+	};
+
+	const handleConfirmAssign = () => {
+		onAssign(selectedUser);
+		setSelectedUser(null);
+		setOpenDialog(false);
+	};
+
+	const handleCancelAssign = () => {
+		setSelectedUser(null);
+		setOpenDialog(false);
 	};
 
 	return (
-		<div style={{ marginTop: 20 }}>
-			<h3>Действия с заявкой</h3>
-			<div style={{ display: 'flex', gap: 10 }}>
+		<Box sx={{ mt: 3 }}>
+			<Typography variant="h6" gutterBottom>
+				Действия с заявкой
+			</Typography>
+			<Box sx={{ display: 'flex', gap: 2 }}>
 				{ticket?.status === 'Открыта' ? (
 					<>
-						<Button type="primary" onClick={onAccept}>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={onAccept}
+							sx={{ minWidth: 120 }}>
 							Принять заявку
 						</Button>
-						<Select
-							style={{ width: 200 }}
-							placeholder="Передать исполнителю"
-							options={userOptions}
-							loading={usersLoading}
-							value={selectedUser}
-							onChange={handleAssign}
-						/>
+						<FormControl sx={{ minWidth: 200 }}>
+							<InputLabel>Передать исполнителю</InputLabel>
+							<Select
+								value={selectedUser || ''}
+								onChange={(e) => handleAssign(e.target.value)}
+								disabled={usersLoading}
+								label="Передать исполнителю">
+								{users?.map((user) => (
+									<MenuItem key={user._id} value={user._id}>
+										{user.username}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
 					</>
 				) : (
 					<Button
-						type="primary"
+						variant="contained"
+						color="primary"
 						onClick={onComplete}
-						disabled={ticket?.status === 'Закрыта'}>
+						disabled={ticket?.status === 'Закрыта'}
+						sx={{ minWidth: 120 }}>
 						Завершить заявку
 					</Button>
 				)}
-			</div>
-		</div>
+			</Box>
+
+			<Dialog open={openDialog} onClose={handleCancelAssign}>
+				<DialogTitle>Подтверждение передачи заявки</DialogTitle>
+				<DialogContent>
+					<Typography>
+						Вы уверены, что хотите передать заявку пользователю{' '}
+						{users?.find((u) => u._id === selectedUser)?.username}?
+					</Typography>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleCancelAssign} color="secondary">
+						Отмена
+					</Button>
+					<Button onClick={handleConfirmAssign} color="primary">
+						Да, передать
+					</Button>
+				</DialogActions>
+			</Dialog>
+		</Box>
 	);
 };
 

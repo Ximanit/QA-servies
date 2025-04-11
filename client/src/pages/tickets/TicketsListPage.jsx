@@ -1,8 +1,16 @@
-// src/pages/tickets/TicketsListPage.jsx
-import { Card, List } from 'antd';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetUserTicketsQuery } from '../../features/tickets/ticketsApi';
+import {
+	Box,
+	Card,
+	CardHeader,
+	CardContent,
+	Typography,
+	Grid,
+	CircularProgress,
+} from '@mui/material';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();
@@ -14,7 +22,20 @@ const TicketsListPage = () => {
 		navigate(`/tickets/${ticketId}`);
 	};
 
-	if (ticketsLoading) return <div>Загрузка...</div>;
+	if (ticketsLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Загрузка...</Typography>
+			</Box>
+		);
+	}
 
 	const inProgressTickets = tickets.filter(
 		(ticket) =>
@@ -22,33 +43,54 @@ const TicketsListPage = () => {
 	);
 
 	return (
-		<div style={{ padding: '20px' }}>
-			<h2>Заявки в работе</h2>
-			<List
-				grid={{ gutter: 16, column: 3 }}
-				dataSource={inProgressTickets}
-				renderItem={(ticket) => (
-					<List.Item>
+		<Box sx={{ p: 2.5 }}>
+			<Typography variant="h5" gutterBottom>
+				Заявки в работе
+			</Typography>
+			<Grid container spacing={3}>
+				{inProgressTickets.map((ticket) => (
+					<Grid item xs={12} sm={6} md={4} key={ticket._id}>
 						<Card
-							title={ticket.title}
-							extra={<span>{ticket.status}</span>}
-							hoverable
+							sx={{
+								cursor: 'pointer',
+								minWidth: 340, // Увеличиваем минимальную ширину
+								minHeight: 220, // Увеличиваем минимальную высоту
+								'&:hover': {
+									boxShadow: 8, // Усиленный эффект наведения
+								},
+							}}
 							onClick={() => handleCardClick(ticket._id)}>
-							<p>
-								<strong>Автор:</strong> {ticket.author?.username}
-							</p>
-							<p>
-								<strong>Исполнитель:</strong> {ticket.assignedTo?.username}
-							</p>
-							<p>
-								<strong>Дата создания:</strong>{' '}
-								{new Date(ticket.createdAt).toLocaleDateString()}
-							</p>
+							<CardHeader
+								title={ticket.title}
+								titleTypographyProps={{ variant: 'h5' }} // Увеличенный заголовок
+								action={
+									<Typography variant="body1">{ticket.status}</Typography>
+								}
+								sx={{ pb: 1 }} // Меньший отступ снизу для плотности
+							/>
+							<CardContent sx={{ pt: 1, pb: 2 }}>
+								<Typography
+									variant="body1"
+									color="text.secondary"
+									sx={{ mb: 1 }}>
+									<strong>Автор:</strong> {ticket.author?.username}
+								</Typography>
+								<Typography
+									variant="body1"
+									color="text.secondary"
+									sx={{ mb: 1 }}>
+									<strong>Исполнитель:</strong> {ticket.assignedTo?.username}
+								</Typography>
+								<Typography variant="body1" color="text.secondary">
+									<strong>Дата создания:</strong>{' '}
+									{new Date(ticket.createdAt).toLocaleDateString()}
+								</Typography>
+							</CardContent>
 						</Card>
-					</List.Item>
-				)}
-			/>
-		</div>
+					</Grid>
+				))}
+			</Grid>
+		</Box>
 	);
 };
 

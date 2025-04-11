@@ -1,7 +1,17 @@
-// src/components/features/tickets/components/TicketChat.jsx
 import React, { useState } from 'react';
-import { Form, Button, List, Input } from 'antd';
+import {
+	Box,
+	Typography,
+	List,
+	ListItem,
+	ListItemText,
+	TextField,
+	Button,
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
 import FileUploader from '../../../components/Common/FileUploader';
+
+import { API_URL } from '../../../constants/constants';
 
 const TicketChat = ({
 	messages,
@@ -10,73 +20,101 @@ const TicketChat = ({
 	isLoading,
 	isClosed,
 }) => {
-	const [form] = Form.useForm();
+	const { control, handleSubmit, reset } = useForm();
 	const [files, setFiles] = useState([]);
 
-	const handleSubmit = (values) => {
+	const onSubmit = (values) => {
 		onSendMessage({ content: values.content, files });
-		form.resetFields();
+		reset();
 		setFiles([]);
 	};
 
 	return (
-		<div style={{ marginTop: 20 }}>
-			<h3>Чат</h3>
-			<List
-				dataSource={messages}
-				renderItem={(msg) => (
-					<List.Item
-						style={{
-							background: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
-							margin: 5,
-							padding: 10,
+		<Box sx={{ mt: 3 }}>
+			<Typography variant="h6" gutterBottom>
+				Чат
+			</Typography>
+			<List>
+				{messages.map((msg) => (
+					<ListItem
+						key={msg._id}
+						sx={{
+							bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
+							m: 0.5,
+							p: 1.5,
+							borderRadius: 1,
 						}}>
-						<p>
-							<strong>{msg.author.username}:</strong> {msg.content}
-						</p>
-						{msg.files?.length > 0 && (
-							<div>
-								{msg.files.map((file) => (
-									<a
-										key={file.filename}
-										href={`${API_URL}/uploads/${file.filename}`}
-										target="_blank"
-										rel="noopener noreferrer">
-										{file.filename}
-									</a>
-								))}
-							</div>
-						)}
-						<small>{new Date(msg.createdAt).toLocaleTimeString()}</small>
-					</List.Item>
-				)}
-			/>
+						<ListItemText
+							primary={
+								<Typography variant="body1">
+									<strong>{msg.author.username}:</strong> {msg.content}
+								</Typography>
+							}
+							secondary={
+								<>
+									{msg.files?.length > 0 && (
+										<Box sx={{ mt: 1 }}>
+											{msg.files.map((file) => (
+												<a
+													key={file.filename}
+													href={`${API_URL}/uploads/${file.filename}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													style={{ display: 'block', color: '#1976d2' }}>
+													{file.filename}
+												</a>
+											))}
+										</Box>
+									)}
+									<Typography variant="caption" color="text.secondary">
+										{new Date(msg.createdAt).toLocaleTimeString()}
+									</Typography>
+								</>
+							}
+						/>
+					</ListItem>
+				))}
+			</List>
 			{!isClosed ? (
-				<Form
-					form={form}
-					onFinish={handleSubmit}
-					layout="vertical"
-					style={{ marginTop: 20 }}>
-					<Form.Item
+				<Box
+					component="form"
+					onSubmit={handleSubmit(onSubmit)}
+					sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+					<Controller
 						name="content"
-						rules={[{ required: true, message: 'Введите сообщение!' }]}>
-						<Input.TextArea rows={4} placeholder="Введите сообщение" />
-					</Form.Item>
-					<Form.Item>
-						<FileUploader onFilesChange={setFiles} />
-					</Form.Item>
-					<Form.Item>
-						<Button type="primary" htmlType="submit" loading={isLoading}>
-							Отправить
-						</Button>
-					</Form.Item>
-				</Form>
+						control={control}
+						defaultValue=""
+						rules={{ required: 'Введите сообщение!' }}
+						render={({ field, fieldState: { error } }) => (
+							<TextField
+								{...field}
+								label="Сообщение"
+								multiline
+								rows={4}
+								placeholder="Введите сообщение"
+								variant="outlined"
+								fullWidth
+								error={!!error}
+								helperText={error?.message}
+							/>
+						)}
+					/>
+					<FileUploader onFilesChange={setFiles} />
+					<Button
+						type="submit"
+						variant="contained"
+						color="primary"
+						disabled={isLoading}
+						sx={{ alignSelf: 'flex-start' }}>
+						{isLoading ? 'Отправка...' : 'Отправить'}
+					</Button>
+				</Box>
 			) : (
-				<p style={{ marginTop: 10, color: '#888' }}>
+				<Typography sx={{ mt: 2, color: 'text.secondary' }}>
 					Заявка закрыта. Чат доступен только для просмотра.
-				</p>
+				</Typography>
 			)}
-		</div>
+		</Box>
 	);
 };
 
