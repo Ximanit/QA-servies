@@ -6,10 +6,13 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 
 import { router } from './routes';
+import { ToastProvider } from './utils/ToastContext';
 
 const App = () => (
 	<Provider store={store}>
-		<RouterProvider router={router} />
+		<ToastProvider>
+			<RouterProvider router={router} />
+		</ToastProvider>
 	</Provider>
 );
 

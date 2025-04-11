@@ -1,16 +1,18 @@
 // src/components/features/tickets/hooks/useTicketStatus.js
-import { message } from 'antd';
+import { useToast } from '../../../utils/ToastContext';
 import { useUpdateTicketMutation } from '../ticketsApi';
 
 export const useTicketStatus = (ticketId) => {
 	const [updateTicket] = useUpdateTicketMutation();
 
+	const { showToast } = useToast();
+
 	const completeTicket = async () => {
 		try {
 			await updateTicket({ id: ticketId, status: 'Закрыта' }).unwrap();
-			message.success('Заявка завершена!');
+			showToast('Паявка завершена!', 'success');
 		} catch (error) {
-			message.error('Ошибка при завершении заявки');
+			showToast('шибка при завершении заявки', 'error');
 		}
 	};
 

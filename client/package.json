@@ -16,7 +16,6 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@reduxjs/toolkit": "^2.5.1",
-    "antd": "^5.23.3",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "moment": "^2.30.1",
