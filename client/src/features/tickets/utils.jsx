@@ -1,7 +1,6 @@
-// src/components/features/tickets/utils.jsx
 import { Link } from 'react-router-dom';
-import { Badge } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
+import { Badge, Box } from '@mui/material';
+import { Inbox } from '@mui/icons-material';
 
 export const formatMenuItems = (
 	tickets = [],
@@ -17,21 +16,29 @@ export const formatMenuItems = (
 			? ticketList.map((t) => ({
 					key: t._id,
 					label: (
-						<>
-							<Link to={`/tickets/${t._id}`}>{t.title}</Link>
+						<Box sx={{ display: 'flex', alignItems: 'center' }}>
+							<Link
+								to={`/tickets/${t._id}`}
+								style={{ textDecoration: 'none', color: 'inherit' }}>
+								{t.title}
+							</Link>
 							{newMessages[t._id] > 0 && (
-								<Badge count={newMessages[t._id]} style={{ marginLeft: 5 }} />
+								<Badge
+									badgeContent={newMessages[t._id]}
+									color="error"
+									sx={{ ml: 0.5 }} // Аналог marginLeft: 5
+								/>
 							)}
-						</>
+						</Box>
 					),
 			  }))
 			: [
 					{
 						key: 'empty',
 						label: (
-							<>
-								<InboxOutlined /> Нет заявок
-							</>
+							<Box sx={{ display: 'flex', alignItems: 'center' }}>
+								<Inbox sx={{ mr: 1 }} /> Нет заявок
+							</Box>
 						),
 						disabled: true,
 					},

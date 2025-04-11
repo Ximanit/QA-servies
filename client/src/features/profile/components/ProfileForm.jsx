@@ -1,6 +1,14 @@
-// src/components/features/profile/components/ProfileForm.jsx
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button } from 'antd';
+import {
+	Box,
+	TextField,
+	Button,
+	FormControl,
+	FormLabel,
+	FormHelperText,
+	Typography,
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
 
 const ProfileForm = ({
 	profile,
@@ -9,21 +17,26 @@ const ProfileForm = ({
 	onUpdate,
 	updateLoading,
 }) => {
-	const [form] = Form.useForm();
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			fio: profile?.fio || '',
+		},
+	});
 	const [isEditing, setIsEditing] = useState(false);
 
 	// Инициализация формы
 	useEffect(() => {
-		if (profile) {
-			form.setFieldsValue({
-				fio: profile.fio,
-				createdTickets: createdTicketsCount,
-				completedTickets: completedTicketsCount,
-			});
-		}
-	}, [profile, createdTicketsCount, completedTicketsCount, form]);
+		reset({
+			fio: profile?.fio || '',
+		});
+	}, [profile, reset]);
 
-	const onFinish = async (values) => {
+	const onSubmit = async (values) => {
 		const success = await onUpdate(values);
 		if (success) {
 			setIsEditing(false);
@@ -31,10 +44,8 @@ const ProfileForm = ({
 	};
 
 	const onCancel = () => {
-		form.setFieldsValue({
-			fio: profile?.fio,
-			createdTickets: createdTicketsCount,
-			completedTickets: completedTicketsCount,
+		reset({
+			fio: profile?.fio || '',
 		});
 		setIsEditing(false);
 	};
@@ -44,41 +55,69 @@ const ProfileForm = ({
 	};
 
 	return (
-		<Form
-			form={form}
-			layout="vertical"
-			onFinish={onFinish}
-			disabled={!isEditing}>
-			<Form.Item
-				label="ФИО"
-				name="fio"
-				rules={[{ required: true, message: 'Введите ваше ФИО!' }]}>
-				<Input placeholder="Фамилия Имя Отчество" />
-			</Form.Item>
+		<Box
+			component="form"
+			onSubmit={handleSubmit(onSubmit)}
+			sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+			<FormControl disabled={!isEditing} error={!!errors.fio}>
+				<FormLabel>ФИО</FormLabel>
+				<Controller
+					name="fio"
+					control={control}
+					rules={{ required: 'Введите ваше ФИО!' }}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							placeholder="Фамилия Имя Отчество"
+							variant="outlined"
+							size="small"
+							fullWidth
+						/>
+					)}
+				/>
+				{errors.fio && <FormHelperText>{errors.fio.message}</FormHelperText>}
+			</FormControl>
 
-			<Form.Item label="Количество созданных заявок" name="createdTickets">
-				<Input disabled />
-			</Form.Item>
+			<FormControl>
+				<FormLabel>Количество созданных заявок</FormLabel>
+				<Typography variant="body1">{createdTicketsCount || 0}</Typography>
+			</FormControl>
 
-			<Form.Item label="Количество выполненных заявок" name="completedTickets">
-				<Input disabled />
-			</Form.Item>
+			<FormControl>
+				<FormLabel>Количество выполненных заявок</FormLabel>
+				<Typography variant="body1">{completedTicketsCount || 0}</Typography>
+			</FormControl>
 
-			<Form.Item>
+			<Box sx={{ display: 'flex', gap: 1 }}>
 				{isEditing ? (
-					<div style={{ display: 'flex', gap: 10 }}>
-						<Button type="primary" htmlType="submit" loading={updateLoading}>
-							Сохранить
+					<>
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							disabled={updateLoading}
+							sx={{ minWidth: 100 }}>
+							{updateLoading ? 'Сохранение...' : 'Сохранить'}
 						</Button>
-						<Button onClick={onCancel}>Отменить</Button>
-					</div>
+						<Button
+							variant="outlined"
+							color="secondary"
+							onClick={onCancel}
+							sx={{ minWidth: 100 }}>
+							Отменить
+						</Button>
+					</>
 				) : (
-					<Button disabled={false} type="primary" onClick={onEdit}>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={onEdit}
+						sx={{ minWidth: 100 }}>
 						Редактировать
 					</Button>
 				)}
-			</Form.Item>
-		</Form>
+			</Box>
+		</Box>
 	);
 };
 

@@ -1,30 +1,56 @@
-// src/components/layout/Sidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Drawer,
 	List,
 	ListItem,
 	ListItemButton,
+	ListItemIcon,
 	ListItemText,
 	Collapse,
+	Box,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { ExpandLess, ExpandMore, MailOutline } from '@mui/icons-material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 const Sidebar = ({ items, selectedKeys }) => {
-	const [openGroups, setOpenGroups] = React.useState(
-		items.reduce((acc, item) => {
-			acc[item.key] = true;
-			return acc;
-		}, {})
-	);
+	const [openKeys, setOpenKeys] = useState(['open']);
 
-	const handleGroupClick = (key) => {
-		setOpenGroups((prev) => ({
-			...prev,
-			[key]: !prev[key],
-		}));
+	const handleSubmenuClick = (key) => {
+		setOpenKeys((prev) =>
+			prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+		);
 	};
+
+	const renderMenuItems = (menuItems) =>
+		menuItems.map((item) => {
+			const isSelected = selectedKeys.includes(item.key);
+			const hasChildren = item.children && item.children.length > 0;
+
+			return (
+				<React.Fragment key={item.key}>
+					<ListItem disablePadding>
+						<ListItemButton
+							selected={isSelected}
+							onClick={() => hasChildren && handleSubmenuClick(item.key)}
+							sx={{ pl: 2 }}>
+							{item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
+							<ListItemText primary={item.label} />
+							{hasChildren &&
+								(openKeys.includes(item.key) ? <ExpandLess /> : <ExpandMore />)}
+						</ListItemButton>
+					</ListItem>
+					{hasChildren && (
+						<Collapse
+							in={openKeys.includes(item.key)}
+							timeout="auto"
+							unmountOnExit>
+							<List component="div" disablePadding sx={{ pl: 2 }}>
+								{renderMenuItems(item.children)}
+							</List>
+						</Collapse>
+					)}
+				</React.Fragment>
+			);
+		});
 
 	return (
 		<Drawer
@@ -35,91 +61,14 @@ const Sidebar = ({ items, selectedKeys }) => {
 				'& .MuiDrawer-paper': {
 					width: 200,
 					boxSizing: 'border-box',
-					mt: '64px',
-					borderRight: '1px solid #e0e0e0', // Добавляем правую границу
-					boxShadow: '2px 0 5px rgba(0, 0, 0, 0.05)', // Лёгкая тень для глубины
-					backgroundColor: '#fff',
+					borderRight: 0,
+					height: '100%',
+					mt: '64px', // Отступ сверху для хедера
 				},
 			}}>
-			<List disablePadding>
-				{items.map((item) => (
-					<React.Fragment key={item.key}>
-						<ListItem
-							disablePadding
-							onClick={() => handleGroupClick(item.key)}
-							sx={{
-								backgroundColor: '#f0f2f5',
-								'&:hover': {
-									backgroundColor: '#e6e9ed',
-								},
-							}}>
-							<ListItemButton sx={{ py: 0.5 }}>
-								<ListItemText
-									primary={item.label}
-									primaryTypographyProps={{
-										fontWeight: 'bold',
-										fontSize: '0.8rem',
-										color: '#000',
-									}}
-								/>
-								{openGroups[item.key] ? (
-									<ExpandLess sx={{ fontSize: '0.9rem', color: '#8c8c8c' }} />
-								) : (
-									<ExpandMore sx={{ fontSize: '0.9rem', color: '#8c8c8c' }} />
-								)}
-							</ListItemButton>
-						</ListItem>
-						<Collapse in={openGroups[item.key]} timeout="auto" unmountOnExit>
-							<List component="div" disablePadding>
-								{item.children?.map((child) => (
-									<ListItem
-										key={child.key}
-										disablePadding
-										sx={{
-											'& .Mui-selected': {
-												backgroundColor: '#d9d9d9',
-												'&:hover': {
-													backgroundColor: '#c7c7c7',
-												},
-											},
-										}}>
-										<ListItemButton
-											component={child.path ? Link : 'div'}
-											to={child.path}
-											selected={selectedKeys?.includes(child.key)}
-											sx={{
-												pl: 3,
-												py: 0.3,
-												backgroundColor: '#fff',
-												'&:hover': {
-													backgroundColor: '#fafafa',
-												},
-											}}>
-											{child.label === 'Нет заявок' && (
-												<MailOutline
-													sx={{
-														fontSize: '0.9rem',
-														color: '#8c8c8c',
-														mr: 1,
-													}}
-												/>
-											)}
-											<ListItemText
-												primary={child.label}
-												primaryTypographyProps={{
-													fontSize: '0.8rem',
-													color:
-														child.label === 'Нет заявок' ? '#8c8c8c' : '#000',
-												}}
-											/>
-										</ListItemButton>
-									</ListItem>
-								))}
-							</List>
-						</Collapse>
-					</React.Fragment>
-				))}
-			</List>
+			<Box sx={{ overflow: 'auto', height: '100%' }}>
+				<List>{renderMenuItems(items)}</List>
+			</Box>
 		</Drawer>
 	);
 };

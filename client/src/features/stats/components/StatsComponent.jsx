@@ -85,7 +85,7 @@ const StatsComponent = ({ userId }) => {
 	};
 
 	return (
-		<Box sx={{ maxWidth: 1200, mx: 'auto', p: 3, backgroundColor: '#f5f5f5' }}>
+		<Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
 			{/* Заголовок и выбор периода */}
 			<Card
 				sx={{
