@@ -19,6 +19,7 @@ const TicketForm = ({ onSubmit, users, isLoading }) => {
 			category: '',
 			description: '',
 			assignedTo: '',
+			priority: '',
 		},
 	});
 	const [files, setFiles] = useState([]);
@@ -99,6 +100,26 @@ const TicketForm = ({ onSubmit, users, isLoading }) => {
 									{user.username}
 								</MenuItem>
 							))}
+						</Select>
+					)}
+				/>
+			</FormControl>
+			<FormControl>
+				<InputLabel>Приоритет</InputLabel>
+				<Controller
+					name="priority"
+					control={control}
+					rules={{ required: 'Выберите приоритет!' }}
+					render={({ field, fieldState: { error } }) => (
+						<Select
+							{...field}
+							label="Приоритет"
+							variant="outlined"
+							fullWidth
+							error={!!error}>
+							<MenuItem value="Низкий">Низкий</MenuItem>
+							<MenuItem value="Средний">Средний</MenuItem>
+							<MenuItem value="Высокий">Высокий</MenuItem>
 						</Select>
 					)}
 				/>

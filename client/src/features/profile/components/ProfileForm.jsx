@@ -72,6 +72,7 @@ const ProfileForm = ({
 							variant="outlined"
 							size="small"
 							fullWidth
+							disabled={!isEditing}
 						/>
 					)}
 				/>
@@ -92,19 +93,19 @@ const ProfileForm = ({
 				{isEditing ? (
 					<>
 						<Button
+							variant="outlined"
+							color="secondary"
+							onClick={onCancel}
+							sx={{ minWidth: 100 }}>
+							Отменить
+						</Button>
+						<Button
 							type="submit"
 							variant="contained"
 							color="primary"
 							disabled={updateLoading}
 							sx={{ minWidth: 100 }}>
 							{updateLoading ? 'Сохранение...' : 'Сохранить'}
-						</Button>
-						<Button
-							variant="outlined"
-							color="secondary"
-							onClick={onCancel}
-							sx={{ minWidth: 100 }}>
-							Отменить
 						</Button>
 					</>
 				) : (
