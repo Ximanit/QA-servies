@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-const Sidebar = ({ items, selectedKeys }) => {
+const Sidebar = ({ items, selectedKeys, onItemClick }) => {
 	const [openKeys, setOpenKeys] = useState(['open']);
 
 	const handleSubmenuClick = (key) => {
@@ -30,7 +30,13 @@ const Sidebar = ({ items, selectedKeys }) => {
 					<ListItem disablePadding>
 						<ListItemButton
 							selected={isSelected}
-							onClick={() => hasChildren && handleSubmenuClick(item.key)}
+							onClick={() => {
+								if (hasChildren) {
+									handleSubmenuClick(item.key);
+								} else {
+									onItemClick(item.key); // Вызов функции для открытия заявки
+								}
+							}}
 							sx={{ pl: 2 }}>
 							{item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
 							<ListItemText primary={item.label} />
@@ -63,7 +69,7 @@ const Sidebar = ({ items, selectedKeys }) => {
 					boxSizing: 'border-box',
 					borderRight: 0,
 					height: '100%',
-					mt: '64px', // Отступ сверху для хедера
+					mt: '64px',
 				},
 			}}>
 			<Box sx={{ overflow: 'auto', height: '100%' }}>

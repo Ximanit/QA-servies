@@ -47,7 +47,13 @@ const MainLayout = () => {
 		<Box sx={{ display: 'flex', minHeight: '100vh' }}>
 			<CssBaseline />
 			<Header onLogout={handleLogout} />
-			<Sidebar items={menuItems} selectedKeys={[currentTicketId]} />
+			<Sidebar
+				items={menuItems}
+				selectedKeys={[currentTicketId]}
+				onItemClick={(key) => {
+					navigate(`/tickets/${key}`);
+				}}
+			/>
 			<Box
 				component="main"
 				sx={{
