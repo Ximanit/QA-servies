@@ -1,36 +1,46 @@
-// src/layouts/AuthLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Container, Box, Paper } from '@mui/material';
-import { motion } from 'framer-motion';
+import { Box, CssBaseline, Toolbar, Typography } from '@mui/material';
+import Header from '../components/layout/Header';
 
 const AuthLayout = () => {
+	const handleLoginRedirect = () => {
+		window.location.href = '/auth/login';
+	};
+
 	return (
-		<Container
-			maxWidth={false}
-			sx={{
-				minHeight: '100vh',
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				background: 'linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%)',
-			}}>
-			<Paper
-				elevation={8}
+		<Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+			<CssBaseline />
+			{/* <Header onLogout={handleLoginRedirect} isAuthLayout /> */}
+			<Box
+				component="main"
 				sx={{
-					width: '100%',
-					maxWidth: 500,
-					p: 4,
-					borderRadius: 3,
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					p: { xs: 2, sm: 3 },
+
+					minHeight: '100vh ',
 					bgcolor: 'background.paper',
-				}}
-				component={motion.div}
-				initial={{ opacity: 0, scale: 0.95 }}
-				animate={{ opacity: 1, scale: 1 }}
-				transition={{ duration: 0.5, ease: 'easeOut' }}>
-				<Outlet />
-			</Paper>
-		</Container>
+					boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+				}}>
+				<Box
+					sx={{
+						width: { xs: '100%', sm: '80%', md: '50%' },
+						maxWidth: 600,
+						p: { xs: 2, sm: 4 },
+						bgcolor: 'background.paper',
+						borderRadius: 2,
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+					}}>
+					<Typography
+						variant="h4"
+						gutterBottom
+						sx={{ fontWeight: 600, textAlign: 'center' }}></Typography>
+					<Outlet />
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 

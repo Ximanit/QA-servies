@@ -44,7 +44,7 @@ const LoginPage = () => {
 				fontWeight="bold"
 				color="primary.main"
 				sx={{ mb: 1.5 }}>
-				Вход в Сервис Заявок
+				Авторизация
 			</Typography>
 			<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
 				Управляйте своими заявками легко и быстро

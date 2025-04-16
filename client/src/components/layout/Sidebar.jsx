@@ -8,17 +8,56 @@ import {
 	ListItemText,
 	Collapse,
 	Box,
+	TextField,
 } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import {
+	ExpandLess,
+	ExpandMore,
+	Inbox,
+	OpenInNew,
+	Work,
+	CheckCircle,
+} from '@mui/icons-material';
 
-const Sidebar = ({ items, selectedKeys, onItemClick }) => {
-	const [openKeys, setOpenKeys] = useState(['open']);
+const Sidebar = ({ items, selectedKeys, onItemClick, drawerProps }) => {
+	const [openKeys, setOpenKeys] = useState([
+		'open',
+		'inProgress',
+		'closed',
+		'created',
+	]);
+	const [search, setSearch] = useState('');
 
 	const handleSubmenuClick = (key) => {
 		setOpenKeys((prev) =>
 			prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
 		);
 	};
+
+	const getIcon = (key) => {
+		switch (key) {
+			case 'open':
+				return <OpenInNew />;
+			case 'inProgress':
+				return <Work />;
+			case 'closed':
+				return <CheckCircle />;
+			case 'created':
+				return <Inbox />;
+			default:
+				return null;
+		}
+	};
+
+	const filteredItems = items.map((item) => ({
+		...item,
+		children: item.children.filter(
+			(child) =>
+				child.label?.props?.children?.[0]?.props?.children
+					?.toLowerCase()
+					.includes(search.toLowerCase()) || child.key === 'empty'
+		),
+	}));
 
 	const renderMenuItems = (menuItems) =>
 		menuItems.map((item) => {
@@ -34,7 +73,7 @@ const Sidebar = ({ items, selectedKeys, onItemClick }) => {
 								if (hasChildren) {
 									handleSubmenuClick(item.key);
 								} else {
-									onItemClick(item.key); // Вызов функции для открытия заявки
+									onItemClick(item.key);
 								}
 							}}
 							sx={{ pl: 2 }}>
@@ -59,21 +98,19 @@ const Sidebar = ({ items, selectedKeys, onItemClick }) => {
 		});
 
 	return (
-		<Drawer
-			variant="permanent"
-			sx={{
-				width: 200,
-				flexShrink: 0,
-				'& .MuiDrawer-paper': {
-					width: 200,
-					boxSizing: 'border-box',
-					borderRight: 0,
-					height: '100%',
-					mt: '64px',
-				},
-			}}>
+		<Drawer {...drawerProps}>
+			<Box sx={{ p: 2 }}>
+				<TextField
+					fullWidth
+					variant="outlined"
+					placeholder="Поиск заявок..."
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					size="small"
+				/>
+			</Box>
 			<Box sx={{ overflow: 'auto', height: '100%' }}>
-				<List>{renderMenuItems(items)}</List>
+				<List>{renderMenuItems(filteredItems)}</List>
 			</Box>
 		</Drawer>
 	);
