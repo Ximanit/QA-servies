@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useRegisterMutation } from '../../features/auth/authApi';
 import RegisterForm from '../../features/auth/components/RegisterForm';
-import { Snackbar, Alert, Box, Typography, Container } from '@mui/material';
+import { Snackbar, Alert, Box, Typography } from '@mui/material';
 
 const RegisterPage = () => {
 	const [register, { isLoading }] = useRegisterMutation();
@@ -29,39 +29,31 @@ const RegisterPage = () => {
 	};
 
 	return (
-		<Container
-			sx={{
-				minHeight: '100vh',
-				display: 'flex',
-				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center',
-				px: { xs: 2, sm: 3 },
-			}}>
-			<Box sx={{ textAlign: 'center', mb: 4 }}>
-				<Typography
-					variant="h4"
-					fontWeight="bold"
-					color="primary.main"
-					sx={{ mb: 1 }}>
-					Сервис Заявок
+		<Box sx={{ textAlign: 'center', py: 4 }}>
+			<Typography
+				variant="h4"
+				fontWeight="bold"
+				color="primary.main"
+				sx={{ mb: 1.5 }}>
+				Регистрация
+			</Typography>
+			<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+				Создайте аккаунт для управления заявками
+			</Typography>
+			<RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
+			<Box sx={{ mt: 2.5, textAlign: 'center' }}>
+				<Typography variant="body2" color="text.secondary">
+					Уже есть аккаунт?{' '}
+					<Link
+						to="/auth/login"
+						style={{
+							color: '#1976d2',
+							textDecoration: 'none',
+							fontWeight: 'medium',
+						}}>
+						Войдите
+					</Link>
 				</Typography>
-				<Typography variant="body1" color="text.secondary">
-					Управляйте своими заявками легко и быстро
-				</Typography>
-			</Box>
-			<Box sx={{ width: '100%', maxWidth: 450 }}>
-				<RegisterForm onSubmit={onSubmit} isLoading={isLoading} />
-				<Box sx={{ mt: 2, textAlign: 'center' }}>
-					<Typography variant="body2" color="text.secondary">
-						Уже есть аккаунт?{' '}
-						<Link
-							to="/auth/login"
-							style={{ color: '#1976d2', textDecoration: 'none' }}>
-							Войдите
-						</Link>
-					</Typography>
-				</Box>
 			</Box>
 			<Snackbar
 				open={openSnackbar}
@@ -71,7 +63,7 @@ const RegisterPage = () => {
 				sx={{
 					'& .MuiSnackbarContent-root': {
 						borderRadius: '8px',
-						boxShadow: '0 3px 5px rgba(0, 0, 0, 0.2)',
+						boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
 					},
 				}}>
 				<Alert
@@ -86,11 +78,12 @@ const RegisterPage = () => {
 							snackbarSeverity === 'success'
 								? 'success.contrastText'
 								: 'error.contrastText',
+						fontWeight: 'medium',
 					}}>
 					{snackbarMessage}
 				</Alert>
 			</Snackbar>
-		</Container>
+		</Box>
 	);
 };
 

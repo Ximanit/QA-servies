@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoginMutation } from '../../features/auth/authApi';
 import LoginForm from '../../features/auth/components/LoginForm';
-import { Snackbar, Alert, Box, Typography, Container } from '@mui/material';
+import { Snackbar, Alert, Box, Typography } from '@mui/material';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();
@@ -31,47 +31,43 @@ const LoginPage = () => {
 	};
 
 	return (
-		<Container
-			sx={{
-				minHeight: '100vh',
-				display: 'flex',
-				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center',
-				px: { xs: 2, sm: 3 },
-			}}>
-			<Box sx={{ textAlign: 'center', mb: 4 }}>
-				<Typography
-					variant="h4"
-					fontWeight="bold"
-					color="primary.main"
-					sx={{ mb: 1 }}>
-					Сервис Заявок
+		<Box sx={{ textAlign: 'center', py: 4 }}>
+			<Typography
+				variant="h4"
+				fontWeight="bold"
+				color="primary.main"
+				sx={{ mb: 1.5 }}>
+				Авторизация
+			</Typography>
+			<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+				Управляйте своими заявками легко и быстро
+			</Typography>
+			<LoginForm onSubmit={onSubmit} isLoading={isLoading} />
+			<Box sx={{ mt: 2.5, textAlign: 'center' }}>
+				<Typography variant="body2" color="text.secondary">
+					Нет аккаунта?{' '}
+					<Link
+						to="/auth/register"
+						style={{
+							color: '#1976d2',
+							textDecoration: 'none',
+							fontWeight: 'medium',
+						}}>
+						Зарегистрируйтесь
+					</Link>
 				</Typography>
-				<Typography variant="body1" color="text.secondary">
-					Управляйте своими заявками легко и быстро
+				<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+					Забыли пароль?{' '}
+					<Link
+						to="/auth/forgot-password"
+						style={{
+							color: '#1976d2',
+							textDecoration: 'none',
+							fontWeight: 'medium',
+						}}>
+						Восстановить
+					</Link>
 				</Typography>
-			</Box>
-			<Box sx={{ width: '100%', maxWidth: 450 }}>
-				<LoginForm onSubmit={onSubmit} isLoading={isLoading} />
-				<Box sx={{ mt: 2, textAlign: 'center' }}>
-					<Typography variant="body2" color="text.secondary">
-						Нет аккаунта?{' '}
-						<Link
-							to="/auth/register"
-							style={{ color: '#1976d2', textDecoration: 'none' }}>
-							Зарегистрируйтесь
-						</Link>
-					</Typography>
-					<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-						Забыли пароль?{' '}
-						<Link
-							to="/auth/forgot-password"
-							style={{ color: '#1976d2', textDecoration: 'none' }}>
-							Восстановить
-						</Link>
-					</Typography>
-				</Box>
 			</Box>
 			<Snackbar
 				open={openSnackbar}
@@ -81,7 +77,7 @@ const LoginPage = () => {
 				sx={{
 					'& .MuiSnackbarContent-root': {
 						borderRadius: '8px',
-						boxShadow: '0 3px 5px rgba(0, 0, 0, 0.2)',
+						boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
 					},
 				}}>
 				<Alert
@@ -96,11 +92,12 @@ const LoginPage = () => {
 							snackbarSeverity === 'success'
 								? 'success.contrastText'
 								: 'error.contrastText',
+						fontWeight: 'medium',
 					}}>
 					{snackbarMessage}
 				</Alert>
 			</Snackbar>
-		</Container>
+		</Box>
 	);
 };
 
