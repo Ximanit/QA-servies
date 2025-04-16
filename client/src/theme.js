@@ -4,12 +4,12 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: '#1976d2', // Основной синий
+			main: '#1976d2',
 			light: '#42a5f5',
 			dark: '#1565c0',
 		},
 		secondary: {
-			main: '#f50057', // Акцентный розовый
+			main: '#f50057',
 		},
 		background: {
 			default: '#f5f7fa',
@@ -29,7 +29,7 @@ const theme = createTheme({
 		},
 	},
 	shape: {
-		borderRadius: 8, // Скругление углов для всех элементов
+		borderRadius: 8,
 	},
 	components: {
 		MuiButton: {

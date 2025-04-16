@@ -55,10 +55,11 @@ export const router = createBrowserRouter([
 	{
 		path: '/auth',
 		element: <AuthLayout />,
-		errorElement: <NotFound />,
-		children: [
-			{ path: 'login', element: <LoginPage /> },
-			{ path: 'register', element: <RegisterPage /> },
-		],
+		children: authRoutes.map((route) => ({
+			...route,
+			element: (
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+			),
+		})),
 	},
 ]);

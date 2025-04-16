@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useLoginMutation } from '../../features/auth/authApi';
 import LoginForm from '../../features/auth/components/LoginForm';
 import { Snackbar, Alert, Box, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();
@@ -31,13 +32,19 @@ const LoginPage = () => {
 	};
 
 	return (
-		<Box sx={{ textAlign: 'center', py: 4 }}>
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0, x: -50 }}
+			animate={{ opacity: 1, x: 0 }}
+			exit={{ opacity: 0, x: 50 }}
+			transition={{ duration: 0.4, ease: 'easeInOut' }}
+			sx={{ textAlign: 'center', py: 4 }}>
 			<Typography
 				variant="h4"
 				fontWeight="bold"
 				color="primary.main"
 				sx={{ mb: 1.5 }}>
-				Авторизация
+				Вход в Сервис Заявок
 			</Typography>
 			<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
 				Управляйте своими заявками легко и быстро
