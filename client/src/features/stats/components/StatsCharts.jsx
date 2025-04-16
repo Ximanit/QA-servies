@@ -1,4 +1,3 @@
-// src/components/features/stats/StatsCharts.jsx
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import {
@@ -14,7 +13,7 @@ import {
 	CartesianGrid,
 } from 'recharts';
 
-const COLORS = ['#1890FF', '#9254DE', '#52C41A', '#595959'];
+const COLORS = ['#1976d2', '#d81b60', '#2e7d32', '#6b7280'];
 
 const StatsCharts = ({ statusData, priorityData }) => (
 	<Grid container spacing={3}>
@@ -22,7 +21,7 @@ const StatsCharts = ({ statusData, priorityData }) => (
 			<Typography
 				variant="h6"
 				align="center"
-				sx={{ mb: 2, fontWeight: 'bold' }}>
+				sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
 				Статус заявок
 			</Typography>
 			<PieChart width={400} height={300}>
@@ -48,7 +47,7 @@ const StatsCharts = ({ statusData, priorityData }) => (
 			<Typography
 				variant="h6"
 				align="center"
-				sx={{ mb: 2, fontWeight: 'bold' }}>
+				sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
 				Заявки по приоритету
 			</Typography>
 			<BarChart width={400} height={300} data={priorityData}>
@@ -56,7 +55,7 @@ const StatsCharts = ({ statusData, priorityData }) => (
 				<XAxis dataKey="name" />
 				<YAxis />
 				<Tooltip />
-				<Bar dataKey="value" fill="#9254DE" />
+				<Bar dataKey="value" fill="#2e7d32" />
 			</BarChart>
 		</Grid>
 	</Grid>

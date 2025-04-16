@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import FileUploader from '../../../components/Common/FileUploader';
-
 import { API_URL } from '../../../constants/constants';
 
 const TicketChat = ({
@@ -31,10 +30,13 @@ const TicketChat = ({
 
 	return (
 		<Box sx={{ mt: 3 }}>
-			<Typography variant="h6" gutterBottom>
+			<Typography
+				variant="h6"
+				gutterBottom
+				sx={{ fontWeight: 600, color: 'text.primary' }}>
 				Чат
 			</Typography>
-			<List>
+			<List sx={{ maxHeight: 400, overflowY: 'auto', bgcolor: 'grey.50' }}>
 				{messages.map((msg) => (
 					<ListItem
 						key={msg._id}
@@ -42,11 +44,11 @@ const TicketChat = ({
 							bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
 							m: 0.5,
 							p: 1.5,
-							borderRadius: 1,
+							borderRadius: 2,
 						}}>
 						<ListItemText
 							primary={
-								<Typography variant="body1">
+								<Typography variant="body1" color="text.primary">
 									<strong>{msg.author.username}:</strong> {msg.content}
 								</Typography>
 							}
@@ -57,10 +59,10 @@ const TicketChat = ({
 											{msg.files.map((file) => (
 												<a
 													key={file.filename}
-													href={`${API_URL}/uploads/${file.filename}`}
+													href={`${API_URL}/Uploads/${file.filename}`}
 													target="_blank"
 													rel="noopener noreferrer"
-													style={{ display: 'block', color: '#1976d2' }}>
+													style={{ display: 'block', color: 'primary.main' }}>
 													{file.filename}
 												</a>
 											))}
@@ -96,6 +98,12 @@ const TicketChat = ({
 								fullWidth
 								error={!!error}
 								helperText={error?.message}
+								sx={{
+									'& .MuiOutlinedInput-root': {
+										borderRadius: 2,
+										bgcolor: 'background.paper',
+									},
+								}}
 							/>
 						)}
 					/>
@@ -105,12 +113,12 @@ const TicketChat = ({
 						variant="contained"
 						color="primary"
 						disabled={isLoading}
-						sx={{ alignSelf: 'flex-start' }}>
+						sx={{ alignSelf: 'flex-start', borderRadius: 2 }}>
 						{isLoading ? 'Отправка...' : 'Отправить'}
 					</Button>
 				</Box>
 			) : (
-				<Typography sx={{ mt: 2, color: 'text.secondary' }}>
+				<Typography sx={{ mt: 2, color: 'success.main' }}>
 					Заявка закрыта. Чат доступен только для просмотра.
 				</Typography>
 			)}

@@ -9,13 +9,15 @@ import {
 	Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
 import { useGetUsersQuery } from '../../features/auth/authApi';
 import TicketForm from '../../features/tickets/components/TicketForm';
 
 const CreateTicketPage = () => {
 	const navigate = useNavigate();
-	const [createTicket, { isLoading }] = useCreateTicketMutation();
+	const [createTicket, { isLoading: createLoading }] =
+		useCreateTicketMutation();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
 	const [alert, setAlert] = useState({
 		open: false,
@@ -23,7 +25,7 @@ const CreateTicketPage = () => {
 		severity: 'success',
 	});
 
-	const onSubmit = async (values) => {
+	const handleSubmit = async (values) => {
 		try {
 			const newTicket = await createTicket(values).unwrap();
 			setAlert({
@@ -35,7 +37,7 @@ const CreateTicketPage = () => {
 		} catch (error) {
 			setAlert({
 				open: true,
-				message: 'Ошибка при создании заявки',
+				message: error.data?.message || 'Ошибка при создании заявки',
 				severity: 'error',
 			});
 		}
@@ -45,26 +47,24 @@ const CreateTicketPage = () => {
 		setAlert({ ...alert, open: false });
 	};
 
-	if (usersLoading) {
-		return (
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					height: '100vh',
-				}}>
-				<CircularProgress />
-			</Box>
-		);
-	}
-
 	return (
-		<>
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
-				<CardHeader title="Создать заявку" />
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.4, ease: 'easeInOut' }}
+			sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ boxShadow: 3 }}>
+				<CardHeader
+					title="Создать заявку"
+					titleTypographyProps={{ fontWeight: 600 }}
+				/>
 				<CardContent>
-					<TicketForm onSubmit={onSubmit} users={users} isLoading={isLoading} />
+					<TicketForm
+						onSubmit={handleSubmit}
+						users={users}
+						isLoading={createLoading}
+					/>
 				</CardContent>
 			</Card>
 			<Snackbar
@@ -75,11 +75,16 @@ const CreateTicketPage = () => {
 				<Alert
 					onClose={handleCloseAlert}
 					severity={alert.severity}
-					sx={{ width: '100%' }}>
+					sx={{
+						width: '100%',
+						borderRadius: 2,
+						bgcolor:
+							alert.severity === 'success' ? 'success.light' : 'error.light',
+					}}>
 					{alert.message}
 				</Alert>
 			</Snackbar>
-		</>
+		</Box>
 	);
 };
 

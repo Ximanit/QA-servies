@@ -11,7 +11,6 @@ export const useTicketAssignment = (ticketId) => {
 		try {
 			await updateTicket({ id: ticketId, assignedTo: newAssignedTo }).unwrap();
 			showToast('Заявка передана другому исполнителю!', 'success');
-			message.success('Заявка передана другому исполнителю!');
 		} catch (error) {
 			showToast('Ошибка при передаче заявки', 'error');
 		}

@@ -1,4 +1,3 @@
-// src/theme.js
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -9,20 +8,27 @@ const theme = createTheme({
 			dark: '#1565c0',
 		},
 		secondary: {
-			main: '#f50057',
+			main: '#d81b60', // Смягченный розовый для акцентов
+		},
+		success: {
+			main: '#2e7d32', // Зеленый для успешных действий
+			light: '#4caf50',
 		},
 		background: {
-			default: '#f4f6f8',
-			paper: '#ffffff',
+			default: '#e8ecef', // Более темный серый фон страницы
+			paper: '#f9fafb', // Холодный серо-голубой для карточек
 		},
 		text: {
-			primary: '#1a202c',
-			secondary: '#4a5568',
+			primary: '#111827', // Темнее для основного текста
+			secondary: '#6b7280', // Серый для второстепенного текста
 		},
 	},
 	typography: {
 		fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
 		h4: {
+			fontWeight: 600,
+		},
+		h5: {
 			fontWeight: 600,
 		},
 		h6: {
@@ -42,8 +48,8 @@ const theme = createTheme({
 		MuiAppBar: {
 			styleOverrides: {
 				root: {
-					backgroundColor: '#ffffff',
-					color: '#1a202c',
+					backgroundColor: '#f9fafb', // Соответствует карточкам
+					color: '#111827',
 					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
 				},
 			},
@@ -51,7 +57,7 @@ const theme = createTheme({
 		MuiDrawer: {
 			styleOverrides: {
 				paper: {
-					backgroundColor: '#ffffff',
+					backgroundColor: '#f9fafb',
 					boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
 					borderRight: 'none',
 				},
@@ -64,8 +70,32 @@ const theme = createTheme({
 					fontWeight: 500,
 					transition: 'all 0.2s ease',
 					'&:hover': {
-						transform: 'translateY(-1px)',
-						boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+						transform: 'translateY(-2px)',
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+					},
+				},
+				containedSecondary: {
+					backgroundColor: '#d81b60',
+					'&:hover': {
+						backgroundColor: '#c2185b',
+					},
+				},
+				containedSuccess: {
+					backgroundColor: '#2e7d32',
+					'&:hover': {
+						backgroundColor: '#27632a',
+					},
+				},
+			},
+		},
+		MuiCard: {
+			styleOverrides: {
+				root: {
+					backgroundColor: '#f9fafb',
+					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+					transition: 'all 0.2s ease',
+					'&:hover': {
+						boxShadow: '0 6px 16px rgba(0, 0, 0, 0.15)',
 					},
 				},
 			},
@@ -77,15 +107,15 @@ const theme = createTheme({
 					margin: '4px 8px',
 					transition: 'all 0.2s ease',
 					'&:hover': {
-						backgroundColor: '#e6f7ff',
+						backgroundColor: '#e3f2fd', // Светло-синий для наведения
 						transform: 'translateX(2px)',
 					},
 					'&.Mui-selected': {
-						backgroundColor: '#e6f7ff',
+						backgroundColor: '#e3f2fd',
 						color: '#1976d2',
 						fontWeight: 600,
 						'&:hover': {
-							backgroundColor: '#d1e9ff',
+							backgroundColor: '#bbdefb',
 						},
 					},
 				},

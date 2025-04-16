@@ -29,7 +29,6 @@ const ProfileForm = ({
 	});
 	const [isEditing, setIsEditing] = useState(false);
 
-	// Инициализация формы
 	useEffect(() => {
 		reset({
 			fio: profile?.fio || '',
@@ -60,7 +59,7 @@ const ProfileForm = ({
 			onSubmit={handleSubmit(onSubmit)}
 			sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 			<FormControl disabled={!isEditing} error={!!errors.fio}>
-				<FormLabel>ФИО</FormLabel>
+				<FormLabel sx={{ color: 'text.primary' }}>ФИО</FormLabel>
 				<Controller
 					name="fio"
 					control={control}
@@ -73,38 +72,60 @@ const ProfileForm = ({
 							size="small"
 							fullWidth
 							disabled={!isEditing}
+							sx={{
+								'& .MuiOutlinedInput-root': {
+									borderRadius: '8px',
+									bgcolor: isEditing ? 'background.paper' : 'grey.100',
+								},
+							}}
 						/>
 					)}
 				/>
-				{errors.fio && <FormHelperText>{errors.fio.message}</FormHelperText>}
+				{errors.fio && (
+					<FormHelperText sx={{ color: 'error.main' }}>
+						{errors.fio.message}
+					</FormHelperText>
+				)}
 			</FormControl>
 
 			<FormControl>
-				<FormLabel>Количество созданных заявок</FormLabel>
-				<Typography variant="body1">{createdTicketsCount || 0}</Typography>
+				<FormLabel sx={{ color: 'text.primary' }}>
+					Количество созданных заявок
+				</FormLabel>
+				<Typography variant="body1" color="text.primary">
+					{createdTicketsCount || 0}
+				</Typography>
 			</FormControl>
 
 			<FormControl>
-				<FormLabel>Количество выполненных заявок</FormLabel>
-				<Typography variant="body1">{completedTicketsCount || 0}</Typography>
+				<FormLabel sx={{ color: 'text.primary' }}>
+					Количество выполненных заявок
+				</FormLabel>
+				<Typography
+					variant="body1"
+					sx={{
+						color: completedTicketsCount ? 'success.main' : 'text.primary',
+					}}>
+					{completedTicketsCount || 0}
+				</Typography>
 			</FormControl>
 
-			<Box sx={{ display: 'flex', gap: 1 }}>
+			<Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
 				{isEditing ? (
 					<>
 						<Button
 							variant="outlined"
 							color="secondary"
 							onClick={onCancel}
-							sx={{ minWidth: 100 }}>
+							sx={{ minWidth: 120, borderRadius: 2 }}>
 							Отменить
 						</Button>
 						<Button
 							type="submit"
 							variant="contained"
-							color="primary"
+							color="success"
 							disabled={updateLoading}
-							sx={{ minWidth: 100 }}>
+							sx={{ minWidth: 120, borderRadius: 2 }}>
 							{updateLoading ? 'Сохранение...' : 'Сохранить'}
 						</Button>
 					</>
@@ -113,7 +134,7 @@ const ProfileForm = ({
 						variant="contained"
 						color="primary"
 						onClick={onEdit}
-						sx={{ minWidth: 100 }}>
+						sx={{ minWidth: 120, borderRadius: 2 }}>
 						Редактировать
 					</Button>
 				)}

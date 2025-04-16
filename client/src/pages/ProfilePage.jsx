@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+	Box,
 	Card,
 	CardHeader,
 	CardContent,
 	CircularProgress,
 	Typography,
-	Box,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import { useProfile } from '../features/profile/hooks/useProfile';
 import ProfileForm from '../features/profile/components/ProfileForm';
 
@@ -29,7 +30,7 @@ const ProfilePage = () => {
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
-					height: '100vh',
+					minHeight: '100vh',
 				}}>
 				<CircularProgress />
 				<Typography sx={{ ml: 2 }}>Загрузка профиля...</Typography>
@@ -39,10 +40,10 @@ const ProfilePage = () => {
 
 	if (profileError) {
 		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
 				<CardHeader title="Ошибка" />
 				<CardContent>
-					<Typography>
+					<Typography color="error">
 						Не удалось загрузить профиль: {profileError.status} -{' '}
 						{profileError.data?.message || 'Неизвестная ошибка'}
 					</Typography>
@@ -53,10 +54,10 @@ const ProfilePage = () => {
 
 	if (ticketsError) {
 		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
 				<CardHeader title="Ошибка" />
 				<CardContent>
-					<Typography>
+					<Typography color="error">
 						Не удалось загрузить заявки: {ticketsError.status} -{' '}
 						{ticketsError.data?.message || 'Неизвестная ошибка'}
 					</Typography>
@@ -67,10 +68,10 @@ const ProfilePage = () => {
 
 	if (!profile) {
 		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
 				<CardHeader title="Ошибка" />
 				<CardContent>
-					<Typography>
+					<Typography color="error">
 						Данные профиля не найдены. Проверьте авторизацию.
 					</Typography>
 				</CardContent>
@@ -79,9 +80,17 @@ const ProfilePage = () => {
 	}
 
 	return (
-		<>
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
-				<CardHeader title="Профиль пользователя" />
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.4, ease: 'easeInOut' }}
+			sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ boxShadow: 3 }}>
+				<CardHeader
+					title="Профиль пользователя"
+					titleTypographyProps={{ fontWeight: 600 }}
+				/>
 				<CardContent>
 					<ProfileForm
 						profile={profile}
@@ -92,7 +101,7 @@ const ProfilePage = () => {
 					/>
 				</CardContent>
 			</Card>
-		</>
+		</Box>
 	);
 };
 

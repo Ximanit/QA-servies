@@ -6,15 +6,8 @@ import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
 import { useSocket } from '../hooks/useSocket';
 import { useNotifications } from '../hooks/useNotifications';
 import { formatMenuItems } from '../features/tickets/utils';
-import {
-	Box,
-	CssBaseline,
-	IconButton,
-	Toolbar,
-	useMediaQuery,
-	Skeleton,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Box, CssBaseline, useMediaQuery, Skeleton } from '@mui/material';
+
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 
@@ -136,7 +129,6 @@ const MainLayout = () => {
 					boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
 					width: { xs: '100%', sm: `calc(100% - ${isTablet ? 180 : 200}px)` },
 				}}>
-				<Toolbar />
 				<Outlet />
 			</Box>
 		</Box>
