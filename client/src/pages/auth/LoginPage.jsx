@@ -38,12 +38,8 @@ const LoginPage = () => {
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: 50 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
-			sx={{ textAlign: 'center', py: 4 }}>
-			<Typography
-				variant="h4"
-				fontWeight="bold"
-				color="primary.main"
-				sx={{ mb: 1.5 }}>
+			sx={{ textAlign: 'center' }}>
+			<Typography variant="h4" fontWeight="bold" sx={{ mb: 1.5 }}>
 				Авторизация
 			</Typography>
 			<Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>

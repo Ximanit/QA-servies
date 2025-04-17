@@ -77,7 +77,7 @@ const TicketActions = ({ ticket, onAssign, onAccept, onComplete }) => {
 				) : (
 					<Button
 						variant="contained"
-						color={ticket?.status === 'Закрыта' ? 'success' : 'success'}
+						// color={ticket?.status === 'Закрыта' ? 'secondary' : 'secondary'}
 						onClick={onComplete}
 						disabled={ticket?.status === 'Закрыта'}
 						sx={{ minWidth: 120, borderRadius: 2 }}>

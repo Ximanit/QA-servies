@@ -101,13 +101,7 @@ const ProfileForm = ({
 				<FormLabel sx={{ color: 'text.primary' }}>
 					Количество выполненных заявок
 				</FormLabel>
-				<Typography
-					variant="body1"
-					sx={{
-						color: completedTicketsCount ? 'success.main' : 'text.primary',
-					}}>
-					{completedTicketsCount || 0}
-				</Typography>
+				<Typography variant="body1">{completedTicketsCount || 0}</Typography>
 			</FormControl>
 
 			<Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
@@ -117,7 +111,7 @@ const ProfileForm = ({
 							variant="outlined"
 							color="secondary"
 							onClick={onCancel}
-							sx={{ minWidth: 120, borderRadius: 2 }}>
+							sx={{ minWidth: 120, borderRadius: 1 }}>
 							Отменить
 						</Button>
 						<Button
@@ -125,7 +119,7 @@ const ProfileForm = ({
 							variant="contained"
 							color="success"
 							disabled={updateLoading}
-							sx={{ minWidth: 120, borderRadius: 2 }}>
+							sx={{ minWidth: 120, borderRadius: 1 }}>
 							{updateLoading ? 'Сохранение...' : 'Сохранить'}
 						</Button>
 					</>
@@ -134,7 +128,7 @@ const ProfileForm = ({
 						variant="contained"
 						color="primary"
 						onClick={onEdit}
-						sx={{ minWidth: 120, borderRadius: 2 }}>
+						sx={{ minWidth: 120, borderRadius: 1 }}>
 						Редактировать
 					</Button>
 				)}

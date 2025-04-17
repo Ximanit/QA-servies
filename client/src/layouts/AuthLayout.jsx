@@ -1,17 +1,11 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Box, CssBaseline, Toolbar, Typography } from '@mui/material';
-import Header from '../components/layout/Header';
+import { Box, CssBaseline, Typography } from '@mui/material';
 
 const AuthLayout = () => {
-	const handleLoginRedirect = () => {
-		window.location.href = '/auth/login';
-	};
-
 	return (
 		<Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 			<CssBaseline />
-			{/* <Header onLogout={handleLoginRedirect} isAuthLayout /> */}
 			<Box
 				component="main"
 				sx={{
@@ -33,10 +27,6 @@ const AuthLayout = () => {
 						borderRadius: 2,
 						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
 					}}>
-					<Typography
-						variant="h4"
-						gutterBottom
-						sx={{ fontWeight: 600, textAlign: 'center' }}></Typography>
 					<Outlet />
 				</Box>
 			</Box>
