@@ -1,5 +1,5 @@
 // src/components/features/stats/StatsComponent.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
 	Card,
 	CardContent,
@@ -31,6 +31,32 @@ const StatsComponent = ({ userId }) => {
 	const { data: stats = { createdStats: [], assignedStats: [] }, isLoading } =
 		useGetTicketStatsQuery({ userId, period });
 
+	// Вычисление статистики для созданных и направленных заявок
+	const createdStats = useMemo(
+		() => calculateStats(stats.createdStats),
+		[stats.createdStats]
+	);
+	const assignedStats = useMemo(
+		() => calculateStats(stats.assignedStats),
+		[stats.assignedStats]
+	);
+	const statusDataCreated = useMemo(
+		() => getStatusData(stats.createdStats),
+		[stats.createdStats]
+	);
+	const statusDataAssigned = useMemo(
+		() => getStatusData(stats.assignedStats),
+		[stats.assignedStats]
+	);
+	const priorityDataCreated = useMemo(
+		() => getPriorityData(stats.createdStats),
+		[stats.createdStats]
+	);
+	const priorityDataAssigned = useMemo(
+		() => getPriorityData(stats.assignedStats),
+		[stats.assignedStats]
+	);
+
 	if (isLoading) {
 		return (
 			<Box sx={{ textAlign: 'center', padding: 2 }}>
@@ -38,16 +64,6 @@ const StatsComponent = ({ userId }) => {
 			</Box>
 		);
 	}
-
-	// Вычисление статистики для созданных и направленных заявок
-	const createdStats = calculateStats(stats.createdStats);
-	const assignedStats = calculateStats(stats.assignedStats);
-
-	// Подготовка данных для диаграмм
-	const statusDataCreated = getStatusData(stats.createdStats);
-	const statusDataAssigned = getStatusData(stats.assignedStats);
-	const priorityDataCreated = getPriorityData(stats.createdStats);
-	const priorityDataAssigned = getPriorityData(stats.assignedStats);
 
 	// Компонент для отображения содержимого вкладки
 	const StatsContent = ({ type }) => {

@@ -25,21 +25,12 @@ const theme = createTheme({
 	},
 	typography: {
 		fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-		h4: {
-			fontWeight: 600,
-		},
-		h5: {
-			fontWeight: 600,
-		},
-		h6: {
-			fontWeight: 600,
-		},
-		body1: {
-			fontSize: '1rem',
-		},
-		body2: {
-			fontSize: '0.875rem',
-		},
+		h4: { fontWeight: 600 },
+		h5: { fontWeight: 600 },
+		h6: { fontWeight: 600 },
+		body1: { fontSize: '1rem' },
+		body2: { fontSize: '0.875rem' },
+		caption: { fontSize: '0.75rem', fontWeight: 400 }, // Замена subtitle2
 	},
 	shape: {
 		borderRadius: 8,
