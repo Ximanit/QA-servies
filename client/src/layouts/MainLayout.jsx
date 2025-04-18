@@ -3,20 +3,18 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
 import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
-import { useSocket } from '../hooks/useSocket';
-import { useNotifications } from '../hooks/useNotifications';
-import { Box, CssBaseline, useMediaQuery, Skeleton } from '@mui/material';
+
+import { Box, CssBaseline, useMediaQuery } from '@mui/material';
 
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
+import SkeletonLayout from '../components/layout/SkeletonLayout';
 
 const MainLayout = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const userId = useSelector((state) => state.auth.id);
-	const { data: userTickets = [], isLoading } = useGetUserTicketsQuery(userId);
-	const { notifications: socketNotifications } = useSocket(null, userId);
-	const apiNotifications = useNotifications();
+	const { isLoading } = useGetUserTicketsQuery(userId);
 	const isMobile = useMediaQuery('(max-width:600px)');
 	const isTablet = useMediaQuery('(max-width:900px)');
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,39 +29,7 @@ const MainLayout = () => {
 	};
 
 	if (isLoading) {
-		return (
-			<Box
-				sx={{
-					display: 'flex',
-					minHeight: '100vh',
-					bgcolor: 'background.default',
-				}}>
-				{!isMobile && (
-					<Skeleton
-						variant="rectangular"
-						width={isTablet ? 180 : 255}
-						height="100%"
-						sx={{ mt: '64px' }}
-					/>
-				)}
-				<Box
-					sx={{ flexGrow: 1, p: { xs: 2, sm: 3 }, mt: '64px', width: '100%' }}>
-					<Skeleton variant="text" width="40%" height={40} />
-					<Skeleton
-						variant="rectangular"
-						width="100%"
-						height={200}
-						sx={{ mt: 2 }}
-					/>
-					<Skeleton
-						variant="rectangular"
-						width="100%"
-						height={200}
-						sx={{ mt: 2 }}
-					/>
-				</Box>
-			</Box>
-		);
+		return <SkeletonLayout />;
 	}
 
 	return (
