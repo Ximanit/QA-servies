@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	Box,
+	Card,
 	Typography,
 	List,
 	ListItem,
-	ListItemText,
 	TextField,
 	Button,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
-import FileUploader from '../../../components/Common/FileUploader';
-import { API_URL } from '../../../constants/constants';
 
 const TicketChat = ({
 	messages,
@@ -20,60 +18,57 @@ const TicketChat = ({
 	isClosed,
 }) => {
 	const { control, handleSubmit, reset } = useForm();
-	const [files, setFiles] = useState([]);
 
 	const onSubmit = (values) => {
-		onSendMessage({ content: values.content, files });
+		onSendMessage({ content: values.content });
 		reset();
-		setFiles([]);
 	};
 
 	return (
-		<Box sx={{ mt: 3 }}>
-			<Typography
-				variant="h6"
-				gutterBottom
-				sx={{ fontWeight: 600, color: 'text.primary' }}>
-				Чат
+		<Card sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+			<Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+				Обсуждение заявки
 			</Typography>
-			<List sx={{ maxHeight: 400, overflowY: 'auto', bgcolor: 'grey.50' }}>
+			<List
+				sx={{
+					maxHeight: 400,
+					overflowY: 'auto',
+					bgcolor: 'grey.50',
+					borderRadius: 1,
+					p: 2,
+				}}>
 				{messages.map((msg) => (
 					<ListItem
 						key={msg._id}
 						sx={{
-							bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
-							m: 0.5,
-							p: 1.5,
-							borderRadius: 2,
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: msg.author._id === userId ? 'flex-end' : 'flex-start',
+							p: 0.5,
+							bgcolor: 'transparent',
 						}}>
-						<ListItemText
-							primary={
-								<Typography variant="body1" color="text.primary">
-									<strong>{msg.author.username}:</strong> {msg.content}
-								</Typography>
-							}
-							secondary={
-								<>
-									{msg.files?.length > 0 && (
-										<Box sx={{ mt: 1 }}>
-											{msg.files.map((file) => (
-												<a
-													key={file.filename}
-													href={`${API_URL}/Uploads/${file.filename}`}
-													target="_blank"
-													rel="noopener noreferrer"
-													style={{ display: 'block', color: 'primary.main' }}>
-													{file.filename}
-												</a>
-											))}
-										</Box>
-									)}
-									<Typography variant="caption" color="text.secondary">
-										{new Date(msg.createdAt).toLocaleTimeString()}
-									</Typography>
-								</>
-							}
-						/>
+						<Box
+							sx={{
+								display: 'inline-block',
+								bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
+								borderRadius: 2,
+								p: 1,
+								maxWidth: '70%', // Ограничиваем ширину для длинных сообщений
+							}}>
+							<Typography variant="body1" color="text.primary">
+								{msg.content}
+							</Typography>
+						</Box>
+						<Typography
+							variant="caption"
+							color="text.secondary"
+							sx={{
+								mt: 0.5,
+								textAlign: msg.author._id === userId ? 'right' : 'left',
+							}}>
+							<strong>{msg.author.username}</strong> ·{' '}
+							{new Date(msg.createdAt).toLocaleTimeString()}
+						</Typography>
 					</ListItem>
 				))}
 			</List>
@@ -90,10 +85,9 @@ const TicketChat = ({
 						render={({ field, fieldState: { error } }) => (
 							<TextField
 								{...field}
-								label="Сообщение"
+								placeholder="Введите сообщение..."
 								multiline
 								rows={4}
-								placeholder="Введите сообщение"
 								variant="outlined"
 								fullWidth
 								error={!!error}
@@ -107,7 +101,6 @@ const TicketChat = ({
 							/>
 						)}
 					/>
-					<FileUploader onFilesChange={setFiles} />
 					<Button
 						type="submit"
 						variant="contained"
@@ -122,7 +115,7 @@ const TicketChat = ({
 					Заявка закрыта. Чат доступен только для просмотра.
 				</Typography>
 			)}
-		</Box>
+		</Card>
 	);
 };
 

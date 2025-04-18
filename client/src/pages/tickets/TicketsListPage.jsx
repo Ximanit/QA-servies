@@ -102,8 +102,6 @@ const TicketsListPage = () => {
 					startIcon={<AddIcon />}
 					onClick={handleCreateTicket}
 					sx={{
-						bgcolor: '#6B46C1',
-						'&:hover': { bgcolor: '#553C9A' },
 						borderRadius: '8px',
 					}}>
 					Новая заявка
