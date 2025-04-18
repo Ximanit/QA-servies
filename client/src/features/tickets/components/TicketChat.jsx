@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
 	Box,
 	Card,
@@ -18,10 +18,26 @@ const TicketChat = ({
 	isClosed,
 }) => {
 	const { control, handleSubmit, reset } = useForm();
+	const messagesEndRef = useRef(null); // Ref для контейнера сообщений
+
+	// Прокрутка к последнему сообщению
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollTo({
+			top: messagesEndRef.current.scrollHeight,
+			behavior: 'smooth',
+		});
+	};
+
+	// Прокручиваем при загрузке и изменении messages
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages]);
 
 	const onSubmit = (values) => {
 		onSendMessage({ content: values.content });
 		reset();
+		// Прокрутка после отправки нового сообщения (если нужно)
+		setTimeout(scrollToBottom, 100); // Небольшая задержка для рендеринга нового сообщения
 	};
 
 	return (
@@ -30,6 +46,7 @@ const TicketChat = ({
 				Обсуждение заявки
 			</Typography>
 			<List
+				ref={messagesEndRef} // Привязываем ref к List
 				sx={{
 					maxHeight: 400,
 					overflowY: 'auto',
@@ -53,7 +70,7 @@ const TicketChat = ({
 								bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
 								borderRadius: 2,
 								p: 1,
-								maxWidth: '70%', // Ограничиваем ширину для длинных сообщений
+								maxWidth: '70%',
 							}}>
 							<Typography variant="body1" color="text.primary">
 								{msg.content}

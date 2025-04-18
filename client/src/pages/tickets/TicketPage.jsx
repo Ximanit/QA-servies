@@ -61,9 +61,7 @@ const TicketPage = () => {
 				sx={{ mb: 2, textTransform: 'none' }}>
 				&lt; Назад
 			</Button>
-			<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-				Ошибка при создании отчета
-			</Typography>
+
 			<Box
 				sx={{
 					display: 'flex',

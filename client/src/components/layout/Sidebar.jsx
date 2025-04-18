@@ -17,12 +17,7 @@ const Sidebar = ({ onLogout, drawerProps }) => {
 	// Navigation items for the top of the sidebar
 	const mainNavItems = [
 		{ key: 'home', label: 'Home', path: '/', icon: <Home /> },
-		{
-			key: 'create-ticket',
-			label: 'Create Ticket',
-			path: '/tickets/create-ticket',
-			icon: <AddCircle />,
-		},
+
 		{ key: 'profile', label: 'Profile', path: '/profile', icon: <Person /> },
 		{ key: 'stats', label: 'Statistics', path: '/stats', icon: <BarChart /> },
 	];

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
 	Box,
 	Card,
@@ -11,14 +12,29 @@ import {
 	ListItem,
 	ListItemText,
 	CircularProgress,
+	Snackbar,
+	Alert,
 } from '@mui/material';
 import { API_URL } from '../../../constants/constants';
+import { useUpdateTicketMutation } from '../ticketsApi';
+import { useGetUsersQuery } from '../../auth/authApi'; // Предполагаемый хук для получения пользователей
 
 const TicketDetailsAndActions = ({ ticket }) => {
-	const [priority, setPriority] = useState(ticket?.priority || 'Средний');
+	const userId = useSelector((state) => state.auth.id);
 	const [status, setStatus] = useState(ticket?.status || 'Новая');
+	const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo || '');
 	const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-	const [isLoadingPriority, setIsLoadingPriority] = useState(false);
+	const [isLoadingAssignedTo, setIsLoadingAssignedTo] = useState(false);
+	const [alert, setAlert] = useState({
+		open: false,
+		message: '',
+		severity: 'success',
+	});
+
+	const [updateTicket] = useUpdateTicketMutation();
+	const { data: users = [], isLoading: usersLoading } = useGetUsersQuery();
+
+	const isCurrentAssignee = ticket?.assignedTo._id === userId;
 
 	const handleStatusChange = async (value) => {
 		const previousStatus = status;
@@ -26,59 +42,58 @@ const TicketDetailsAndActions = ({ ticket }) => {
 		setIsLoadingStatus(true);
 
 		try {
-			const response = await fetch(`${API_URL}/tickets/${ticket._id}`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-					// Если нужен токен авторизации, раскомментируйте и замените 'YOUR_TOKEN' на реальный токен
-					// Authorization: `Bearer ${YOUR_TOKEN}`,
-				},
-				body: JSON.stringify({ status: value }),
+			await updateTicket({ id: ticket._id, status: value }).unwrap();
+			setAlert({
+				open: true,
+				message: 'Статус успешно обновлен!',
+				severity: 'success',
 			});
-
-			if (!response.ok) {
-				throw new Error('Ошибка при обновлении статуса');
-			}
-
-			// Успешное обновление, ничего не делаем, так как состояние уже обновлено
 		} catch (error) {
-			console.error('Ошибка:', error);
-			setStatus(previousStatus); // Откатываем состояние при ошибке
-			alert('Не удалось обновить статус. Попробуйте снова.');
+			console.error('Ошибка при обновлении статуса:', error);
+			setStatus(previousStatus);
+			setAlert({
+				open: true,
+				message: error.data?.message || 'Не удалось обновить статус',
+				severity: 'error',
+			});
 		} finally {
 			setIsLoadingStatus(false);
 		}
 	};
 
-	const handlePriorityChange = async (value) => {
-		const previousPriority = priority;
-		setPriority(value);
-		setIsLoadingPriority(true);
+	const handleAssignedToChange = async (value) => {
+		const previousAssignedTo = assignedTo;
+		setAssignedTo(value);
+		setIsLoadingAssignedTo(true);
 
 		try {
-			const response = await fetch(`${API_URL}/tickets/${ticket._id}`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-					// Если нужен токен авторизации, раскомментируйте и замените 'YOUR_TOKEN' на реальный токен
-					// Authorization: `Bearer ${YOUR_TOKEN}`,
-				},
-				body: JSON.stringify({ priority: value }),
+			await updateTicket({ id: ticket._id, assignedTo: value }).unwrap();
+			setAlert({
+				open: true,
+				message: 'Исполнитель успешно обновлен!',
+				severity: 'success',
 			});
-
-			if (!response.ok) {
-				throw new Error('Ошибка при обновлении приоритета');
-			}
-
-			// Успешное обновление, ничего не делаем, так как состояние уже обновлено
 		} catch (error) {
-			console.error('Ошибка:', error);
-			setPriority(previousPriority); // Откатываем состояние при ошибке
-			alert('Не удалось обновить приоритет. Попробуйте снова.');
+			console.error('Ошибка при обновлении исполнителя:', error);
+			setAssignedTo(previousAssignedTo);
+			setAlert({
+				open: true,
+				message: error.data?.message || 'Не удалось обновить исполнителя',
+				severity: 'error',
+			});
 		} finally {
-			setIsLoadingPriority(false);
+			setIsLoadingAssignedTo(false);
 		}
 	};
+
+	const handleCloseAlert = () => {
+		setAlert({ ...alert, open: false });
+	};
+
+	// Фильтруем пользователей, исключая создателя заявки
+	const availableUsers = users.filter(
+		(user) => user._id !== ticket?.author?._id
+	);
 
 	return (
 		<Card sx={{ p: 3, borderRadius: 2, boxShadow: 1 }}>
@@ -93,12 +108,14 @@ const TicketDetailsAndActions = ({ ticket }) => {
 					{ticket?.description ||
 						'При попытке сформировать отчет за март система выдает ошибку'}
 				</Typography>
+
 				<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
 					Категория
 				</Typography>
 				<Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
 					{ticket?.category || 'Reports'}
 				</Typography>
+
 				<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
 					Дата создания
 				</Typography>
@@ -107,45 +124,7 @@ const TicketDetailsAndActions = ({ ticket }) => {
 						? new Date(ticket.createdAt).toLocaleString()
 						: '07 апреля 2025, 00:22'}
 				</Typography>
-				{/* //TODO доделать отправку на сервер нормально */}
-				<FormControl fullWidth>
-					<InputLabel>Статус</InputLabel>
-					<Select
-						value={status}
-						onChange={(e) => handleStatusChange(e.target.value)}
-						label="Статус"
-						sx={{ borderRadius: 1 }}
-						disabled={isLoadingStatus}>
-						<MenuItem value="Новая">Новая</MenuItem>
-						<MenuItem value="В работе">В работе</MenuItem>
-						<MenuItem value="Закрыта">Закрыта</MenuItem>
-					</Select>
-					{isLoadingStatus && (
-						<CircularProgress
-							size={20}
-							sx={{ position: 'absolute', right: 10, top: 18 }}
-						/>
-					)}
-				</FormControl>
-				<FormControl fullWidth>
-					<InputLabel>Приоритет</InputLabel>
-					<Select
-						value={priority}
-						onChange={(e) => handlePriorityChange(e.target.value)}
-						label="Приоритет"
-						sx={{ borderRadius: 1 }}
-						disabled={isLoadingPriority}>
-						<MenuItem value="Низкий">Низкий</MenuItem>
-						<MenuItem value="Средний">Средний</MenuItem>
-						<MenuItem value="Высокий">Высокий</MenuItem>
-					</Select>
-					{isLoadingPriority && (
-						<CircularProgress
-							size={20}
-							sx={{ position: 'absolute', right: 10, top: 18 }}
-						/>
-					)}
-				</FormControl>
+
 				{ticket?.files?.length > 0 && (
 					<>
 						<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -170,6 +149,68 @@ const TicketDetailsAndActions = ({ ticket }) => {
 						</List>
 					</>
 				)}
+
+				<FormControl fullWidth sx={{ position: 'relative' }}>
+					<InputLabel>Статус</InputLabel>
+					<Select
+						value={status}
+						onChange={(e) => handleStatusChange(e.target.value)}
+						label="Статус"
+						sx={{ borderRadius: 1 }}
+						disabled={isLoadingStatus}>
+						<MenuItem value="Новая">Новая</MenuItem>
+						<MenuItem value="В работе">В работе</MenuItem>
+						<MenuItem value="Закрыта">Закрыта</MenuItem>
+					</Select>
+					{isLoadingStatus && (
+						<CircularProgress
+							size={20}
+							sx={{ position: 'absolute', right: 10, top: 18 }}
+						/>
+					)}
+				</FormControl>
+
+				{isCurrentAssignee && (
+					<FormControl fullWidth sx={{ position: 'relative' }}>
+						<InputLabel>Исполнитель</InputLabel>
+						<Select
+							value={assignedTo}
+							onChange={(e) => handleAssignedToChange(e.target.value)}
+							label="Исполнитель"
+							sx={{ borderRadius: 1 }}
+							disabled={isLoadingAssignedTo || usersLoading}>
+							{availableUsers.map((user) => (
+								<MenuItem key={user._id} value={user._id}>
+									{user.username || user.fio || user.email}
+								</MenuItem>
+							))}
+						</Select>
+						{isLoadingAssignedTo && (
+							<CircularProgress
+								size={20}
+								sx={{ position: 'absolute', right: 10, top: 18 }}
+							/>
+						)}
+					</FormControl>
+				)}
+
+				<Snackbar
+					open={alert.open}
+					autoHideDuration={6000}
+					onClose={handleCloseAlert}
+					anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+					<Alert
+						onClose={handleCloseAlert}
+						severity={alert.severity}
+						sx={{
+							width: '100%',
+							borderRadius: 2,
+							bgcolor:
+								alert.severity === 'success' ? 'success.light' : 'error.light',
+						}}>
+						{alert.message}
+					</Alert>
+				</Snackbar>
 			</Box>
 		</Card>
 	);

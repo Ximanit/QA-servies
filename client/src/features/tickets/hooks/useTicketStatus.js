@@ -10,9 +10,9 @@ export const useTicketStatus = (ticketId) => {
 	const completeTicket = async () => {
 		try {
 			await updateTicket({ id: ticketId, status: 'Закрыта' }).unwrap();
-			showToast('Паявка завершена!', 'success');
+			showToast('Заявка завершена!', 'success');
 		} catch (error) {
-			showToast('шибка при завершении заявки', 'error');
+			showToast('Ошибка при завершении заявки', 'error');
 		}
 	};
 
