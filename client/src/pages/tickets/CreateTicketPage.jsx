@@ -3,7 +3,7 @@ import {
 	Card,
 	CardHeader,
 	CardContent,
-	CircularProgress,
+	Button,
 	Box,
 	Snackbar,
 	Alert,
@@ -54,6 +54,12 @@ const CreateTicketPage = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
 			sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Button
+				variant="text"
+				onClick={() => window.history.back()}
+				sx={{ mb: 2, textTransform: 'none' }}>
+				&lt; Назад
+			</Button>
 			<Card sx={{ boxShadow: 3 }}>
 				<CardHeader
 					title="Создать заявку"
