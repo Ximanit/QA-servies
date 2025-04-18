@@ -3,31 +3,26 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoginMutation } from '../../features/auth/authApi';
 import LoginForm from '../../features/auth/components/LoginForm';
-import { Snackbar, Alert, Box, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+
+import { useToast } from '../../utils/ToastContext';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();
 	const navigate = useNavigate();
-	const [openSnackbar, setOpenSnackbar] = React.useState(false);
-	const [snackbarMessage, setSnackbarMessage] = React.useState('');
-	const [snackbarSeverity, setSnackbarSeverity] = React.useState('success');
-
-	const handleCloseSnackbar = () => setOpenSnackbar(false);
+	const { showToast } = useToast();
 
 	const onSubmit = async (values) => {
 		try {
 			await login(values).unwrap();
-			setSnackbarMessage('Вы успешно вошли в систему!');
-			setSnackbarSeverity('success');
-			setOpenSnackbar(true);
+			showToast('Вы успешно вошли в систему!', 'success');
 			navigate('/');
 		} catch (error) {
-			setSnackbarMessage(
-				error.data?.message || 'Неверное имя пользователя или пароль'
+			showToast(
+				error.data?.message || 'Неверное имя пользователя или пароль',
+				'error'
 			);
-			setSnackbarSeverity('error');
-			setOpenSnackbar(true);
 		}
 	};
 
@@ -72,34 +67,6 @@ const LoginPage = () => {
 					</Link>
 				</Typography>
 			</Box>
-			<Snackbar
-				open={openSnackbar}
-				autoHideDuration={6000}
-				onClose={handleCloseSnackbar}
-				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-				sx={{
-					'& .MuiSnackbarContent-root': {
-						borderRadius: '8px',
-						boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
-					},
-				}}>
-				<Alert
-					onClose={handleCloseSnackbar}
-					severity={snackbarSeverity}
-					sx={{
-						width: '100%',
-						borderRadius: '8px',
-						bgcolor:
-							snackbarSeverity === 'success' ? 'success.light' : 'error.light',
-						color:
-							snackbarSeverity === 'success'
-								? 'success.contrastText'
-								: 'error.contrastText',
-						fontWeight: 'medium',
-					}}>
-					{snackbarMessage}
-				</Alert>
-			</Snackbar>
 		</Box>
 	);
 };

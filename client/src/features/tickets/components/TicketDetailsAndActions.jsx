@@ -12,12 +12,12 @@ import {
 	ListItem,
 	ListItemText,
 	CircularProgress,
-	Snackbar,
-	Alert,
 } from '@mui/material';
 import { API_URL } from '../../../constants/constants';
 import { useUpdateTicketMutation } from '../ticketsApi';
 import { useGetUsersQuery } from '../../auth/authApi'; // Предполагаемый хук для получения пользователей
+
+import { useToast } from '../../../utils/ToastContext';
 
 const TicketDetailsAndActions = ({ ticket }) => {
 	const userId = useSelector((state) => state.auth.id);
@@ -25,11 +25,7 @@ const TicketDetailsAndActions = ({ ticket }) => {
 	const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo || '');
 	const [isLoadingStatus, setIsLoadingStatus] = useState(false);
 	const [isLoadingAssignedTo, setIsLoadingAssignedTo] = useState(false);
-	const [alert, setAlert] = useState({
-		open: false,
-		message: '',
-		severity: 'success',
-	});
+	const { showToast } = useToast();
 
 	const [updateTicket] = useUpdateTicketMutation();
 	const { data: users = [], isLoading: usersLoading } = useGetUsersQuery();
@@ -43,19 +39,10 @@ const TicketDetailsAndActions = ({ ticket }) => {
 
 		try {
 			await updateTicket({ id: ticket._id, status: value }).unwrap();
-			setAlert({
-				open: true,
-				message: 'Статус успешно обновлен!',
-				severity: 'success',
-			});
+			showToast('Статус успешно обновлен!', 'success');
 		} catch (error) {
-			console.error('Ошибка при обновлении статуса:', error);
 			setStatus(previousStatus);
-			setAlert({
-				open: true,
-				message: error.data?.message || 'Не удалось обновить статус',
-				severity: 'error',
-			});
+			showToast(error.data?.message || 'Не удалось обновить статус');
 		} finally {
 			setIsLoadingStatus(false);
 		}
@@ -85,11 +72,7 @@ const TicketDetailsAndActions = ({ ticket }) => {
 			setIsLoadingAssignedTo(false);
 		}
 	};
-
-	const handleCloseAlert = () => {
-		setAlert({ ...alert, open: false });
-	};
-
+	
 	// Фильтруем пользователей, исключая создателя заявки
 	const availableUsers = users.filter(
 		(user) => user._id !== ticket?.author?._id
@@ -193,24 +176,6 @@ const TicketDetailsAndActions = ({ ticket }) => {
 						)}
 					</FormControl>
 				)}
-
-				<Snackbar
-					open={alert.open}
-					autoHideDuration={6000}
-					onClose={handleCloseAlert}
-					anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-					<Alert
-						onClose={handleCloseAlert}
-						severity={alert.severity}
-						sx={{
-							width: '100%',
-							borderRadius: 2,
-							bgcolor:
-								alert.severity === 'success' ? 'success.light' : 'error.light',
-						}}>
-						{alert.message}
-					</Alert>
-				</Snackbar>
 			</Box>
 		</Card>
 	);
