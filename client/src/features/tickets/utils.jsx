@@ -1,77 +1,56 @@
-import { Link } from 'react-router-dom';
-import { Badge, Box } from '@mui/material';
-import { Inbox } from '@mui/icons-material';
-
-export const formatMenuItems = (
-	tickets = [],
+export const filterTickets = (
+	tickets,
 	userId,
-	newMessages = {},
-	notifications = []
+	isCreatedTab,
+	search,
+	statusFilter,
+	priorityFilter
 ) => {
-	const sortByDate = (ticketList) =>
-		ticketList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+	return tickets.filter((ticket) => {
+		// Tab filter: Created (author) vs Received (assigned)
+		const matchesTab = isCreatedTab
+			? ticket.author?._id === userId
+			: ticket.assignedTo?._id === userId;
 
-	const getChildren = (ticketList) => {
-		return ticketList.length > 0
-			? ticketList.map((t) => ({
-					key: t._id,
-					label: (
-						<Box sx={{ display: 'flex', alignItems: 'center' }}>
-							<Link
-								to={`/tickets/${t._id}`}
-								style={{ textDecoration: 'none', color: 'inherit' }}>
-								{t.title}
-							</Link>
-							{newMessages[t._id] > 0 && (
-								<Badge
-									badgeContent={newMessages[t._id]}
-									color="error"
-									sx={{ ml: 0.5 }} // Аналог marginLeft: 5
-								/>
-							)}
-						</Box>
-					),
-			  }))
-			: [
-					{
-						key: 'empty',
-						label: (
-							<Box sx={{ display: 'flex', alignItems: 'center' }}>
-								<Inbox sx={{ mr: 1 }} /> Нет заявок
-							</Box>
-						),
-						disabled: true,
-					},
-			  ];
-	};
+		// Search filter: Match title
+		const matchesSearch = ticket.title
+			.toLowerCase()
+			.includes(search.toLowerCase());
 
-	const assignedTickets = tickets.filter((t) => t.assignedTo?._id === userId);
+		// Status filter
+		const matchesStatus =
+			statusFilter === 'Все статусы' || ticket.status === statusFilter;
 
-	const openTickets = sortByDate(
-		assignedTickets.filter((t) => t.status === 'Открыта')
-	);
-	const inProgressTickets = sortByDate(
-		assignedTickets.filter((t) => t.status === 'В работе')
-	);
-	const closedTickets = sortByDate(
-		assignedTickets.filter((t) => t.status === 'Закрыта')
-	);
-	const createdTickets = sortByDate(
-		tickets.filter((t) => t.author?._id === userId)
-	);
+		// Priority filter
+		const matchesPriority =
+			priorityFilter === 'Все приоритеты' || ticket.priority === priorityFilter;
 
-	return [
-		{ key: 'open', label: 'Открытые', children: getChildren(openTickets) },
-		{
-			key: 'inProgress',
-			label: 'В работе',
-			children: getChildren(inProgressTickets),
-		},
-		{ key: 'closed', label: 'Закрытые', children: getChildren(closedTickets) },
-		{
-			key: 'created',
-			label: 'Созданные',
-			children: getChildren(createdTickets),
-		},
-	];
+		return matchesTab && matchesSearch && matchesStatus && matchesPriority;
+	});
+};
+
+export const getStatusStyles = (status) => {
+	switch (status) {
+		case 'Открыта':
+			return { bgcolor: '#23B479', color: 'white' }; // Purple
+		case 'В работе':
+			return { bgcolor: '#B9DFF7', color: 'black' }; // Yellow
+		case 'Закрыта':
+			return { bgcolor: '#3B3B3B', color: 'white' }; // Green
+		default:
+			return { bgcolor: 'grey.500', color: 'white' };
+	}
+};
+
+export const getPriorityStyles = (status) => {
+	switch (status) {
+		case 'Низкий':
+			return { bgcolor: '#94C11F', color: 'white' }; // Purple
+		case 'Средний':
+			return { bgcolor: '#F6E05E', color: 'black' }; // Yellow
+		case 'Высокий':
+			return { bgcolor: '#E41616', color: 'white' }; // Green
+		default:
+			return { bgcolor: 'grey.500', color: 'white' };
+	}
 };

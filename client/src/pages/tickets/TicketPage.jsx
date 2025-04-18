@@ -71,20 +71,23 @@ const TicketPage = () => {
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
-			sx={{ maxWidth: 800, mx: 'auto', mt: 3 }}>
+			sx={{ mx: 'auto', mt: 3 }}>
 			<Card sx={{ boxShadow: 3 }}>
 				<CardHeader
 					title={`Заявка: ${ticketDetails.title}`}
 					titleTypographyProps={{ fontWeight: 600 }}
 				/>
-				<CardContent>
-					<TicketDetails ticket={ticketDetails} />
-					<TicketActions
-						ticket={ticketDetails}
-						onAssign={assignTicket}
-						onAccept={acceptTicket}
-						onComplete={completeTicket}
-					/>
+				<CardContent sx={{ display: 'flex' }}>
+					<div>
+						<TicketDetails ticket={ticketDetails} />
+						<TicketActions
+							ticket={ticketDetails}
+							onAssign={assignTicket}
+							onAccept={acceptTicket}
+							onComplete={completeTicket}
+						/>
+					</div>
+
 					{ticketDetails.status !== 'Открыта' && (
 						<TicketChat
 							messages={messages}

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/actions/authActions';
 import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
 import { useSocket } from '../hooks/useSocket';
 import { useNotifications } from '../hooks/useNotifications';
-import { formatMenuItems } from '../features/tickets/utils';
 import { Box, CssBaseline, useMediaQuery, Skeleton } from '@mui/material';
 
 import Header from '../components/layout/Header';
@@ -14,7 +13,6 @@ import Sidebar from '../components/layout/Sidebar';
 const MainLayout = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const location = useLocation();
 	const userId = useSelector((state) => state.auth.id);
 	const { data: userTickets = [], isLoading } = useGetUserTicketsQuery(userId);
 	const { notifications: socketNotifications } = useSocket(null, userId);
@@ -32,22 +30,6 @@ const MainLayout = () => {
 		navigate('/auth/login');
 	};
 
-	const combinedNotifications = {
-		...socketNotifications,
-		...(apiNotifications?.reduce((acc, notif) => {
-			acc[notif.ticket._id] = (acc[notif.ticket._id] || 0) + 1;
-			return acc;
-		}, {}) || {}),
-	};
-
-	const menuItems = formatMenuItems(
-		userTickets,
-		userId,
-		combinedNotifications,
-		apiNotifications
-	);
-	const currentTicketId = location.pathname.split('/tickets/')[1];
-
 	if (isLoading) {
 		return (
 			<Box
@@ -59,7 +41,7 @@ const MainLayout = () => {
 				{!isMobile && (
 					<Skeleton
 						variant="rectangular"
-						width={isTablet ? 180 : 200}
+						width={isTablet ? 180 : 255}
 						height="100%"
 						sx={{ mt: '64px' }}
 					/>
@@ -92,26 +74,18 @@ const MainLayout = () => {
 				bgcolor: 'background.default',
 			}}>
 			<CssBaseline />
-			<Header
-				onLogout={handleLogout}
-				handleDrawerToggle={isMobile ? handleDrawerToggle : null}
-			/>
+			<Header handleDrawerToggle={isMobile ? handleDrawerToggle : null} />
 			<Sidebar
-				items={menuItems}
-				selectedKeys={[currentTicketId]}
-				onItemClick={(key) => {
-					navigate(`/tickets/${key}`);
-					if (isMobile) setMobileOpen(false);
-				}}
+				onLogout={handleLogout}
 				drawerProps={{
 					variant: isMobile ? 'temporary' : 'permanent',
 					open: isMobile ? mobileOpen : true,
 					onClose: handleDrawerToggle,
 					sx: {
-						width: isTablet ? 180 : 200,
+						width: isTablet ? 180 : 255,
 						flexShrink: 0,
 						'& .MuiDrawer-paper': {
-							width: isTablet ? 180 : isMobile ? 240 : 200,
+							width: isTablet ? 180 : isMobile ? 240 : 255,
 							boxSizing: 'border-box',
 							mt: isMobile ? 0 : '64px',
 							height: isMobile ? '100%' : 'calc(100% - 64px)',
@@ -127,7 +101,10 @@ const MainLayout = () => {
 					mt: '64px',
 					bgcolor: 'background.paper',
 					boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-					width: { xs: '100%', sm: `calc(100% - ${isTablet ? 180 : 200}px)` },
+					width: {
+						xs: '100%',
+						sm: `calc(100% - ${isTablet ? 180 : 255}px)`,
+					},
 				}}>
 				<Outlet />
 			</Box>
