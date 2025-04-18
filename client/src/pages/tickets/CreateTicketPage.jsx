@@ -1,50 +1,29 @@
 import React, { useState } from 'react';
-import {
-	Card,
-	CardHeader,
-	CardContent,
-	Button,
-	Box,
-	Snackbar,
-	Alert,
-} from '@mui/material';
+import { Card, CardHeader, CardContent, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
 import { useGetUsersQuery } from '../../features/auth/authApi';
 import TicketForm from '../../features/tickets/components/TicketForm';
 
+import { useToast } from '../../utils/ToastContext';
+
 const CreateTicketPage = () => {
 	const navigate = useNavigate();
 	const [createTicket, { isLoading: createLoading }] =
 		useCreateTicketMutation();
 	const { data: users, isLoading: usersLoading } = useGetUsersQuery();
-	const [alert, setAlert] = useState({
-		open: false,
-		message: '',
-		severity: 'success',
-	});
+	const { showToast } = useToast();
 
 	const handleSubmit = async (values) => {
 		try {
 			const newTicket = await createTicket(values).unwrap();
-			setAlert({
-				open: true,
-				message: 'Заявка успешно создана!',
-				severity: 'success',
-			});
+			showToast('Заявка успешно создана!', 'success');
+
 			navigate(`/tickets/${newTicket._id}`);
 		} catch (error) {
-			setAlert({
-				open: true,
-				message: error.data?.message || 'Ошибка при создании заявки',
-				severity: 'error',
-			});
+			showToast(error.data?.message || 'Ошибка при создании заявки', 'error');
 		}
-	};
-
-	const handleCloseAlert = () => {
-		setAlert({ ...alert, open: false });
 	};
 
 	return (
@@ -73,23 +52,6 @@ const CreateTicketPage = () => {
 					/>
 				</CardContent>
 			</Card>
-			<Snackbar
-				open={alert.open}
-				autoHideDuration={6000}
-				onClose={handleCloseAlert}
-				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-				<Alert
-					onClose={handleCloseAlert}
-					severity={alert.severity}
-					sx={{
-						width: '100%',
-						borderRadius: 2,
-						bgcolor:
-							alert.severity === 'success' ? 'success.light' : 'error.light',
-					}}>
-					{alert.message}
-				</Alert>
-			</Snackbar>
 		</Box>
 	);
 };
