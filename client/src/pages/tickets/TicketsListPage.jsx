@@ -1,54 +1,236 @@
-// src/pages/tickets/TicketsListPage.jsx
-import { Card, List } from 'antd';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetUserTicketsQuery } from '../../features/tickets/ticketsApi';
+import {
+	Box,
+	Typography,
+	TextField,
+	Select,
+	MenuItem,
+	Button,
+	List,
+	ListItem,
+	ListItemText,
+	ListItemButton,
+	Divider,
+	Chip,
+	CircularProgress,
+	Tabs,
+	Tab,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { motion } from 'framer-motion';
+import {
+	filterTickets,
+	getStatusStyles,
+	getPriorityStyles,
+} from '../../features/tickets/utils';
 
 const TicketsListPage = () => {
 	const navigate = useNavigate();
 	const userId = useSelector((state) => state.auth.id);
-	const { data: tickets = [], isLoading: ticketsLoading } =
-		useGetUserTicketsQuery(userId);
+	const { data: tickets = [], isLoading } = useGetUserTicketsQuery(userId);
+	const [search, setSearch] = useState('');
+	const [statusFilter, setStatusFilter] = useState('Все статусы');
+	const [priorityFilter, setPriorityFilter] = useState('Все приоритеты');
+	const [activeTab, setActiveTab] = useState(0);
 
-	const handleCardClick = (ticketId) => {
-		navigate(`/tickets/${ticketId}`);
-	};
-
-	if (ticketsLoading) return <div>Загрузка...</div>;
-
-	const inProgressTickets = tickets.filter(
-		(ticket) =>
-			ticket.status === 'В работе' && ticket.assignedTo?._id === userId
+	// Memoized event handlers
+	const handleCardClick = useCallback(
+		(ticketId) => {
+			navigate(`/tickets/${ticketId}`);
+		},
+		[navigate]
 	);
 
+	const handleCreateTicket = useCallback(() => {
+		navigate('/tickets/create-ticket');
+	}, [navigate]);
+
+	const handleTabChange = useCallback((event, newValue) => {
+		setActiveTab(newValue);
+	}, []);
+
+	// Filtered tickets based on tab, search, and filters
+	const filteredTickets = useMemo(() => {
+		return filterTickets(
+			tickets,
+			userId,
+			activeTab === 1, // true for "Созданные", false for "Полученные"
+			search,
+			statusFilter,
+			priorityFilter
+		);
+	}, [tickets, userId, activeTab, search, statusFilter, priorityFilter]);
+
+	if (isLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					minHeight: '100vh',
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Загрузка заявок...</Typography>
+			</Box>
+		);
+	}
+
 	return (
-		<div style={{ padding: '20px' }}>
-			<h2>Заявки в работе</h2>
-			<List
-				grid={{ gutter: 16, column: 3 }}
-				dataSource={inProgressTickets}
-				renderItem={(ticket) => (
-					<List.Item>
-						<Card
-							title={ticket.title}
-							extra={<span>{ticket.status}</span>}
-							hoverable
-							onClick={() => handleCardClick(ticket._id)}>
-							<p>
-								<strong>Автор:</strong> {ticket.author?.username}
-							</p>
-							<p>
-								<strong>Исполнитель:</strong> {ticket.assignedTo?.username}
-							</p>
-							<p>
-								<strong>Дата создания:</strong>{' '}
-								{new Date(ticket.createdAt).toLocaleDateString()}
-							</p>
-						</Card>
-					</List.Item>
-				)}
-			/>
-		</div>
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.4, ease: 'easeInOut' }}
+			sx={{ p: { xs: 2, sm: 3 } }}>
+			{/* Header Section */}
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					mb: 3,
+				}}>
+				<Typography variant="h5" fontWeight={600}>
+					Заявки
+				</Typography>
+				<Button
+					variant="contained"
+					startIcon={<AddIcon />}
+					onClick={handleCreateTicket}
+					sx={{
+						borderRadius: '8px',
+					}}>
+					Новая заявка
+				</Button>
+			</Box>
+
+			{/* Tabs */}
+			<Tabs
+				value={activeTab}
+				onChange={handleTabChange}
+				sx={{ mb: 3 }}
+				aria-label="Переключение между созданными и полученными заявками">
+				<Tab label="Полученные" />
+				<Tab label="Созданные" />
+			</Tabs>
+
+			{/* Filters Section */}
+			<Box
+				sx={{
+					display: 'flex',
+					gap: 2,
+					mb: 3,
+					flexWrap: 'wrap',
+				}}>
+				<TextField
+					placeholder="Поиск заявок..."
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					sx={{ flex: '1 1 300px', minWidth: '200px' }}
+				/>
+				<Select
+					value={statusFilter}
+					onChange={(e) => setStatusFilter(e.target.value)}
+					sx={{ width: '200px' }}>
+					<MenuItem value="Все статусы">Все статусы</MenuItem>
+					<MenuItem value="Новая">Новая</MenuItem>
+					<MenuItem value="В работе">В работе</MenuItem>
+					<MenuItem value="Закрыта">Закрыта</MenuItem>
+				</Select>
+				<Select
+					value={priorityFilter}
+					onChange={(e) => setPriorityFilter(e.target.value)}
+					sx={{ width: '200px' }}>
+					<MenuItem value="Все приоритеты">Все приоритеты</MenuItem>
+					<MenuItem value="Низкий">Низкий</MenuItem>
+					<MenuItem value="Средний">Средний</MenuItem>
+					<MenuItem value="Высокий">Высокий</MenuItem>
+				</Select>
+			</Box>
+
+			{/* Tickets List */}
+			{filteredTickets.length === 0 ? (
+				<Typography color="text.secondary" sx={{ mt: 2 }}>
+					Заявки не найдены.
+				</Typography>
+			) : (
+				<List
+					sx={{
+						bgcolor: 'background.paper',
+						borderRadius: '8px',
+						boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+					}}>
+					{filteredTickets.map((ticket, index) => (
+						<React.Fragment key={ticket._id}>
+							<ListItem disablePadding>
+								<ListItemButton
+									onClick={() => handleCardClick(ticket._id)}
+									sx={{
+										'&:hover': {
+											bgcolor: 'grey.100',
+										},
+									}}>
+									<ListItemText
+										primary={
+											<Typography
+												variant="body1"
+												fontWeight={500}
+												sx={{ mb: 0.5 }}>
+												{ticket.title}
+											</Typography>
+										}
+										secondary={
+											<Typography
+												variant="body2"
+												color="text.secondary"
+												sx={{ maxWidth: '60%' }}>
+												{ticket.description || 'Нет описания'}
+											</Typography>
+										}
+									/>
+									<Box
+										sx={{
+											display: 'flex',
+											gap: 2,
+											alignItems: 'center',
+										}}>
+										<Chip
+											label={ticket.status}
+											sx={{
+												...getStatusStyles(ticket.status),
+												borderRadius: '4px',
+												fontWeight: 500,
+											}}
+										/>
+										<Chip
+											label={ticket.priority}
+											sx={{
+												...getPriorityStyles(ticket.priority),
+												borderRadius: '4px',
+												fontWeight: 500,
+											}}
+										/>
+										<Typography
+											variant="body2"
+											color="text.secondary"
+											sx={{ minWidth: '100px', textAlign: 'right' }}>
+											{new Date(ticket.createdAt).toLocaleDateString()}
+										</Typography>
+									</Box>
+								</ListItemButton>
+							</ListItem>
+							{index < filteredTickets.length - 1 && (
+								<Divider sx={{ my: 1, borderColor: 'grey.200' }} />
+							)}
+						</React.Fragment>
+					))}
+				</List>
+			)}
+		</Box>
 	);
 };
 

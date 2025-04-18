@@ -42,6 +42,7 @@ export const ticketsApi = createApi({
 				formData.append('description', ticketData.description);
 				formData.append('category', ticketData.category);
 				formData.append('assignedTo', ticketData.assignedTo);
+				formData.append('priority', ticketData.priority);
 				if (ticketData.files) {
 					ticketData.files.forEach((file) => formData.append('files', file));
 				}

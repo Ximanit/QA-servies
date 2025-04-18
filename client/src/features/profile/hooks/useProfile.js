@@ -1,15 +1,16 @@
 // src/components/features/profile/hooks/useProfile.js
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { message } from 'antd';
 import {
 	useGetProfileQuery,
 	useUpdateProfileMutation,
 } from '../../profile/profileApi';
 import { useGetUserTicketsQuery } from '../../tickets/ticketsApi';
+import { useToast } from '../../../utils/ToastContext';
 
 export const useProfile = () => {
 	const userId = useSelector((state) => state.auth.id);
+
+	const { showToast } = useToast();
 
 	const {
 		data: profileData,
@@ -33,10 +34,11 @@ export const useProfile = () => {
 	const updateProfileData = async (values) => {
 		try {
 			await updateProfile({ id: userId, fio: values.fio }).unwrap();
-			message.success('Профиль успешно обновлен!');
+			showToast('Профиль успешно обновлен!', 'success');
+
 			return true;
 		} catch (error) {
-			message.error('Ошибка при обновлении профиля');
+			showToast('Ошибка при обновлении', 'error');
 			return false;
 		}
 	};

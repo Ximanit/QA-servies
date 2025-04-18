@@ -1,16 +1,12 @@
-// src/pages/tickets/TicketPage.jsx
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Card } from 'antd';
+import { Box, Card, Typography, CircularProgress, Button } from '@mui/material';
+import { motion } from 'framer-motion';
 import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
-import { useTicketStatus } from '../../features/tickets/hooks/useTicketStatus';
-import { useTicketAssignment } from '../../features/tickets/hooks/useTicketAssignment';
-import { useTicketAcceptance } from '../../features/tickets/hooks/useTicketAcceptance';
-import { useTicketNotifications } from '../../features/tickets/hooks/useTicketNotifications';
-import TicketDetails from '../../features/tickets/components/TicketDetails';
+import TicketDetailsAndActions from '../../features/tickets/components/TicketDetailsAndActions';
 import TicketChat from '../../features/tickets/components/TicketChat';
-import TicketActions from '../../features/tickets/components/TicketActions';
 
 const TicketPage = () => {
 	const { id } = useParams();
@@ -23,33 +19,71 @@ const TicketPage = () => {
 		isAdding,
 		sendMessage,
 	} = useTicketMessages(id, userId);
-	const { completeTicket } = useTicketStatus(id);
-	const { assignTicket } = useTicketAssignment(id);
-	const { acceptTicket } = useTicketAcceptance(id);
 
-	useTicketNotifications(id, messages);
+	if (detailsLoading || messagesLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					minHeight: '100vh',
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Загрузка заявки...</Typography>
+			</Box>
+		);
+	}
 
-	if (detailsLoading || messagesLoading) return <div>Загрузка...</div>;
+	if (!ticketDetails) {
+		return (
+			<Card sx={{ maxWidth: 800, mx: 'auto', mt: 3, boxShadow: 3 }}>
+				<Typography variant="h6" sx={{ p: 2 }}>
+					Ошибка
+				</Typography>
+				<Typography color="error" sx={{ p: 2 }}>
+					Заявка не найдена или произошла ошибка при загрузке.
+				</Typography>
+			</Card>
+		);
+	}
 
 	return (
-		<Card title={`Заявка: ${ticketDetails?.title}`}>
-			<TicketDetails ticket={ticketDetails} />
-			<TicketActions
-				ticket={ticketDetails}
-				onAssign={assignTicket}
-				onAccept={acceptTicket}
-				onComplete={completeTicket}
-			/>
-			{ticketDetails?.status !== 'Открыта' && (
-				<TicketChat
-					messages={messages}
-					onSendMessage={sendMessage}
-					userId={userId}
-					isLoading={isAdding}
-					isClosed={ticketDetails?.status === 'Закрыта'} // Передаем флаг закрытия
-				/>
-			)}
-		</Card>
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.4 }}
+			sx={{ maxWidth: 1200, mx: 'auto' }}>
+			<Button
+				variant="text"
+				onClick={() => window.history.back()}
+				sx={{ mb: 2, textTransform: 'none' }}>
+				&lt; Назад
+			</Button>
+
+			<Box
+				sx={{
+					display: 'flex',
+					gap: 3,
+					flexDirection: { xs: 'column', md: 'row' },
+				}}>
+				{/* Левая колонка: Детали и действия */}
+				<Box sx={{ flex: '0 0 300px' }}>
+					<TicketDetailsAndActions ticket={ticketDetails} />
+				</Box>
+				{/* Правая колонка: Чат */}
+				<Box sx={{ flex: 1 }}>
+					<TicketChat
+						messages={messages}
+						onSendMessage={sendMessage}
+						userId={userId}
+						isLoading={isAdding}
+						isClosed={ticketDetails.status === 'Закрыта'}
+					/>
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 

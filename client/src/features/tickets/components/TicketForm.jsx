@@ -1,58 +1,144 @@
-// src/features/tickets/components/TicketForm.jsx
 import React, { useState } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import {
+	Box,
+	TextField,
+	Button,
+	MenuItem,
+	FormControl,
+	InputLabel,
+	Select,
+	Typography,
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
 import FileUploader from '../../../components/Common/FileUploader';
 
 const TicketForm = ({ onSubmit, users, isLoading }) => {
-	const [form] = Form.useForm();
+	const { control, handleSubmit, reset } = useForm({
+		defaultValues: {
+			title: '',
+			category: '',
+			description: '',
+			assignedTo: '',
+			priority: '',
+		},
+	});
 	const [files, setFiles] = useState([]);
 
-	const handleSubmit = (values) => {
+	const onFormSubmit = (values) => {
 		onSubmit({ ...values, files });
-		form.resetFields();
+		reset();
 		setFiles([]);
 	};
 
-	const userOptions = users?.map((user) => ({
-		label: user.username,
-		value: user._id,
-	}));
-
 	return (
-		<Form form={form} onFinish={handleSubmit} layout="vertical">
-			<Form.Item
+		<Box
+			component="form"
+			onSubmit={handleSubmit(onFormSubmit)}
+			sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+			<Controller
 				name="title"
-				label="Заголовок"
-				rules={[{ required: true, message: 'Пожалуйста, введите заголовок!' }]}>
-				<Input />
-			</Form.Item>
-			<Form.Item
+				control={control}
+				rules={{ required: 'Пожалуйста, введите заголовок!' }}
+				render={({ field, fieldState: { error } }) => (
+					<TextField
+						{...field}
+						label="Заголовок"
+						variant="outlined"
+						fullWidth
+						error={!!error}
+						helperText={error?.message}
+					/>
+				)}
+			/>
+			<Controller
 				name="category"
-				label="Категория"
-				rules={[{ required: true, message: 'Выберите категорию!' }]}>
-				<Input />
-			</Form.Item>
-			<Form.Item
+				control={control}
+				rules={{ required: 'Выберите категорию!' }}
+				render={({ field, fieldState: { error } }) => (
+					<TextField
+						{...field}
+						label="Категория"
+						variant="outlined"
+						fullWidth
+						error={!!error}
+						helperText={error?.message}
+					/>
+				)}
+			/>
+			<Controller
 				name="description"
-				label="Описание"
-				rules={[{ required: true, message: 'Введите описание!' }]}>
-				<Input.TextArea rows={4} />
-			</Form.Item>
-			<Form.Item
-				name="assignedTo"
-				label="Исполнитель"
-				rules={[{ required: true, message: 'Выберите исполнителя!' }]}>
-				<Select options={userOptions} placeholder="Выберите исполнителя" />
-			</Form.Item>
-			<Form.Item label="Файлы">
+				control={control}
+				rules={{ required: 'Введите описание!' }}
+				render={({ field, fieldState: { error } }) => (
+					<TextField
+						{...field}
+						label="Описание"
+						multiline
+						rows={4}
+						variant="outlined"
+						fullWidth
+						error={!!error}
+						helperText={error?.message}
+					/>
+				)}
+			/>
+			<FormControl>
+				<InputLabel>Исполнитель</InputLabel>
+				<Controller
+					name="assignedTo"
+					control={control}
+					rules={{ required: 'Выберите исполнителя!' }}
+					render={({ field, fieldState: { error } }) => (
+						<Select
+							{...field}
+							label="Исполнитель"
+							variant="outlined"
+							fullWidth
+							error={!!error}>
+							{users?.map((user) => (
+								<MenuItem key={user._id} value={user._id}>
+									{user.username}
+								</MenuItem>
+							))}
+						</Select>
+					)}
+				/>
+			</FormControl>
+			<FormControl>
+				<InputLabel>Приоритет</InputLabel>
+				<Controller
+					name="priority"
+					control={control}
+					rules={{ required: 'Выберите приоритет!' }}
+					render={({ field, fieldState: { error } }) => (
+						<Select
+							{...field}
+							label="Приоритет"
+							variant="outlined"
+							fullWidth
+							error={!!error}>
+							<MenuItem value="Низкий">Низкий</MenuItem>
+							<MenuItem value="Средний">Средний</MenuItem>
+							<MenuItem value="Высокий">Высокий</MenuItem>
+						</Select>
+					)}
+				/>
+			</FormControl>
+			<Box>
+				<Typography variant="body1" gutterBottom>
+					Файлы
+				</Typography>
 				<FileUploader onFilesChange={setFiles} />
-			</Form.Item>
-			<Form.Item>
-				<Button type="primary" htmlType="submit" loading={isLoading}>
-					{isLoading ? 'Создание...' : 'Создать'}
-				</Button>
-			</Form.Item>
-		</Form>
+			</Box>
+			<Button
+				type="submit"
+				variant="contained"
+				color="primary"
+				disabled={isLoading}
+				sx={{ alignSelf: 'flex-start' }}>
+				{isLoading ? 'Создание...' : 'Создать'}
+			</Button>
+		</Box>
 	);
 };
 

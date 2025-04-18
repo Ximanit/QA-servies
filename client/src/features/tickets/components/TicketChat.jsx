@@ -1,7 +1,14 @@
-// src/components/features/tickets/components/TicketChat.jsx
-import React, { useState } from 'react';
-import { Form, Button, List, Input } from 'antd';
-import FileUploader from '../../../components/Common/FileUploader';
+import React, { useRef, useEffect } from 'react';
+import {
+	Box,
+	Card,
+	Typography,
+	List,
+	ListItem,
+	TextField,
+	Button,
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
 
 const TicketChat = ({
 	messages,
@@ -10,73 +17,122 @@ const TicketChat = ({
 	isLoading,
 	isClosed,
 }) => {
-	const [form] = Form.useForm();
-	const [files, setFiles] = useState([]);
+	const { control, handleSubmit, reset } = useForm();
+	const messagesEndRef = useRef(null); // Ref для контейнера сообщений
 
-	const handleSubmit = (values) => {
-		onSendMessage({ content: values.content, files });
-		form.resetFields();
-		setFiles([]);
+	// Прокрутка к последнему сообщению
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollTo({
+			top: messagesEndRef.current.scrollHeight,
+			behavior: 'smooth',
+		});
+	};
+
+	// Прокручиваем при загрузке и изменении messages
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages]);
+
+	const onSubmit = (values) => {
+		onSendMessage({ content: values.content });
+		reset();
+		// Прокрутка после отправки нового сообщения (если нужно)
+		setTimeout(scrollToBottom, 100); // Небольшая задержка для рендеринга нового сообщения
 	};
 
 	return (
-		<div style={{ marginTop: 20 }}>
-			<h3>Чат</h3>
+		<Card sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+			<Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+				Обсуждение заявки
+			</Typography>
 			<List
-				dataSource={messages}
-				renderItem={(msg) => (
-					<List.Item
-						style={{
-							background: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
-							margin: 5,
-							padding: 10,
+				ref={messagesEndRef} // Привязываем ref к List
+				sx={{
+					maxHeight: 400,
+					overflowY: 'auto',
+					bgcolor: 'grey.50',
+					borderRadius: 1,
+					p: 2,
+				}}>
+				{messages.map((msg) => (
+					<ListItem
+						key={msg._id}
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: msg.author._id === userId ? 'flex-end' : 'flex-start',
+							p: 0.5,
+							bgcolor: 'transparent',
 						}}>
-						<p>
-							<strong>{msg.author.username}:</strong> {msg.content}
-						</p>
-						{msg.files?.length > 0 && (
-							<div>
-								{msg.files.map((file) => (
-									<a
-										key={file.filename}
-										href={`${API_URL}/uploads/${file.filename}`}
-										target="_blank"
-										rel="noopener noreferrer">
-										{file.filename}
-									</a>
-								))}
-							</div>
-						)}
-						<small>{new Date(msg.createdAt).toLocaleTimeString()}</small>
-					</List.Item>
-				)}
-			/>
+						<Box
+							sx={{
+								display: 'inline-block',
+								bgcolor: msg.author._id === userId ? '#e6f7ff' : '#f5f5f5',
+								borderRadius: 2,
+								p: 1,
+								maxWidth: '70%',
+							}}>
+							<Typography variant="body1" color="text.primary">
+								{msg.content}
+							</Typography>
+						</Box>
+						<Typography
+							variant="caption"
+							color="text.secondary"
+							sx={{
+								mt: 0.5,
+								textAlign: msg.author._id === userId ? 'right' : 'left',
+							}}>
+							<strong>{msg.author.username}</strong> ·{' '}
+							{new Date(msg.createdAt).toLocaleTimeString()}
+						</Typography>
+					</ListItem>
+				))}
+			</List>
 			{!isClosed ? (
-				<Form
-					form={form}
-					onFinish={handleSubmit}
-					layout="vertical"
-					style={{ marginTop: 20 }}>
-					<Form.Item
+				<Box
+					component="form"
+					onSubmit={handleSubmit(onSubmit)}
+					sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+					<Controller
 						name="content"
-						rules={[{ required: true, message: 'Введите сообщение!' }]}>
-						<Input.TextArea rows={4} placeholder="Введите сообщение" />
-					</Form.Item>
-					<Form.Item>
-						<FileUploader onFilesChange={setFiles} />
-					</Form.Item>
-					<Form.Item>
-						<Button type="primary" htmlType="submit" loading={isLoading}>
-							Отправить
-						</Button>
-					</Form.Item>
-				</Form>
+						control={control}
+						defaultValue=""
+						rules={{ required: 'Введите сообщение!' }}
+						render={({ field, fieldState: { error } }) => (
+							<TextField
+								{...field}
+								placeholder="Введите сообщение..."
+								multiline
+								rows={4}
+								variant="outlined"
+								fullWidth
+								error={!!error}
+								helperText={error?.message}
+								sx={{
+									'& .MuiOutlinedInput-root': {
+										borderRadius: 2,
+										bgcolor: 'background.paper',
+									},
+								}}
+							/>
+						)}
+					/>
+					<Button
+						type="submit"
+						variant="contained"
+						color="primary"
+						disabled={isLoading}
+						sx={{ alignSelf: 'flex-start', borderRadius: 2 }}>
+						{isLoading ? 'Отправка...' : 'Отправить'}
+					</Button>
+				</Box>
 			) : (
-				<p style={{ marginTop: 10, color: '#888' }}>
+				<Typography sx={{ mt: 2, color: 'success.main' }}>
 					Заявка закрыта. Чат доступен только для просмотра.
-				</p>
+				</Typography>
 			)}
-		</div>
+		</Card>
 	);
 };
 

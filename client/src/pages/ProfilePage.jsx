@@ -1,6 +1,13 @@
-// src/pages/ProfilePage.jsx
 import React from 'react';
-import { Card, Spin } from 'antd';
+import {
+	Box,
+	Card,
+	CardHeader,
+	CardContent,
+	CircularProgress,
+	Typography,
+} from '@mui/material';
+import { motion } from 'framer-motion';
 import { useProfile } from '../features/profile/hooks/useProfile';
 import ProfileForm from '../features/profile/components/ProfileForm';
 
@@ -17,51 +24,84 @@ const ProfilePage = () => {
 	} = useProfile();
 
 	if (isLoading) {
-		return <Spin tip="Загрузка профиля..." />;
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					minHeight: '100vh',
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Загрузка профиля...</Typography>
+			</Box>
+		);
 	}
 
 	if (profileError) {
 		return (
-			<Card title="Ошибка">
-				<p>
-					Не удалось загрузить профиль: {profileError.status} -{' '}
-					{profileError.data?.message || 'Неизвестная ошибка'}
-				</p>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
+				<CardHeader title="Ошибка" />
+				<CardContent>
+					<Typography color="error">
+						Не удалось загрузить профиль: {profileError.status} -{' '}
+						{profileError.data?.message || 'Неизвестная ошибка'}
+					</Typography>
+				</CardContent>
 			</Card>
 		);
 	}
 
 	if (ticketsError) {
 		return (
-			<Card title="Ошибка">
-				<p>
-					Не удалось загрузить заявки: {ticketsError.status} -{' '}
-					{ticketsError.data?.message || 'Неизвестная ошибка'}
-				</p>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
+				<CardHeader title="Ошибка" />
+				<CardContent>
+					<Typography color="error">
+						Не удалось загрузить заявки: {ticketsError.status} -{' '}
+						{ticketsError.data?.message || 'Неизвестная ошибка'}
+					</Typography>
+				</CardContent>
 			</Card>
 		);
 	}
 
 	if (!profile) {
 		return (
-			<Card title="Ошибка">
-				<p>Данные профиля не найдены. Проверьте авторизацию.</p>
+			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
+				<CardHeader title="Ошибка" />
+				<CardContent>
+					<Typography color="error">
+						Данные профиля не найдены. Проверьте авторизацию.
+					</Typography>
+				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
-		<Card
-			title="Профиль пользователя"
-			style={{ maxWidth: 600, margin: '20px auto' }}>
-			<ProfileForm
-				profile={profile}
-				createdTicketsCount={createdTicketsCount}
-				completedTicketsCount={completedTicketsCount}
-				onUpdate={updateProfile}
-				updateLoading={updateLoading}
-			/>
-		</Card>
+		<Box
+			component={motion.div}
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.4, ease: 'easeInOut' }}
+			sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
+			<Card sx={{ boxShadow: 3 }}>
+				<CardHeader
+					title="Профиль пользователя"
+					titleTypographyProps={{ fontWeight: 600 }}
+				/>
+				<CardContent>
+					<ProfileForm
+						profile={profile}
+						createdTicketsCount={createdTicketsCount}
+						completedTicketsCount={completedTicketsCount}
+						onUpdate={updateProfile}
+						updateLoading={updateLoading}
+					/>
+				</CardContent>
+			</Card>
+		</Box>
 	);
 };
 
