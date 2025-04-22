@@ -35,18 +35,16 @@ const mainRoutes = [
 export const router = createBrowserRouter([
 	{
 		path: '/',
-		element: <MainLayout />,
-		errorElement: (
-			<Suspense fallback={<div>Загрузка...</div>}>
-				<NotFound />
-			</Suspense>
+		element: (
+			<ProtectedRoute>
+				<MainLayout />
+			</ProtectedRoute>
 		),
+		errorElement: <NotFound />,
 		children: mainRoutes.map((route) => ({
 			...route,
 			element: route.protected ? (
-				<ProtectedRoute>
-					<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
-				</ProtectedRoute>
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
 			) : (
 				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
 			),

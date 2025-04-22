@@ -2,6 +2,9 @@
 import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+
+import { CircularProgress } from '@mui/material';
+
 import { logoutUser } from '../../store/actions/authActions';
 import { useGetProfileQuery } from '../../features/profile/profileApi'; // Для проверки токена
 
@@ -28,7 +31,12 @@ const ProtectedRoute = ({ children }) => {
 	}, [token, error, dispatch, navigate]);
 
 	if (isLoading) {
-		return <div>Проверка авторизации...</div>;
+		return (
+			<CircularProgress
+				size={20}
+				sx={{ position: 'absolute', right: 10, top: 18 }}
+			/>
+		);
 	}
 
 	if (!token || (error && error.status === 401)) {

@@ -15,14 +15,13 @@ import {
 } from '@mui/material';
 import { API_URL } from '../../../constants/constants';
 import { useUpdateTicketMutation } from '../ticketsApi';
-import { useGetUsersQuery } from '../../auth/authApi'; // Предполагаемый хук для получения пользователей
-
+import { useGetUsersQuery } from '../../auth/authApi';
 import { useToast } from '../../../utils/ToastContext';
 
 const TicketDetailsAndActions = ({ ticket }) => {
 	const userId = useSelector((state) => state.auth.id);
 	const [status, setStatus] = useState(ticket?.status || 'Новая');
-	const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo || '');
+	const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo?._id || '');
 	const [isLoadingStatus, setIsLoadingStatus] = useState(false);
 	const [isLoadingAssignedTo, setIsLoadingAssignedTo] = useState(false);
 	const { showToast } = useToast();
@@ -30,7 +29,7 @@ const TicketDetailsAndActions = ({ ticket }) => {
 	const [updateTicket] = useUpdateTicketMutation();
 	const { data: users = [], isLoading: usersLoading } = useGetUsersQuery();
 
-	const isCurrentAssignee = ticket?.assignedTo._id === userId;
+	const isCurrentAssignee = ticket?.assignedTo?._id === userId;
 
 	const handleStatusChange = async (value) => {
 		const previousStatus = status;
@@ -55,25 +54,17 @@ const TicketDetailsAndActions = ({ ticket }) => {
 
 		try {
 			await updateTicket({ id: ticket._id, assignedTo: value }).unwrap();
-			setAlert({
-				open: true,
-				message: 'Исполнитель успешно обновлен!',
-				severity: 'success',
-			});
+			showToast('Исполнитель успешно обновлен!', 'success');
+			window.history.back();
 		} catch (error) {
 			console.error('Ошибка при обновлении исполнителя:', error);
 			setAssignedTo(previousAssignedTo);
-			setAlert({
-				open: true,
-				message: error.data?.message || 'Не удалось обновить исполнителя',
-				severity: 'error',
-			});
+			showToast(error.data?.message || 'Не удалось обновить исполнителя');
 		} finally {
 			setIsLoadingAssignedTo(false);
 		}
 	};
-	
-	// Фильтруем пользователей, исключая создателя заявки
+
 	const availableUsers = users.filter(
 		(user) => user._id !== ticket?.author?._id
 	);
