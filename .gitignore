@@ -131,4 +131,6 @@ dist
 
 uploads
 
+config.js
+
 .env

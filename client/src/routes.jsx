@@ -1,70 +1,60 @@
+// src/routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
-
+import { lazy, Suspense } from 'react';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
+import ProtectedRoute from './components/Common/ProtectedRoute';
 
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
+const TicketPage = lazy(() => import('./pages/tickets/TicketPage'));
+const CreateTicketPage = lazy(() => import('./pages/tickets/CreateTicketPage'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const TicketsListPage = lazy(() => import('./pages/tickets/TicketsListPage'));
+const StatsPage = lazy(() => import('./pages/StatsPage'));
 
-import QuestionPage from './pages/QuestionPage';
-import CreateQuestionPage from './pages/CreateQuestionPage';
-import NotFound from './pages/NotFound';
-import EmptyPage from './pages/EmptyPage';
+const authRoutes = [
+	{ path: 'login', element: <LoginPage /> },
+	{ path: 'register', element: <RegisterPage /> },
+];
 
-import ProtectedRoute from './components/ProtectedRoute';
-import ProfilePage from './pages/ProfilePage';
+const mainRoutes = [
+	{ index: true, element: <TicketsListPage /> },
+	{ path: 'tickets/:id', element: <TicketPage />, protected: true },
+	{
+		path: 'tickets/create-ticket',
+		element: <CreateTicketPage />,
+		protected: true,
+	},
+	{ path: 'profile', element: <ProfilePage />, protected: true },
+	{ path: 'stats', element: <StatsPage />, protected: true },
+];
 
 export const router = createBrowserRouter([
 	{
 		path: '/',
-		element: <MainLayout />,
+		element: (
+			<ProtectedRoute>
+				<MainLayout />
+			</ProtectedRoute>
+		),
 		errorElement: <NotFound />,
-		children: [
-			{
-				errorElement: <NotFound />,
-				children: [
-					{ index: true, element: <EmptyPage /> },
-					{
-						path: 'questions/:id',
-						element: (
-							<ProtectedRoute>
-								<QuestionPage />
-							</ProtectedRoute>
-						),
-					},
-					{
-						path: 'questions/create-question',
-						element: (
-							<ProtectedRoute>
-								<CreateQuestionPage />
-							</ProtectedRoute>
-						),
-					},
-					{
-						path: 'profile',
-						element: (
-							<ProtectedRoute>
-								<ProfilePage />
-							</ProtectedRoute>
-						),
-					},
-				],
-			},
-		],
+		children: mainRoutes.map((route) => ({
+			...route,
+			element: (
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+			),
+		})),
 	},
 	{
 		path: '/auth',
 		element: <AuthLayout />,
-		errorElement: <NotFound />,
-		children: [
-			{
-				path: 'login',
-				element: <LoginPage />,
-			},
-			{
-				path: 'register',
-				element: <RegisterPage />,
-			},
-		],
+		children: authRoutes.map((route) => ({
+			...route,
+			element: (
+				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
+			),
+		})),
 	},
 ]);

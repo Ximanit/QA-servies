@@ -1,26 +1,36 @@
 import React from 'react';
-import { Layout, Card } from 'antd';
 import { Outlet } from 'react-router-dom';
+import { Box, CssBaseline, Typography } from '@mui/material';
 
-const { Content } = Layout;
-
-const AuthLayout = ({ children }) => {
+const AuthLayout = () => {
 	return (
-		<Layout
-			style={{
-				minHeight: '100vh',
-			}}>
-			<Content
-				style={{
+		<Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+			<CssBaseline />
+			<Box
+				component="main"
+				sx={{
 					display: 'flex',
 					justifyContent: 'center',
 					alignItems: 'center',
+					p: { xs: 2, sm: 3 },
+
+					minHeight: '100vh ',
+					bgcolor: 'background.paper',
+					boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
 				}}>
-				<Card style={{ width: 400, textAlign: 'center', padding: '20px' }}>
+				<Box
+					sx={{
+						width: { xs: '100%', sm: '80%', md: '50%' },
+						maxWidth: 600,
+						p: { xs: 2, sm: 4 },
+						bgcolor: 'background.paper',
+						borderRadius: 2,
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+					}}>
 					<Outlet />
-				</Card>
-			</Content>
-		</Layout>
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 
