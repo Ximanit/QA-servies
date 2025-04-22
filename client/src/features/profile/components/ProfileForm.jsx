@@ -147,7 +147,7 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 								/>
 							</>
 						)}
-						//TODO надо прикруть API для смены пароля
+						{/* //TODO надо прикруть API для смены пароля */}
 						{tabValue === 1 && (
 							<>
 								<Controller
