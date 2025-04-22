@@ -3,20 +3,15 @@ import {
 	Box,
 	TextField,
 	Button,
-	FormControl,
-	FormLabel,
-	FormHelperText,
 	Typography,
+	Tabs,
+	Tab,
+	Card,
+	CardContent,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 
-const ProfileForm = ({
-	profile,
-	createdTicketsCount,
-	completedTicketsCount,
-	onUpdate,
-	updateLoading,
-}) => {
+const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 	const {
 		control,
 		handleSubmit,
@@ -25,114 +20,232 @@ const ProfileForm = ({
 	} = useForm({
 		defaultValues: {
 			fio: profile?.fio || '',
+			email: profile?.email || '',
+			currentPassword: '',
+			newPassword: '',
+			confirmNewPassword: '',
 		},
 	});
-	const [isEditing, setIsEditing] = useState(false);
+
+	const [tabValue, setTabValue] = useState(0);
 
 	useEffect(() => {
 		reset({
 			fio: profile?.fio || '',
+			email: profile?.email || '',
+			currentPassword: '',
+			newPassword: '',
+			confirmNewPassword: '',
 		});
 	}, [profile, reset]);
 
 	const onSubmit = async (values) => {
 		const success = await onUpdate(values);
 		if (success) {
-			setIsEditing(false);
+			reset(values); // Сохраняем новые значения в форме
 		}
 	};
 
-	const onCancel = () => {
-		reset({
-			fio: profile?.fio || '',
-		});
-		setIsEditing(false);
-	};
-
-	const onEdit = () => {
-		setIsEditing(true);
+	const handleTabChange = (event, newValue) => {
+		setTabValue(newValue);
 	};
 
 	return (
-		<Box
-			component="form"
-			onSubmit={handleSubmit(onSubmit)}
-			sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-			<FormControl disabled={!isEditing} error={!!errors.fio}>
-				<FormLabel sx={{ color: 'text.primary' }}>ФИО</FormLabel>
-				<Controller
-					name="fio"
-					control={control}
-					rules={{ required: 'Введите ваше ФИО!' }}
-					render={({ field }) => (
-						<TextField
-							{...field}
-							placeholder="Фамилия Имя Отчество"
-							variant="outlined"
-							size="small"
-							fullWidth
-							disabled={!isEditing}
-							sx={{
-								'& .MuiOutlinedInput-root': {
-									borderRadius: '8px',
-									bgcolor: isEditing ? 'background.paper' : 'grey.100',
-								},
-							}}
-						/>
-					)}
+		<Box>
+			<Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
+				<Tab
+					label="Общие настройки"
+					sx={{
+						textTransform: 'none',
+						color: tabValue === 0 ? '#1976d2' : 'text.secondary',
+					}}
 				/>
-				{errors.fio && (
-					<FormHelperText sx={{ color: 'error.main' }}>
-						{errors.fio.message}
-					</FormHelperText>
-				)}
-			</FormControl>
+				<Tab
+					label="Безопасность"
+					sx={{
+						textTransform: 'none',
+						color: tabValue === 1 ? '#1976d2' : 'text.secondary',
+					}}
+				/>
+			</Tabs>
+			<Card
+				sx={{
+					flex: '1 1 300px',
+					borderRadius: '8px',
+					border: '1px solid #e0e0e0',
+				}}>
+				<CardContent>
+					{tabValue === 0 ? (
+						<>
+							<Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+								Общие настройки
+							</Typography>
+							<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+								Обновите свою личную информацию
+							</Typography>
+						</>
+					) : (
+						<>
+							<Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+								Безопасность
+							</Typography>
+							<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+								Управляйте паролем и настройками безопасности
+							</Typography>
+						</>
+					)}
 
-			<FormControl>
-				<FormLabel sx={{ color: 'text.primary' }}>
-					Количество созданных заявок
-				</FormLabel>
-				<Typography variant="body1" color="text.primary">
-					{createdTicketsCount || 0}
-				</Typography>
-			</FormControl>
-
-			<FormControl>
-				<FormLabel sx={{ color: 'text.primary' }}>
-					Количество выполненных заявок
-				</FormLabel>
-				<Typography variant="body1">{completedTicketsCount || 0}</Typography>
-			</FormControl>
-
-			<Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-				{isEditing ? (
-					<>
-						<Button
-							variant="outlined"
-							color="secondary"
-							onClick={onCancel}
-							sx={{ minWidth: 120, borderRadius: 1 }}>
-							Отменить
-						</Button>
+					<Box
+						component="form"
+						onSubmit={handleSubmit(onSubmit)}
+						sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+						{tabValue === 0 && (
+							<>
+								<Controller
+									name="fio"
+									control={control}
+									rules={{ required: 'Введите ваше имя!' }}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											placeholder="Имя"
+											variant="outlined"
+											fullWidth
+											error={!!errors.fio}
+											helperText={errors.fio?.message}
+											sx={{
+												'& .MuiOutlinedInput-root': {
+													borderRadius: '8px',
+													'& fieldset': { borderColor: '#e0e0e0' },
+												},
+												'& .MuiInputBase-input': { padding: '12px 14px' },
+											}}
+										/>
+									)}
+								/>
+								<Controller
+									name="email"
+									control={control}
+									rules={{ required: 'Введите ваш email!' }}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											placeholder="Email"
+											variant="outlined"
+											fullWidth
+											error={!!errors.email}
+											helperText={errors.email?.message}
+											sx={{
+												'& .MuiOutlinedInput-root': {
+													borderRadius: '8px',
+													'& fieldset': { borderColor: '#e0e0e0' },
+												},
+												'& .MuiInputBase-input': { padding: '12px 14px' },
+											}}
+										/>
+									)}
+								/>
+							</>
+						)}
+						//TODO надо прикруть API для смены пароля
+						{tabValue === 1 && (
+							<>
+								<Controller
+									name="currentPassword"
+									control={control}
+									rules={{ required: 'Введите текущий пароль!' }}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											placeholder="Текущий пароль"
+											type="password"
+											variant="outlined"
+											fullWidth
+											error={!!errors.currentPassword}
+											helperText={errors.currentPassword?.message}
+											sx={{
+												'& .MuiOutlinedInput-root': {
+													borderRadius: '8px',
+													'& fieldset': { borderColor: '#e0e0e0' },
+												},
+												'& .MuiInputBase-input': { padding: '12px 14px' },
+											}}
+										/>
+									)}
+								/>
+								<Controller
+									name="newPassword"
+									control={control}
+									rules={{ required: 'Введите новый пароль!' }}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											placeholder="Новый пароль"
+											type="password"
+											variant="outlined"
+											fullWidth
+											error={!!errors.newPassword}
+											helperText={errors.newPassword?.message}
+											sx={{
+												'& .MuiOutlinedInput-root': {
+													borderRadius: '8px',
+													'& fieldset': { borderColor: '#e0e0e0' },
+												},
+												'& .MuiInputBase-input': { padding: '12px 14px' },
+											}}
+										/>
+									)}
+								/>
+								<Controller
+									name="confirmNewPassword"
+									control={control}
+									rules={{
+										required: 'Подтвердите новый пароль!',
+										validate: (value, formValues) =>
+											value === formValues.newPassword ||
+											'Пароли не совпадают!',
+									}}
+									render={({ field }) => (
+										<TextField
+											{...field}
+											placeholder="Подтвердите новый пароль"
+											type="password"
+											variant="outlined"
+											fullWidth
+											error={!!errors.confirmNewPassword}
+											helperText={errors.confirmNewPassword?.message}
+											sx={{
+												'& .MuiOutlinedInput-root': {
+													borderRadius: '8px',
+													'& fieldset': { borderColor: '#e0e0e0' },
+												},
+												'& .MuiInputBase-input': { padding: '12px 14px' },
+											}}
+										/>
+									)}
+								/>
+							</>
+						)}
 						<Button
 							type="submit"
 							variant="contained"
-							color="success"
 							disabled={updateLoading}
-							sx={{ minWidth: 120, borderRadius: 1 }}>
-							{updateLoading ? 'Сохранение...' : 'Сохранить'}
+							sx={{
+								textTransform: 'none',
+								borderRadius: '8px',
+								padding: '10px 24px',
+								mt: 2,
+								'&:hover': { backgroundColor: '#6b35cc' },
+							}}>
+							{updateLoading
+								? 'Сохранение...'
+								: tabValue === 0
+								? 'Сохранить изменения'
+								: 'Изменить пароль'}
 						</Button>
-					</>
-				) : (
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={onEdit}
-						sx={{ minWidth: 120, borderRadius: 1 }}>
-						Редактировать
-					</Button>
-				)}
-			</Box>
+					</Box>
+				</CardContent>
+			</Card>
 		</Box>
 	);
 };

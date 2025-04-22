@@ -1,11 +1,11 @@
 import React from 'react';
 import {
 	Box,
-	Card,
-	CardHeader,
-	CardContent,
-	CircularProgress,
 	Typography,
+	CircularProgress,
+	Avatar,
+	Card,
+	CardContent,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useProfile } from '../features/profile/hooks/useProfile';
@@ -40,42 +40,28 @@ const ProfilePage = () => {
 
 	if (profileError) {
 		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
-				<CardHeader title="Ошибка" />
-				<CardContent>
-					<Typography color="error">
-						Не удалось загрузить профиль: {profileError.status} -{' '}
-						{profileError.data?.message || 'Неизвестная ошибка'}
-					</Typography>
-				</CardContent>
-			</Card>
-		);
-	}
-
-	if (ticketsError) {
-		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
-				<CardHeader title="Ошибка" />
-				<CardContent>
-					<Typography color="error">
-						Не удалось загрузить заявки: {ticketsError.status} -{' '}
-						{ticketsError.data?.message || 'Неизвестная ошибка'}
-					</Typography>
-				</CardContent>
-			</Card>
+			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
+				<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+					Ошибка
+				</Typography>
+				<Typography color="error">
+					Не удалось загрузить профиль: {profileError.status} -{' '}
+					{profileError.data?.message || 'Неизвестная ошибка'}
+				</Typography>
+			</Box>
 		);
 	}
 
 	if (!profile) {
 		return (
-			<Card sx={{ maxWidth: 600, mx: 'auto', mt: 3, boxShadow: 3 }}>
-				<CardHeader title="Ошибка" />
-				<CardContent>
-					<Typography color="error">
-						Данные профиля не найдены. Проверьте авторизацию.
-					</Typography>
-				</CardContent>
-			</Card>
+			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
+				<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+					Ошибка
+				</Typography>
+				<Typography color="error">
+					Данные профиля не найдены. Проверьте авторизацию.
+				</Typography>
+			</Box>
 		);
 	}
 
@@ -85,22 +71,51 @@ const ProfilePage = () => {
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
-			sx={{ maxWidth: 600, mx: 'auto', mt: 3 }}>
-			<Card sx={{ boxShadow: 3 }}>
-				<CardHeader
-					title="Профиль пользователя"
-					titleTypographyProps={{ fontWeight: 600 }}
-				/>
-				<CardContent>
+			sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
+			<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+				Настройки профиля
+			</Typography>
+			<Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+				{/* Карточка профиля */}
+				<Card
+					sx={{
+						flex: '1 1 300px',
+						borderRadius: '8px',
+						border: '1px solid #e0e0e0',
+					}}>
+					<CardContent>
+						<Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+							Ваш профиль
+						</Typography>
+						<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+							Управляйте личной информацией
+						</Typography>
+						<Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+							<Avatar sx={{ width: 80, height: 80 }} />
+						</Box>
+						<Typography
+							variant="body1"
+							sx={{ fontWeight: 500, textAlign: 'center' }}>
+							{profile.fio || 'Фамилия Имя Отчество'}
+						</Typography>
+						<Typography
+							variant="body2"
+							color="text.secondary"
+							sx={{ textAlign: 'center', mb: 2 }}>
+							{profile.email || 'admin@example.com'}
+						</Typography>
+					</CardContent>
+				</Card>
+
+				{/* Форма настроек */}
+				<Box sx={{ flex: '1 1 400px' }}>
 					<ProfileForm
 						profile={profile}
-						createdTicketsCount={createdTicketsCount}
-						completedTicketsCount={completedTicketsCount}
 						onUpdate={updateProfile}
 						updateLoading={updateLoading}
 					/>
-				</CardContent>
-			</Card>
+				</Box>
+			</Box>
 		</Box>
 	);
 };

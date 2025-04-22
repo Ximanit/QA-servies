@@ -13,7 +13,7 @@ const StatsPage = () => {
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
-			sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
+			sx={{ maxWidth: 1200, mx: 'auto' }}>
 			<StatsComponent userId={userId} />
 		</Box>
 	);
