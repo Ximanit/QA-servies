@@ -28,7 +28,7 @@ export default function SkeletonLayout() {
 					height={795}
 					sx={{ borderRadius: '8px', mr: 2 }}
 				/>
-				<Box sx={{ minWidth: 1050 }}>
+				<Box sx={{ minWidth: 1000, width: 1600 }}>
 					{/* Вкладки */}
 					<Box>
 						<Skeleton

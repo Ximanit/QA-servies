@@ -27,7 +27,6 @@ const mainRoutes = [
 		element: <CreateTicketPage />,
 		protected: true,
 	},
-	{ path: 'tickets', element: <TicketsListPage />, protected: true },
 	{ path: 'profile', element: <ProfilePage />, protected: true },
 	{ path: 'stats', element: <StatsPage />, protected: true },
 ];
@@ -43,9 +42,7 @@ export const router = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: mainRoutes.map((route) => ({
 			...route,
-			element: route.protected ? (
-				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
-			) : (
+			element: (
 				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
 			),
 		})),

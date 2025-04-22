@@ -12,16 +12,8 @@ import { useProfile } from '../features/profile/hooks/useProfile';
 import ProfileForm from '../features/profile/components/ProfileForm';
 
 const ProfilePage = () => {
-	const {
-		profile,
-		createdTicketsCount,
-		completedTicketsCount,
-		isLoading,
-		profileError,
-		ticketsError,
-		updateProfile,
-		updateLoading,
-	} = useProfile();
+	const { profile, isLoading, profileError, updateProfile, updateLoading } =
+		useProfile();
 
 	if (isLoading) {
 		return (
