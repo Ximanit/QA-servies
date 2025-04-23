@@ -137,7 +137,7 @@ const TicketsListPage = () => {
 					onChange={(e) => setStatusFilter(e.target.value)}
 					sx={{ width: '200px' }}>
 					<MenuItem value="Все статусы">Все статусы</MenuItem>
-					<MenuItem value="Новая">Новая</MenuItem>
+					<MenuItem value="Открыта">Открыта</MenuItem>
 					<MenuItem value="В работе">В работе</MenuItem>
 					<MenuItem value="Закрыта">Закрыта</MenuItem>
 				</Select>

@@ -84,10 +84,10 @@ const TicketDetailsAndActions = ({ ticket }) => {
 				</Typography>
 
 				<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-					Категория
+					Приоритет
 				</Typography>
 				<Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-					{ticket?.category || 'Reports'}
+					{ticket?.priority}
 				</Typography>
 
 				<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -132,7 +132,7 @@ const TicketDetailsAndActions = ({ ticket }) => {
 						label="Статус"
 						sx={{ borderRadius: 1 }}
 						disabled={isLoadingStatus}>
-						<MenuItem value="Новая">Новая</MenuItem>
+						<MenuItem value="Открыта">Открыта</MenuItem>
 						<MenuItem value="В работе">В работе</MenuItem>
 						<MenuItem value="Закрыта">Закрыта</MenuItem>
 					</Select>
