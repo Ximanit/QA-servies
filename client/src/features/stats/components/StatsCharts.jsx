@@ -1,64 +1,124 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import {
-	PieChart,
-	Pie,
-	Cell,
+	Chart as ChartJS,
+	ArcElement,
+	BarElement,
+	CategoryScale,
+	LinearScale,
 	Tooltip,
 	Legend,
-	BarChart,
-	Bar,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-} from 'recharts';
+} from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
+
+// Регистрация компонентов Chart.js
+ChartJS.register(
+	ArcElement,
+	BarElement,
+	CategoryScale,
+	LinearScale,
+	Tooltip,
+	Legend
+);
 
 const COLORS = ['#1976d2', '#d81b60', '#2e7d32', '#6b7280'];
 
-const StatsCharts = ({ statusData, priorityData }) => (
-	<Grid container spacing={3}>
-		<Grid item xs={12} md={6}>
-			<Typography
-				variant="h6"
-				align="center"
-				sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
-				Статус заявок
-			</Typography>
-			<PieChart width={400} height={300}>
-				<Pie
-					data={statusData}
-					cx="50%"
-					cy="50%"
-					outerRadius={80}
-					fill="#8884d8"
-					dataKey="value"
-					label={({ name, percent }) =>
-						`${name}: ${(percent * 100).toFixed(0)}%`
-					}>
-					{statusData.map((entry, index) => (
-						<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-					))}
-				</Pie>
-				<Tooltip />
-				<Legend />
-			</PieChart>
+const StatsCharts = ({ statusData, priorityData }) => {
+	// Данные для круговой диаграммы (статус заявок)
+	const pieData = {
+		labels: statusData.map((item) => item.name),
+		datasets: [
+			{
+				data: statusData.map((item) => item.value),
+				backgroundColor: COLORS,
+				borderColor: COLORS,
+				borderWidth: 1,
+			},
+		],
+	};
+
+	// Опции для круговой диаграммы
+	const pieOptions = {
+		plugins: {
+			legend: {
+				position: 'bottom',
+			},
+			tooltip: {
+				callbacks: {
+					label: (context) => {
+						const label = context.label || '';
+						const value = context.parsed || 0;
+						const total = context.dataset.data.reduce(
+							(sum, val) => sum + val,
+							0
+						);
+						const percentage = ((value / total) * 100).toFixed(0);
+						return `${label}: ${value} (${percentage}%)`;
+					},
+				},
+			},
+		},
+		maintainAspectRatio: false,
+	};
+
+	// Данные для гистограммы (приоритеты заявок)
+	const barData = {
+		labels: priorityData.map((item) => item.name),
+		datasets: [
+			{
+				label: 'Количество заявок',
+				data: priorityData.map((item) => item.value),
+				backgroundColor: COLORS[0],
+				borderColor: COLORS[0],
+				borderWidth: 1,
+			},
+		],
+	};
+
+	// Опции для гистограммы
+	const barOptions = {
+		plugins: {
+			legend: {
+				display: false,
+			},
+		},
+		scales: {
+			y: {
+				beginAtZero: true,
+				ticks: {
+					precision: 0,
+				},
+			},
+		},
+		maintainAspectRatio: false,
+	};
+
+	return (
+		<Grid container spacing={3}>
+			<Grid item xs={12} md={6}>
+				<Typography
+					variant="h6"
+					align="center"
+					sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+					Статус заявок
+				</Typography>
+				<div style={{ height: '300px' }}>
+					<Pie data={pieData} options={pieOptions} />
+				</div>
+			</Grid>
+			<Grid item xs={12} md={6}>
+				<Typography
+					variant="h6"
+					align="center"
+					sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+					Приоритет заявок
+				</Typography>
+				<div style={{ height: '300px' }}>
+					<Bar data={barData} options={barOptions} />
+				</div>
+			</Grid>
 		</Grid>
-		<Grid item xs={12} md={6}>
-			<Typography
-				variant="h6"
-				align="center"
-				sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
-				Заявки по приоритету
-			</Typography>
-			<BarChart width={400} height={300} data={priorityData}>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="name" />
-				<YAxis />
-				<Tooltip />
-				<Bar dataKey="value" fill="#2e7d32" />
-			</BarChart>
-		</Grid>
-	</Grid>
-);
+	);
+};
 
 export default React.memo(StatsCharts);

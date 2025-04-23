@@ -6,4 +6,18 @@ import { analyzer } from 'vite-bundle-analyzer';
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [react(), analyzer()],
+	server: {
+		open: false, // Отключение автоматического открытия браузера
+	},
+	build: {
+		minify: 'esbuild',
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					vendor: ['react', 'react-dom', '@mui/material'],
+					charts: ['chart.js', 'react-chartjs-2'],
+				},
+			},
+		},
+	},
 });
