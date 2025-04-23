@@ -102,7 +102,13 @@ module.exports = {
 				roles: user.roles,
 				id: user._id,
 			});
-			res.json({ token, name: user.name, roles: user.roles, id: user._id });
+			res.json({
+				token,
+				name: user.name,
+				roles: user.roles,
+				id: user._id,
+				email: user.username,
+			});
 		} catch (error) {
 			logger.error('Ошибка авторизации пользователя', {
 				error: error.message,
