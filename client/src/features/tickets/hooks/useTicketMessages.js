@@ -32,7 +32,7 @@ export const useTicketMessages = (ticketId, userId) => {
 		try {
 			const messageData = { ticketId, content, files };
 			await addMessage(messageData).unwrap();
-			showToast('Сообщение отправлено!', 'success');
+			// showToast('Сообщение отправлено!', 'success');
 		} catch (error) {
 			showToast('Ошибка при отправке сообщения', 'error');
 		}

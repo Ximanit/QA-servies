@@ -1,8 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import StatsComponent from '../features/stats/components/StatsComponent';
+
+const StatsComponent = lazy(() =>
+	import('../features/stats/components/StatsComponent')
+);
 
 const StatsPage = () => {
 	const userId = useSelector((state) => state.auth.id);

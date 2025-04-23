@@ -1,4 +1,4 @@
-import React from 'react';
+import { lazy } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Box, Card, Typography, CircularProgress, Button } from '@mui/material';
@@ -6,7 +6,9 @@ import { motion } from 'framer-motion';
 import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
 import TicketDetailsAndActions from '../../features/tickets/components/TicketDetailsAndActions';
-import TicketChat from '../../features/tickets/components/TicketChat';
+const TicketChat = lazy(() =>
+	import('../../features/tickets/components/TicketChat')
+);
 
 const TicketPage = () => {
 	const { id } = useParams();

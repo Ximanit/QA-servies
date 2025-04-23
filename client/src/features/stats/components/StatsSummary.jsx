@@ -38,4 +38,4 @@ const StatsSummary = ({ total, pending, resolved }) => (
 	</>
 );
 
-export default StatsSummary;
+export default React.memo(StatsSummary);

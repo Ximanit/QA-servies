@@ -1,10 +1,14 @@
-import React from 'react';
+import { lazy } from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
 import { useGetUsersQuery } from '../../features/auth/authApi';
-import TicketForm from '../../features/tickets/components/TicketForm';
+
+const TicketForm = lazy(() =>
+	import('../../features/tickets/components/TicketForm')
+);
+
 import { useToast } from '../../utils/ToastContext';
 
 const CreateTicketPage = () => {

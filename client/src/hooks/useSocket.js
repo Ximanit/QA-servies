@@ -1,14 +1,12 @@
 // src/hooks/useSocket.js
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import { API_URL } from '../constants/constants';
+import socket from '../socket';
 
 export const useSocket = (ticketId, userId) => {
 	const [newMessages, setNewMessages] = useState([]);
 	const [notifications, setNotifications] = useState({});
 
 	useEffect(() => {
-		const socket = io(API_URL, { transports: ['websocket', 'polling'] });
 		socket.on('connect', () => {
 			console.log('Connected to Socket.IO server');
 			if (ticketId) socket.emit('joinTicket', ticketId);
@@ -29,23 +27,23 @@ export const useSocket = (ticketId, userId) => {
 					recipientId,
 				});
 				if (recipientId === userId) {
-					setNotifications((prev) => {
-						const updated = {
-							...prev,
-							[notifiedTicketId]: (prev[notifiedTicketId] || 0) + 1,
-						};
-						console.log('Updated notifications:', updated);
-						return updated;
-					});
+					setNotifications((prev) => ({
+						...prev,
+						[notifiedTicketId]: (prev[notifiedTicketId] || 0) + 1,
+					}));
 				}
 			}
 		);
 
-		socket.on('connect_error', (error) =>
-			console.error('Socket.IO connection error:', error)
-		);
+		socket.on('connect_error', (error) => {
+			console.error('Socket.IO connection error:', error);
+		});
 
-		return () => socket.disconnect();
+		return () => {
+			socket.off('newMessage');
+			socket.off('newMessageNotification');
+			socket.off('connect_error');
+		};
 	}, [ticketId, userId]);
 
 	return { newMessages, notifications };

@@ -61,4 +61,4 @@ const StatsCharts = ({ statusData, priorityData }) => (
 	</Grid>
 );
 
-export default StatsCharts;
+export default React.memo(StatsCharts);
