@@ -1,10 +1,6 @@
-// src/components/features/profile/hooks/useProfile.js
 import { useSelector } from 'react-redux';
-import {
-	useGetProfileQuery,
-	useUpdateProfileMutation,
-} from '../../profile/profileApi';
-import { useGetUserTicketsQuery } from '../../tickets/ticketsApi';
+import { useGetUserByIdQuery, useUpdateUserMutation } from '../../auth/authApi';
+
 import { useToast } from '../../../utils/ToastContext';
 
 export const useProfile = () => {
@@ -13,29 +9,16 @@ export const useProfile = () => {
 	const { showToast } = useToast();
 
 	const {
-		data: profileData,
+		data: profile,
 		isLoading: profileLoading,
 		error: profileError,
-	} = useGetProfileQuery();
-	const [updateProfile, { isLoading: updateLoading }] =
-		useUpdateProfileMutation();
-	const {
-		data: userTickets = [],
-		isLoading: ticketsLoading,
-		error: ticketsError,
-	} = useGetUserTicketsQuery(userId);
-
-	const profile = profileData?.[0];
-	const createdTicketsCount = userTickets.length;
-	const completedTicketsCount = userTickets.filter(
-		(ticket) => ticket.status === 'Закрыта'
-	).length;
+	} = useGetUserByIdQuery(userId);
+	const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
 
 	const updateProfileData = async (values) => {
 		try {
-			await updateProfile({ id: userId, fio: values.fio }).unwrap();
+			await updateUser({ id: userId, fio: values.fio }).unwrap();
 			showToast('Профиль успешно обновлен!', 'success');
-
 			return true;
 		} catch (error) {
 			showToast('Ошибка при обновлении', 'error');
@@ -45,12 +28,8 @@ export const useProfile = () => {
 
 	return {
 		profile,
-		userTickets,
-		createdTicketsCount,
-		completedTicketsCount,
-		isLoading: profileLoading || ticketsLoading,
+		isLoading: profileLoading,
 		profileError,
-		ticketsError,
 		updateProfile: updateProfileData,
 		updateLoading,
 	};

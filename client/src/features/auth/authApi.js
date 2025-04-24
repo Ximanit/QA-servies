@@ -59,8 +59,31 @@ export const authApi = createApi({
 			query: () => '/auth/users',
 			providesTags: ['Users'],
 		}),
+		// Новый эндпоинт для получения пользователя по ID
+		getUserById: builder.query({
+			query: (id) => `/auth/user/${id}`,
+			providesTags: ['Users'],
+		}),
+		// Новый эндпоинт для обновления пользователя
+		updateUser: builder.mutation({
+			query: ({ id, ...userData }) => ({
+				url: `/auth/update/${id}`,
+				method: 'PATCH', // или 'PUT' в зависимости от вашего API
+				body: userData,
+			}),
+			invalidatesTags: ['Users'], // Инвалидация кэша при обновлении
+			onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+				const { data } = await queryFulfilled;
+				dispatch(setUser({ data: data.user })); // Обновляем данные пользователя в сторе
+			},
+		}),
 	}),
 });
 
-export const { useLoginMutation, useRegisterMutation, useGetUsersQuery } =
-	authApi;
+export const {
+	useLoginMutation,
+	useRegisterMutation,
+	useGetUsersQuery,
+	useGetUserByIdQuery,
+	useUpdateUserMutation,
+} = authApi;
