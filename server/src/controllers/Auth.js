@@ -160,19 +160,12 @@ module.exports = {
 	async update(req, res, next) {
 		try {
 			const { id } = req.params;
-			const { password, ...rest } = req.body;
+			const { fio, email } = req.body;
 
-			if (password) {
-				const passwordRegex = /^[a-zA-Z._0-9]+$/;
-				if (!passwordRegex.test(password)) {
-					throw boom.badRequest(
-						'Пароль должен содержать только буквы a-z, A-Z, цифры 0-9, точку (.) и символ подчеркивания (_)'
-					);
-				}
-				rest.password = await bcrypt.hash(password, 7);
-			}
-
-			const updatedUser = await User.findByIdAndUpdate(id, rest, { new: true });
+			const updatedUser = await User.findByIdAndUpdate(id, {
+				name: fio,
+				username: email,
+			});
 			if (!updatedUser) {
 				throw boom.notFound('Пользователь не найден');
 			}

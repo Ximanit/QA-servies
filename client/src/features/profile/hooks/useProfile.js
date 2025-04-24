@@ -17,7 +17,11 @@ export const useProfile = () => {
 
 	const updateProfileData = async (values) => {
 		try {
-			await updateUser({ id: userId, fio: values.fio }).unwrap();
+			await updateUser({
+				id: userId,
+				fio: values.fio,
+				email: values.email,
+			}).unwrap();
 			showToast('Профиль успешно обновлен!', 'success');
 			return true;
 		} catch (error) {
