@@ -15,6 +15,8 @@ const ProfilePage = () => {
 	const { profile, isLoading, profileError, updateProfile, updateLoading } =
 		useProfile();
 
+	console.log(profile);
+
 	if (isLoading) {
 		return (
 			<Box
@@ -88,13 +90,13 @@ const ProfilePage = () => {
 						<Typography
 							variant="body1"
 							sx={{ fontWeight: 500, textAlign: 'center' }}>
-							{profile.fio || 'Фамилия Имя Отчество'}
+							{profile.name || 'Фамилия Имя Отчество'}
 						</Typography>
 						<Typography
 							variant="body2"
 							color="text.secondary"
 							sx={{ textAlign: 'center', mb: 2 }}>
-							{profile.email || 'admin@example.com'}
+							{profile.username || 'admin@example.com'}
 						</Typography>
 					</CardContent>
 				</Card>

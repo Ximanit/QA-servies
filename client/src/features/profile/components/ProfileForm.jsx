@@ -40,7 +40,6 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 	}, [profile, reset]);
 
 	const onSubmit = async (values) => {
-		console.log(values);
 		const success = await onUpdate(values);
 		if (success) {
 			reset(values); // Сохраняем новые значения в форме
