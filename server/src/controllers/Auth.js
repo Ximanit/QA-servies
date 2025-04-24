@@ -142,8 +142,7 @@ module.exports = {
 
 	async get(req, res, next) {
 		try {
-			const { username } = req.body;
-			const user = await User.findOne({ username });
+			const user = await User.findById(req.params.id);
 			if (!user) {
 				throw boom.notFound('Пользователь не найден');
 			}
