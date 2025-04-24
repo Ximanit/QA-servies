@@ -10,6 +10,7 @@ import {
 	Legend,
 } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import { COLORS } from '../../../constants/constants';
 
 // Регистрация компонентов Chart.js
 ChartJS.register(
@@ -20,8 +21,6 @@ ChartJS.register(
 	Tooltip,
 	Legend
 );
-
-const COLORS = ['#1976d2', '#d81b60', '#2e7d32', '#6b7280'];
 
 const StatsCharts = ({ statusData, priorityData }) => {
 	// Данные для круговой диаграммы (статус заявок)
