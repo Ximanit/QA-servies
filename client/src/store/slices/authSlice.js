@@ -17,13 +17,19 @@ const authSlice = createSlice({
 			state.user = action.payload.data.name;
 			state.token = action.payload.data.token;
 			state.roles = JSON.stringify(action.payload.data.roles);
-			state.id = action.payload.data.id;
-			state.email = action.payload.data.email;
+			state.id = action.payload.data.id || action.payload.data._id;
+			state.email = action.payload.data.email || action.payload.data.username;
 			localStorage.setItem('user', action.payload.data.name);
 			localStorage.setItem('token', action.payload.data.token);
 			localStorage.setItem('roles', JSON.stringify(action.payload.data.roles));
-			localStorage.setItem('id', action.payload.data.id);
-			localStorage.setItem('email', action.payload.data.email);
+			localStorage.setItem(
+				'id',
+				action.payload.data.id || action.payload.data._id
+			);
+			localStorage.setItem(
+				'email',
+				action.payload.data.email || action.payload.data.username
+			);
 		},
 		logout: (state) => {
 			state.user = null;

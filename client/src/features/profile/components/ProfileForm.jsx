@@ -31,8 +31,8 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 
 	useEffect(() => {
 		reset({
-			fio: profile?.fio || '',
-			email: profile?.email || '',
+			fio: profile?.name || '',
+			email: profile?.username || '',
 			currentPassword: '',
 			newPassword: '',
 			confirmNewPassword: '',

@@ -68,13 +68,14 @@ export const authApi = createApi({
 		updateUser: builder.mutation({
 			query: ({ id, ...userData }) => ({
 				url: `/auth/update/${id}`,
-				method: 'PATCH', // или 'PUT' в зависимости от вашего API
+				method: 'PUT', // или 'PUT' в зависимости от вашего API
 				body: userData,
 			}),
-			invalidatesTags: ['Users'], // Инвалидация кэша при обновлении
-			onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+			// invalidatesTags: ['Users'], // Инвалидация кэша при обновлении
+			onQueryStarted: async (_, { dispatch, queryFulfilled, getState }) => {
 				const { data } = await queryFulfilled;
-				dispatch(setUser({ data: data.user })); // Обновляем данные пользователя в сторе
+				const currentToken = getState().auth.token; // Получаем текущий токен
+				dispatch(setUser({ data: { ...data.user, token: currentToken } }));
 			},
 		}),
 	}),
