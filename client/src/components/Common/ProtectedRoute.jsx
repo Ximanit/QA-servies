@@ -12,38 +12,22 @@ const ProtectedRoute = ({ children }) => {
 	const { token } = useSelector((state) => state.auth);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-
-	// Проверяем токен через запрос к профилю
-	const { error, isLoading } = useGetProfileQuery(undefined, {
-		skip: !token, // Пропускаем запрос, если токена нет
-	});
+	const { error, isLoading } = useGetProfileQuery(undefined, { skip: !token });
 
 	useEffect(() => {
-		if (!token) {
+		if (!token || error?.status === 401) {
+			dispatch(logoutUser());
 			navigate('/auth/login');
-		} else if (error) {
-			// Если сервер вернул ошибку (например, 401), токен недействителен
-			if (error.status === 401) {
-				dispatch(logoutUser());
-				navigate('/auth/login');
-			}
 		}
 	}, [token, error, dispatch, navigate]);
 
 	if (isLoading) {
 		return (
-			<CircularProgress
-				size={20}
-				sx={{ position: 'absolute', right: 10, top: 18 }}
-			/>
+			<CircularProgress sx={{ position: 'absolute', right: 10, top: 18 }} />
 		);
 	}
 
-	if (!token || (error && error.status === 401)) {
-		return <Navigate to="/auth/login" replace />;
-	}
-
-	return children;
+	return token ? children : <Navigate to="/auth/login" replace />;
 };
 
 export default ProtectedRoute;
