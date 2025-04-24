@@ -1,14 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import {
-	Box,
-	Card,
-	Typography,
-	List,
-	ListItem,
-	TextField,
-	Button,
-} from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { Box, Card, Typography, List, Button } from '@mui/material';
+
+import ControlledTextField from '../../../components/Common/ControlledTextField';
+
+import { useForm } from 'react-hook-form';
 import ChatMessage from './ChatMessage';
 
 const TicketChat = ({
@@ -64,29 +59,19 @@ const TicketChat = ({
 					component="form"
 					onSubmit={handleSubmit(onSubmit)}
 					sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-					<Controller
+					<ControlledTextField
 						name="content"
 						control={control}
-						defaultValue=""
 						rules={{ required: 'Введите сообщение!' }}
-						render={({ field, fieldState: { error } }) => (
-							<TextField
-								{...field}
-								placeholder="Введите сообщение..."
-								multiline
-								rows={4}
-								variant="outlined"
-								fullWidth
-								error={!!error}
-								helperText={error?.message}
-								sx={{
-									'& .MuiOutlinedInput-root': {
-										borderRadius: 2,
-										bgcolor: 'background.paper',
-									},
-								}}
-							/>
-						)}
+						placeholder="Введите сообщение..."
+						multiline
+						rows={4}
+						sx={{
+							'& .MuiOutlinedInput-root': {
+								borderRadius: 2,
+								bgcolor: 'background.paper',
+							},
+						}}
 					/>
 					<Button
 						type="submit"

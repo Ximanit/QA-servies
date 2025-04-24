@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
 	Box,
-	TextField,
 	Button,
 	Typography,
 	Tabs,
@@ -9,7 +8,8 @@ import {
 	Card,
 	CardContent,
 } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import ControlledTextField from '../../../components/Common/ControlledTextField';
 
 const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 	const {
@@ -101,102 +101,38 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 						sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 						{tabValue === 0 && (
 							<>
-								<Controller
+								<ControlledTextField
 									name="fio"
 									control={control}
 									rules={{ required: 'Введите ваше имя!' }}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											placeholder="Имя"
-											variant="outlined"
-											fullWidth
-											error={!!errors.fio}
-											helperText={errors.fio?.message}
-											sx={{
-												'& .MuiOutlinedInput-root': {
-													borderRadius: '8px',
-													'& fieldset': { borderColor: '#e0e0e0' },
-												},
-												'& .MuiInputBase-input': { padding: '12px 14px' },
-											}}
-										/>
-									)}
+									placeholder="Имя"
 								/>
-								<Controller
+								<ControlledTextField
 									name="email"
 									control={control}
 									rules={{ required: 'Введите ваш email!' }}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											placeholder="Email"
-											variant="outlined"
-											fullWidth
-											error={!!errors.email}
-											helperText={errors.email?.message}
-											sx={{
-												'& .MuiOutlinedInput-root': {
-													borderRadius: '8px',
-													'& fieldset': { borderColor: '#e0e0e0' },
-												},
-												'& .MuiInputBase-input': { padding: '12px 14px' },
-											}}
-										/>
-									)}
+									placeholder="Email"
 								/>
 							</>
 						)}
-						{/* //TODO надо прикруть API для смены пароля */}
+						{/* //TODO надо прикрутить API для смены пароля */}
 						{tabValue === 1 && (
 							<>
-								<Controller
+								<ControlledTextField
 									name="currentPassword"
 									control={control}
 									rules={{ required: 'Введите текущий пароль!' }}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											placeholder="Текущий пароль"
-											type="password"
-											variant="outlined"
-											fullWidth
-											error={!!errors.currentPassword}
-											helperText={errors.currentPassword?.message}
-											sx={{
-												'& .MuiOutlinedInput-root': {
-													borderRadius: '8px',
-													'& fieldset': { borderColor: '#e0e0e0' },
-												},
-												'& .MuiInputBase-input': { padding: '12px 14px' },
-											}}
-										/>
-									)}
+									placeholder="Текущий пароль"
+									type="password"
 								/>
-								<Controller
+								<ControlledTextField
 									name="newPassword"
 									control={control}
 									rules={{ required: 'Введите новый пароль!' }}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											placeholder="Новый пароль"
-											type="password"
-											variant="outlined"
-											fullWidth
-											error={!!errors.newPassword}
-											helperText={errors.newPassword?.message}
-											sx={{
-												'& .MuiOutlinedInput-root': {
-													borderRadius: '8px',
-													'& fieldset': { borderColor: '#e0e0e0' },
-												},
-												'& .MuiInputBase-input': { padding: '12px 14px' },
-											}}
-										/>
-									)}
+									placeholder="Новый пароль"
+									type="password"
 								/>
-								<Controller
+								<ControlledTextField
 									name="confirmNewPassword"
 									control={control}
 									rules={{
@@ -205,24 +141,8 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 											value === formValues.newPassword ||
 											'Пароли не совпадают!',
 									}}
-									render={({ field }) => (
-										<TextField
-											{...field}
-											placeholder="Подтвердите новый пароль"
-											type="password"
-											variant="outlined"
-											fullWidth
-											error={!!errors.confirmNewPassword}
-											helperText={errors.confirmNewPassword?.message}
-											sx={{
-												'& .MuiOutlinedInput-root': {
-													borderRadius: '8px',
-													'& fieldset': { borderColor: '#e0e0e0' },
-												},
-												'& .MuiInputBase-input': { padding: '12px 14px' },
-											}}
-										/>
-									)}
+									placeholder="Подтвердите новый пароль"
+									type="password"
 								/>
 							</>
 						)}

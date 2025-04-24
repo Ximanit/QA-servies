@@ -1,7 +1,7 @@
+// src/features/ticket/components/TicketForm.jsx
 import React, { useState } from 'react';
 import {
 	Box,
-	TextField,
 	Button,
 	MenuItem,
 	FormControl,
@@ -9,6 +9,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
+import ControlledTextField from '../../../components/Common/ControlledTextField'; // Новый компонент
 import FileUploader from '../../../components/Common/FileUploader';
 
 const TicketForm = ({ onSubmit, users, isLoading }) => {
@@ -34,51 +35,19 @@ const TicketForm = ({ onSubmit, users, isLoading }) => {
 				component="form"
 				onSubmit={handleSubmit(onFormSubmit)}
 				sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-				<Controller
+				<ControlledTextField
 					name="title"
 					control={control}
 					rules={{ required: 'Пожалуйста, введите заголовок!' }}
-					render={({ field, fieldState: { error } }) => (
-						<TextField
-							{...field}
-							placeholder="Введите тему заявки"
-							variant="outlined"
-							fullWidth
-							error={!!error}
-							helperText={error?.message}
-							sx={{
-								'& .MuiOutlinedInput-root': {
-									borderRadius: '8px',
-									'& fieldset': { borderColor: '#e0e0e0' },
-								},
-								'& .MuiInputBase-input': { padding: '12px 14px' },
-							}}
-						/>
-					)}
+					placeholder="Введите тему заявки"
 				/>
-				<Controller
+				<ControlledTextField
 					name="description"
 					control={control}
 					rules={{ required: 'Введите описание!' }}
-					render={({ field, fieldState: { error } }) => (
-						<TextField
-							{...field}
-							placeholder="Опишите проблему или запрос подробно"
-							multiline
-							rows={4}
-							variant="outlined"
-							fullWidth
-							error={!!error}
-							helperText={error?.message}
-							sx={{
-								'& .MuiOutlinedInput-root': {
-									borderRadius: '8px',
-									'& fieldset': { borderColor: '#e0e0e0' },
-								},
-								'& .MuiInputBase-input': { padding: '12px 14px' },
-							}}
-						/>
-					)}
+					placeholder="Опишите проблему или запрос подробно"
+					multiline
+					rows={4}
 				/>
 				<Box sx={{ display: 'flex', gap: 2 }}>
 					<FormControl fullWidth>

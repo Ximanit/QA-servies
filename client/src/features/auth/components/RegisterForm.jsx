@@ -1,13 +1,6 @@
-// src/features/auth/components/RegisterForm.jsx
 import React, { useState } from 'react';
-import {
-	TextField,
-	Button,
-	Box,
-	InputAdornment,
-	IconButton,
-} from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { Button, Box, InputAdornment, IconButton } from '@mui/material';
+import { useForm } from 'react-hook-form';
 import {
 	Visibility,
 	VisibilityOff,
@@ -15,6 +8,7 @@ import {
 	Lock,
 	Badge,
 } from '@mui/icons-material';
+import ControlledTextField from '../../../components/Common/ControlledTextField';
 
 const RegisterForm = ({ onSubmit, isLoading }) => {
 	const {
@@ -31,97 +25,70 @@ const RegisterForm = ({ onSubmit, isLoading }) => {
 			component="form"
 			onSubmit={handleSubmit(onSubmit)}
 			sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-			<Controller
+			<ControlledTextField
 				name="name"
 				control={control}
-				defaultValue=""
 				rules={{ required: 'Введите ваше ФИО!' }}
-				render={({ field, fieldState: { error } }) => (
-					<TextField
-						{...field}
-						label="Фамилия Имя Отчество"
-						variant="outlined"
-						error={!!error}
-						helperText={error?.message}
-						fullWidth
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<Badge />
-								</InputAdornment>
-							),
-						}}
-						sx={{
-							'& .MuiOutlinedInput-root': {
-								borderRadius: '8px',
-							},
-						}}
-					/>
-				)}
+				placeholder="Фамилия Имя Отчество"
+				label="Фамилия Имя Отчество"
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<Badge />
+						</InputAdornment>
+					),
+				}}
+				sx={{
+					'& .MuiOutlinedInput-root': {
+						borderRadius: '8px',
+					},
+				}}
 			/>
-			<Controller
+			<ControlledTextField
 				name="username"
 				control={control}
-				defaultValue=""
 				rules={{ required: 'Введите логин!' }}
-				render={({ field, fieldState: { error } }) => (
-					<TextField
-						{...field}
-						label="Логин"
-						variant="outlined"
-						error={!!error}
-						helperText={error?.message}
-						fullWidth
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<Person />
-								</InputAdornment>
-							),
-						}}
-						sx={{
-							'& .MuiOutlinedInput-root': {
-								borderRadius: '8px',
-							},
-						}}
-					/>
-				)}
+				placeholder="Логин"
+				label="Логин"
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<Person />
+						</InputAdornment>
+					),
+				}}
+				sx={{
+					'& .MuiOutlinedInput-root': {
+						borderRadius: '8px',
+					},
+				}}
 			/>
-			<Controller
+			<ControlledTextField
 				name="password"
 				control={control}
-				defaultValue=""
 				rules={{ required: 'Введите пароль!' }}
-				render={({ field, fieldState: { error } }) => (
-					<TextField
-						{...field}
-						label="Пароль"
-						type={showPassword ? 'text' : 'password'}
-						variant="outlined"
-						error={!!error}
-						helperText={error?.message}
-						fullWidth
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									<Lock />
-								</InputAdornment>
-							),
-							endAdornment: (
-								<InputAdornment position="end">
-									<IconButton onClick={handleTogglePassword} edge="end">
-										{showPassword ? <VisibilityOff /> : <Visibility />}
-									</IconButton>
-								</InputAdornment>
-							),
-						}}
-						sx={{
-							'& .MuiOutlinedInput-root': {
-								borderRadius: '8px',
-							},
-						}}
-					/>
-				)}
+				placeholder="Пароль"
+				label="Пароль"
+				type={showPassword ? 'text' : 'password'}
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<Lock />
+						</InputAdornment>
+					),
+					endAdornment: (
+						<InputAdornment position="end">
+							<IconButton onClick={handleTogglePassword} edge="end">
+								{showPassword ? <VisibilityOff /> : <Visibility />}
+							</IconButton>
+						</InputAdornment>
+					),
+				}}
+				sx={{
+					'& .MuiOutlinedInput-root': {
+						borderRadius: '8px',
+					},
+				}}
 			/>
 			<Button
 				type="submit"
