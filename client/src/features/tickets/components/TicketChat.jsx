@@ -29,11 +29,25 @@ const TicketChat = ({
 		scrollToBottom();
 	}, [messages]);
 
-	const onSubmit = (values) => {
-		onSendMessage({ content: values.content });
-		reset();
-		// Прокрутка после отправки нового сообщения (если нужно)
-		setTimeout(scrollToBottom, 100); // Небольшая задержка для рендеринга нового сообщения
+	const onSubmit = async (values) => {
+		try {
+			// Проверяем, что values.content не пустой
+			if (!values.content.trim()) {
+				console.error('Сообщение пустое');
+				return;
+			}
+
+			// Вызываем onSendMessage и ждем завершения
+			await onSendMessage({ content: values.content });
+
+			// Очищаем форму после успешной отправки
+			reset({ content: '' });
+
+			// Прокрутка после отправки нового сообщения
+			setTimeout(scrollToBottom, 100); // Задержка для рендеринга
+		} catch (error) {
+			console.error('Ошибка при отправке сообщения:', error);
+		}
 	};
 
 	return (

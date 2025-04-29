@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import { API_URL } from '../constants';
+import { API_URL } from '../constants/constants';
 
 export const useSocket = (ticketId) => {
 	const [socket, setSocket] = useState(null);
