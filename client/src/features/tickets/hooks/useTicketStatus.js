@@ -1,4 +1,5 @@
 // src/components/features/tickets/hooks/useTicketStatus.js
+import { TOAST_MESSAGES } from '../../../constants/messages';
 import { useToast } from '../../../utils/ToastContext';
 import { useUpdateTicketMutation } from '../ticketsApi';
 
@@ -10,9 +11,9 @@ export const useTicketStatus = (ticketId) => {
 	const completeTicket = async () => {
 		try {
 			await updateTicket({ id: ticketId, status: 'Закрыта' }).unwrap();
-			showToast('Заявка завершена!', 'success');
+			showToast(TOAST_MESSAGES.TICKET_COMPLETED, 'success');
 		} catch (error) {
-			showToast('Ошибка при завершении заявки', 'error');
+			showToast(TOAST_MESSAGES.ERROR_TICKET, 'error');
 		}
 	};
 

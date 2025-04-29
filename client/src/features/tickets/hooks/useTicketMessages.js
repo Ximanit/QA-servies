@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useToast } from '../../../utils/ToastContext';
 import { useGetMessagesQuery, useAddMessageMutation } from '../ticketsApi';
 import { useSocket } from '../../../hooks/useSocket';
+import { TOAST_MESSAGES } from '../../../constants/messages';
 
 export const useTicketMessages = (ticketId, userId) => {
 	const { data: initialMessages, isLoading: messagesLoading } =
@@ -34,7 +35,7 @@ export const useTicketMessages = (ticketId, userId) => {
 			await addMessage(messageData).unwrap();
 			// showToast('Сообщение отправлено!', 'success');
 		} catch (error) {
-			showToast('Ошибка при отправке сообщения', 'error');
+			showToast(TOAST_MESSAGES.ERROR_MESSAGE_SEND, 'error');
 		}
 	};
 

@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
 import { useToast } from '../../utils/ToastContext';
+import { TOAST_MESSAGES } from '../../constants/messages';
 
 const LoginPage = () => {
 	const [login, { isLoading }] = useLoginMutation();
@@ -16,13 +17,10 @@ const LoginPage = () => {
 	const onSubmit = async (values) => {
 		try {
 			await login(values).unwrap();
-			showToast('Вы успешно вошли в систему!', 'success');
+			showToast(TOAST_MESSAGES.LOGIN_SUCCESS, 'success');
 			navigate('/');
 		} catch (error) {
-			showToast(
-				error.data?.message || 'Неверное имя пользователя или пароль',
-				'error'
-			);
+			showToast(error.data?.message || TOAST_MESSAGES.ERROR_AUTH, 'error');
 		}
 	};
 

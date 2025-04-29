@@ -1,6 +1,7 @@
 // src/store/api/profileApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_URL } from '../../constants/constants';
+import { baseQueryWithAuth } from '../../utils/apiUtils';
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: API_URL,
@@ -11,17 +12,11 @@ const baseQuery = fetchBaseQuery({
 	},
 });
 
-const baseQueryWithAuth = async (args, api, extraOptions) => {
-	const result = await baseQuery(args, api, extraOptions);
-	if (result.error && result.error.status === 401) {
-		api.dispatch(logoutUser());
-	}
-	return result;
-};
+const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
 
 export const profileApi = createApi({
 	reducerPath: 'profileApi',
-	baseQuery: baseQueryWithAuth,
+	baseQuery: baseQueryWithAuthHandler,
 	tagTypes: ['Profile'],
 	endpoints: (builder) => ({
 		getProfile: builder.query({

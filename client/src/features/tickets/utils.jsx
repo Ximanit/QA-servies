@@ -45,11 +45,11 @@ export const getStatusStyles = (status) => {
 export const getPriorityStyles = (status) => {
 	switch (status) {
 		case 'Низкий':
-			return { bgcolor: '#94C11F', color: 'white' }; // Purple
+			return { bgcolor: '#94C11F', color: 'white' };
 		case 'Средний':
-			return { bgcolor: '#F6E05E', color: 'black' }; // Yellow
+			return { bgcolor: '#F6E05E', color: 'black' };
 		case 'Высокий':
-			return { bgcolor: '#E41616', color: 'white' }; // Green
+			return { bgcolor: '#E41616', color: 'white' };
 		default:
 			return { bgcolor: 'grey.500', color: 'white' };
 	}

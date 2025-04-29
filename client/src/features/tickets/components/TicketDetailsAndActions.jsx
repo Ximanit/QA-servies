@@ -17,6 +17,7 @@ import { API_URL } from '../../../constants/constants';
 import { useUpdateTicketMutation } from '../ticketsApi';
 import { useGetUsersQuery } from '../../auth/authApi';
 import { useToast } from '../../../utils/ToastContext';
+import { TOAST_MESSAGES } from '../../../constants/messages';
 
 const TicketDetailsAndActions = ({ ticket }) => {
 	const userId = useSelector((state) => state.auth.id);
@@ -38,10 +39,10 @@ const TicketDetailsAndActions = ({ ticket }) => {
 
 		try {
 			await updateTicket({ id: ticket._id, status: value }).unwrap();
-			showToast('Статус успешно обновлен!', 'success');
+			showToast(TOAST_MESSAGES.STATUS_SUCCESS, 'success');
 		} catch (error) {
 			setStatus(previousStatus);
-			showToast(error.data?.message || 'Не удалось обновить статус');
+			showToast(error.data?.message || TOAST_MESSAGES.ERROR_STATUS);
 		} finally {
 			setIsLoadingStatus(false);
 		}
@@ -54,12 +55,12 @@ const TicketDetailsAndActions = ({ ticket }) => {
 
 		try {
 			await updateTicket({ id: ticket._id, assignedTo: value }).unwrap();
-			showToast('Исполнитель успешно обновлен!', 'success');
+			showToast(TOAST_MESSAGES.ASIGNEDTO_UPDATE, 'success');
 			window.history.back();
 		} catch (error) {
 			console.error('Ошибка при обновлении исполнителя:', error);
 			setAssignedTo(previousAssignedTo);
-			showToast(error.data?.message || 'Не удалось обновить исполнителя');
+			showToast(error.data?.message || TOAST_MESSAGES.ERROR_ASIGNEDTO);
 		} finally {
 			setIsLoadingAssignedTo(false);
 		}
@@ -172,4 +173,4 @@ const TicketDetailsAndActions = ({ ticket }) => {
 	);
 };
 
-export default TicketDetailsAndActions;
+export default React.memo(TicketDetailsAndActions);

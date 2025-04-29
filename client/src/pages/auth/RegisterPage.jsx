@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
 import { useToast } from '../../utils/ToastContext';
+import { TOAST_MESSAGES } from '../../constants/messages';
 
 const RegisterPage = () => {
 	const [register, { isLoading }] = useRegisterMutation();
@@ -16,10 +17,10 @@ const RegisterPage = () => {
 	const onSubmit = async (values) => {
 		try {
 			await register(values).unwrap();
-			showToast('Вы успешно зарегистрировались', 'success');
+			showToast(TOAST_MESSAGES.REGISTER_SUCCESS, 'success');
 			navigate('/');
 		} catch (error) {
-			showToast(error.data?.message || 'Ошибка регистрации', 'error');
+			showToast(error.data?.message || TOAST_MESSAGES.ERROR_AUTH, 'error');
 		}
 	};
 

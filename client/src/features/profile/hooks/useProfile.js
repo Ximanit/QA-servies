@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { useGetUserByIdQuery, useUpdateUserMutation } from '../../auth/authApi';
 
 import { useToast } from '../../../utils/ToastContext';
+import { TOAST_MESSAGES } from '../../../constants/messages';
 
 export const useProfile = () => {
 	const userId = useSelector((state) => state.auth.id);
@@ -22,10 +23,10 @@ export const useProfile = () => {
 				fio: values.fio,
 				email: values.email,
 			}).unwrap();
-			showToast('Профиль успешно обновлен!', 'success');
+			showToast(TOAST_MESSAGES.PROFILE_UPDATED, 'success');
 			return true;
 		} catch (error) {
-			showToast('Ошибка при обновлении', 'error');
+			showToast(TOAST_MESSAGES.ERROR_PROFILE, 'error');
 			return false;
 		}
 	};

@@ -2,7 +2,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setUser } from '../../store/slices/authSlice';
 import { API_URL } from '../../constants/constants';
-import { logoutUser } from '../../store/actions/authActions';
+
+import { baseQueryWithAuth } from '../../utils/apiUtils';
 
 // Кастомный baseQuery с обработкой 401
 const baseQuery = fetchBaseQuery({
@@ -14,17 +15,11 @@ const baseQuery = fetchBaseQuery({
 	},
 });
 
-const baseQueryWithAuth = async (args, api, extraOptions) => {
-	const result = await baseQuery(args, api, extraOptions);
-	if (result.error && result.error.status === 401) {
-		api.dispatch(logoutUser());
-	}
-	return result;
-};
+const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
 
 export const authApi = createApi({
 	reducerPath: 'authApi',
-	baseQuery: baseQueryWithAuth,
+	baseQuery: baseQueryWithAuthHandler,
 	tagTypes: ['Users'],
 	endpoints: (builder) => ({
 		login: builder.mutation({

@@ -1,50 +1,42 @@
-// src/hooks/useSocket.js
 import { useEffect, useState } from 'react';
-import socket from '../socket';
+import io from 'socket.io-client';
+import { API_URL } from '../constants';
 
-export const useSocket = (ticketId, userId) => {
+export const useSocket = (ticketId) => {
+	const [socket, setSocket] = useState(null);
 	const [newMessages, setNewMessages] = useState([]);
-	const [notifications, setNotifications] = useState({});
 
 	useEffect(() => {
-		socket.on('connect', () => {
-			console.log('Connected to Socket.IO server');
-			if (ticketId) socket.emit('joinTicket', ticketId);
+		const newSocket = io(API_URL);
+		setSocket(newSocket);
+
+		newSocket.on('connect', () => {
+			newSocket.emit('joinTicket', ticketId);
 		});
 
-		socket.on('newMessage', (message) => {
-			console.log('Received newMessage:', message);
+		newSocket.on('newMessage', (message) => {
 			if (message.ticket === ticketId) {
-				setNewMessages((prev) => [...prev, message]);
-			}
-		});
-
-		socket.on(
-			'newMessageNotification',
-			({ ticketId: notifiedTicketId, recipientId }) => {
-				console.log('Received newMessageNotification:', {
-					notifiedTicketId,
-					recipientId,
-				});
-				if (recipientId === userId) {
-					setNotifications((prev) => ({
-						...prev,
-						[notifiedTicketId]: (prev[notifiedTicketId] || 0) + 1,
-					}));
+				if (process.env.NODE_ENV !== 'production') {
+					console.log('Received newMessage:', message);
 				}
+				setNewMessages((prev) =>
+					prev.some((msg) => msg._id === message._id)
+						? prev
+						: [...prev, message]
+				);
 			}
-		);
-
-		socket.on('connect_error', (error) => {
-			console.error('Socket.IO connection error:', error);
 		});
 
 		return () => {
-			socket.off('newMessage');
-			socket.off('newMessageNotification');
-			socket.off('connect_error');
+			newSocket.disconnect();
 		};
-	}, [ticketId, userId]);
+	}, [ticketId]);
 
-	return { newMessages, notifications };
+	const sendMessage = (message) => {
+		if (socket) {
+			socket.emit('sendMessage', { ticketId, message });
+		}
+	};
+
+	return { newMessages, sendMessage };
 };

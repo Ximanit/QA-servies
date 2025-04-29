@@ -10,6 +10,7 @@ const TicketForm = lazy(() =>
 );
 
 import { useToast } from '../../utils/ToastContext';
+import { TOAST_MESSAGES } from '../../constants/messages';
 
 const CreateTicketPage = () => {
 	const navigate = useNavigate();
@@ -21,10 +22,10 @@ const CreateTicketPage = () => {
 	const handleSubmit = async (values) => {
 		try {
 			const newTicket = await createTicket(values).unwrap();
-			showToast('Заявка успешно создана!', 'success');
+			showToast(TOAST_MESSAGES.TICKET_CREATED, 'success');
 			navigate(`/tickets/${newTicket._id}`);
 		} catch (error) {
-			showToast(error.data?.message || 'Ошибка при создании заявки', 'error');
+			showToast(error.data?.message || TOAST_MESSAGES.ERROR_TICKET, 'error');
 		}
 	};
 

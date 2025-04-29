@@ -2,6 +2,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_URL } from '../../constants/constants';
 import { logoutUser } from '../../store/actions/authActions';
+import { baseQueryWithAuth } from '../../utils/apiUtils';
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: API_URL,
@@ -12,17 +13,11 @@ const baseQuery = fetchBaseQuery({
 	},
 });
 
-const baseQueryWithAuth = async (args, api, extraOptions) => {
-	const result = await baseQuery(args, api, extraOptions);
-	if (result.error && result.error.status === 401) {
-		api.dispatch(logoutUser());
-	}
-	return result;
-};
+const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
 
 export const ticketsApi = createApi({
 	reducerPath: 'ticketsApi',
-	baseQuery: baseQueryWithAuth,
+	baseQuery: baseQueryWithAuthHandler,
 	tagTypes: ['Tickets', 'TicketDetails', 'Messages', 'Notifications'],
 	endpoints: (builder) => ({
 		getTickets: builder.query({
