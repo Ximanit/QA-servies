@@ -1,8 +1,7 @@
-import React from 'react';
 import {
 	Box,
 	Typography,
-	CircularProgress,
+	Skeleton,
 	Avatar,
 	Card,
 	CardContent,
@@ -19,15 +18,12 @@ const ProfilePage = () => {
 
 	if (isLoading) {
 		return (
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					minHeight: '100vh',
-				}}>
-				<CircularProgress />
-				<Typography sx={{ ml: 2 }}>Загрузка профиля...</Typography>
+			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
+				<Skeleton variant="text" width="40%" height={40} />
+				<Box sx={{ display: 'flex', gap: 3, mt: 3 }}>
+					<Skeleton variant="rectangular" width={300} height={200} />
+					<Skeleton variant="rectangular" width={400} height={200} />
+				</Box>
 			</Box>
 		);
 	}

@@ -1,18 +1,17 @@
-// src/components/ProtectedRoute.jsx
 import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { CircularProgress } from '@mui/material';
-
 import { logoutUser } from '../../store/actions/authActions';
-import { useGetProfileQuery } from '../../features/profile/profileApi'; // Для проверки токена
+import { useGetProfileQuery } from '../../features/profile/profileApi';
+import MainLayout from '../../layouts/MainLayout';
 
 const ProtectedRoute = ({ children }) => {
 	const { token } = useSelector((state) => state.auth);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { error, isLoading } = useGetProfileQuery(undefined, { skip: !token });
+	const { error, isLoading: isProfileLoading } = useGetProfileQuery(undefined, {
+		skip: !token,
+	});
 
 	useEffect(() => {
 		if (!token || error?.status === 401) {
@@ -21,13 +20,11 @@ const ProtectedRoute = ({ children }) => {
 		}
 	}, [token, error, dispatch, navigate]);
 
-	if (isLoading) {
-		return (
-			<CircularProgress sx={{ position: 'absolute', right: 10, top: 18 }} />
-		);
+	if (!token) {
+		return <Navigate to="/auth/login" replace />;
 	}
 
-	return token ? children : <Navigate to="/auth/login" replace />;
+	return <MainLayout isTokenChecking={isProfileLoading}>{children}</MainLayout>;
 };
 
 export default ProtectedRoute;

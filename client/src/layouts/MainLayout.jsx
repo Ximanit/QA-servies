@@ -10,11 +10,13 @@ import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 import SkeletonLayout from '../components/layout/SkeletonLayout';
 
-const MainLayout = () => {
+const MainLayout = ({ isTokenChecking }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const userId = useSelector((state) => state.auth.id);
-	const { isLoading } = useGetUserTicketsQuery(userId);
+	const { isLoading: isTicketsLoading } = useGetUserTicketsQuery(userId, {
+		skip: !userId,
+	});
 	const isMobile = useMediaQuery('(max-width:600px)');
 	const isTablet = useMediaQuery('(max-width:900px)');
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,7 +30,8 @@ const MainLayout = () => {
 		navigate('/auth/login');
 	};
 
-	if (isLoading) {
+	// Показываем SkeletonLayout, если проверяется токен или загружаются данные
+	if (isTokenChecking || isTicketsLoading) {
 		return <SkeletonLayout />;
 	}
 

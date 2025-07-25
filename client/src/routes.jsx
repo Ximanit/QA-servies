@@ -1,18 +1,15 @@
-// src/routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/Common/ProtectedRoute';
-
-const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
-const TicketPage = lazy(() => import('./pages/tickets/TicketPage'));
-const CreateTicketPage = lazy(() => import('./pages/tickets/CreateTicketPage'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const TicketsListPage = lazy(() => import('./pages/tickets/TicketsListPage'));
-const StatsPage = lazy(() => import('./pages/StatsPage'));
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import TicketPage from './pages/tickets/TicketPage';
+import CreateTicketPage from './pages/tickets/CreateTicketPage';
+import NotFound from './pages/NotFound';
+import ProfilePage from './pages/ProfilePage';
+import TicketsListPage from './pages/tickets/TicketsListPage';
+import StatsPage from './pages/StatsPage';
 
 const authRoutes = [
 	{ path: 'login', element: <LoginPage /> },
@@ -42,9 +39,7 @@ export const router = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: mainRoutes.map((route) => ({
 			...route,
-			element: (
-				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
-			),
+			element: route.element, // Убрали Suspense
 		})),
 	},
 	{
@@ -52,9 +47,7 @@ export const router = createBrowserRouter([
 		element: <AuthLayout />,
 		children: authRoutes.map((route) => ({
 			...route,
-			element: (
-				<Suspense fallback={<div>Загрузка...</div>}>{route.element}</Suspense>
-			),
+			element: route.element, // Убрали Suspense
 		})),
 	},
 ]);

@@ -1,7 +1,7 @@
 import { lazy, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Box, Card, Typography, CircularProgress, Button } from '@mui/material';
+import { Box, Card, Typography, Skeleton, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
@@ -43,15 +43,16 @@ const TicketPage = () => {
 
 	if (detailsLoading || messagesLoading) {
 		return (
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					minHeight: '100vh',
-				}}>
-				<CircularProgress />
-				<Typography sx={{ ml: 2 }}>Загрузка заявки...</Typography>
+			<Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+				<Skeleton variant="text" width="60%" height={40} />
+				<Box sx={{ display: 'flex', gap: 3, mt: 3 }}>
+					<Box sx={{ flex: '0 0 300px' }}>
+						<Skeleton variant="rectangular" width="100%" height={400} />
+					</Box>
+					<Box sx={{ flex: 1 }}>
+						<Skeleton variant="rectangular" width="100%" height={400} />
+					</Box>
+				</Box>
 			</Box>
 		);
 	}
