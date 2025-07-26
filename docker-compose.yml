@@ -21,7 +21,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - DB_URI=mongodb://mongo:27017/ticket-service
+      - DB_URI=${DB_URI}
       - JWT_SECRET=${JWT_SECRET}
       - PORT=3000
     volumes:
@@ -29,6 +29,7 @@ services:
       - ./server/Uploads:/app/Uploads
     depends_on:
       - mongo
+      - clamav
     networks:
       - app-network
 
@@ -38,6 +39,13 @@ services:
       - '27017:27017'
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
+
+  clamav:
+    image: clamav/clamav:latest
+    ports:
+      - '3310:3310'
     networks:
       - app-network
 
