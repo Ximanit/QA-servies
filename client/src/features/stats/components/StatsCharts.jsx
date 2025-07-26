@@ -93,7 +93,10 @@ const StatsCharts = ({ statusData, priorityData }) => {
 	};
 
 	return (
-		<Grid container spacing={3}>
+		<Grid
+			container
+			spacing={3}
+			style={{ display: 'flex', justifyContent: 'center' }}>
 			<Grid item xs={12} md={6}>
 				<Typography
 					variant="h6"

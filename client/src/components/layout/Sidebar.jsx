@@ -9,23 +9,23 @@ import {
 	ListItemText,
 	Box,
 } from '@mui/material';
-import { Home, AddCircle, Person, BarChart, Logout } from '@mui/icons-material';
+import { Home, Person, BarChart, Logout } from '@mui/icons-material';
 
 const Sidebar = ({ onLogout, drawerProps }) => {
 	const location = useLocation();
 
 	// Navigation items for the top of the sidebar
 	const mainNavItems = [
-		{ key: 'home', label: 'Home', path: '/', icon: <Home /> },
+		{ key: 'home', label: 'Заявки', path: '/', icon: <Home /> },
 
-		{ key: 'profile', label: 'Profile', path: '/profile', icon: <Person /> },
-		{ key: 'stats', label: 'Statistics', path: '/stats', icon: <BarChart /> },
+		{ key: 'profile', label: 'Профиль', path: '/profile', icon: <Person /> },
+		{ key: 'stats', label: 'Статистика', path: '/stats', icon: <BarChart /> },
 	];
 
 	// Logout item for the bottom
 	const logoutItem = {
 		key: 'logout',
-		label: 'Logout',
+		label: 'Выйти',
 		action: onLogout,
 		icon: <Logout />,
 	};
@@ -39,7 +39,6 @@ const Sidebar = ({ onLogout, drawerProps }) => {
 					height: '100%',
 					overflow: 'auto',
 				}}>
-				{/* Top navigation items */}
 				<List>
 					{mainNavItems.map((item) => {
 						const isActive = item.path && location.pathname === item.path;
@@ -65,9 +64,9 @@ const Sidebar = ({ onLogout, drawerProps }) => {
 						);
 					})}
 				</List>
-				{/* Spacer to push logout to the bottom */}
+
 				<Box sx={{ flexGrow: 1 }} />
-				{/* Logout button at the bottom */}
+
 				<List>
 					<ListItem disablePadding>
 						<ListItemButton

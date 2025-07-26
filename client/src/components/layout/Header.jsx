@@ -20,7 +20,7 @@ const Header = ({ handleDrawerToggle }) => {
 					</IconButton>
 				)}
 				<Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-					Ticket Platform
+					Сервис Заявок
 				</Typography>
 				<Typography variant="body1" sx={{ fontWeight: 400 }}>
 					{username}

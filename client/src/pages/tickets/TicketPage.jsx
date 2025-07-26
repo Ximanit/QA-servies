@@ -1,4 +1,4 @@
-import { lazy, useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Box, Card, Typography, Skeleton, Button } from '@mui/material';
@@ -96,13 +96,18 @@ const TicketPage = () => {
 				</Box>
 				{/* Правая колонка: Чат */}
 				<Box sx={{ flex: 1 }}>
-					<TicketChat
-						messages={messages}
-						onSendMessage={sendMessage}
-						userId={userId}
-						isLoading={isAdding}
-						isClosed={ticketDetails.status === 'Закрыта'}
-					/>
+					<Suspense
+						fallback={
+							<Skeleton variant="rectangular" width="100%" height={400} />
+						}>
+						<TicketChat
+							messages={messages}
+							onSendMessage={sendMessage}
+							userId={userId}
+							isLoading={isAdding}
+							isClosed={ticketDetails.status === 'Закрыта'}
+						/>
+					</Suspense>
 				</Box>
 			</Box>
 		</Box>

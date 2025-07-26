@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: mainRoutes.map((route) => ({
 			...route,
-			element: route.element, // Убрали Suspense
+			element: route.element,
 		})),
 	},
 	{
@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
 		element: <AuthLayout />,
 		children: authRoutes.map((route) => ({
 			...route,
-			element: route.element, // Убрали Suspense
+			element: route.element,
 		})),
 	},
 ]);
