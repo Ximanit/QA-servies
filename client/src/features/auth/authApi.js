@@ -1,4 +1,3 @@
-// src/store/api/authApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setUser } from '../../store/slices/authSlice';
 import { API_URL } from '../../constants/constants';

@@ -1,4 +1,3 @@
-// src/components/features/tickets/hooks/useTicketDetails.js
 import { useGetTicketDetailsQuery } from '../ticketsApi';
 
 export const useTicketDetails = (ticketId) => {

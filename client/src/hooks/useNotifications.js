@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useGetUserNotificationsQuery } from '../features/tickets/ticketsApi';
 
 export const useNotifications = () => {

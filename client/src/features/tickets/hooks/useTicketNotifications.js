@@ -1,4 +1,3 @@
-// src/components/features/tickets/hooks/useTicketNotifications.js
 import { useEffect } from 'react';
 import { useMarkNotificationsAsReadMutation } from '../ticketsApi';
 

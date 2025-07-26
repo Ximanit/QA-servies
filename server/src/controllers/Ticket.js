@@ -1,4 +1,3 @@
-// server/src/controllers/Ticket.js
 const Ticket = require('../models/Ticket');
 const boom = require('@hapi/boom');
 const logger = require('../logger');

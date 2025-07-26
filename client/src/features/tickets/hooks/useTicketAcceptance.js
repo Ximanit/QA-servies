@@ -1,4 +1,3 @@
-// src/components/features/tickets/hooks/useTicketAcceptance.js
 import { TOAST_MESSAGES } from '../../../constants/messages';
 import { useToast } from '../../../utils/ToastContext';
 import { useUpdateTicketMutation } from '../ticketsApi';

@@ -1,4 +1,3 @@
-// src/components/features/stats/statsUtils.js
 export const calculateStats = (statsArray) => {
 	const total = statsArray.reduce((sum, stat) => sum + stat.count, 0);
 	const pending = statsArray.find((s) => s._id === 'Открыта')?.count || 0;

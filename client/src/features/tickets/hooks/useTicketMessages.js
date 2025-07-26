@@ -1,4 +1,3 @@
-// src/components/features/tickets/hooks/useTicketMessages.js
 import { useEffect, useState } from 'react';
 import { useToast } from '../../../utils/ToastContext';
 import { useGetMessagesQuery, useAddMessageMutation } from '../ticketsApi';

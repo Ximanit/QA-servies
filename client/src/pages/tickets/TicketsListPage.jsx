@@ -16,7 +16,6 @@ import {
 	ListItemButton,
 	Divider,
 	Chip,
-	CircularProgress,
 	Tabs,
 	Tab,
 	Badge, // Добавляем Badge для отображения уведомлений
@@ -77,21 +76,6 @@ const TicketsListPage = () => {
 			priorityFilter
 		);
 	}, [tickets, userId, activeTab, search, statusFilter, priorityFilter]);
-
-	// if (isLoading) {
-	// 	return (
-	// 		<Box
-	// 			sx={{
-	// 				display: 'flex',
-	// 				justifyContent: 'center',
-	// 				alignItems: 'center',
-	// 				minHeight: '100vh',
-	// 			}}>
-	// 			<CircularProgress />
-	// 			<Typography sx={{ ml: 2 }}>Загрузка заявок...</Typography>
-	// 		</Box>
-	// 	);
-	// }
 
 	return (
 		<Box

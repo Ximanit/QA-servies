@@ -1,5 +1,3 @@
-// src/pages/auth/RegisterPage.jsx
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useRegisterMutation } from '../../features/auth/authApi';
 import RegisterForm from '../../features/auth/components/RegisterForm';

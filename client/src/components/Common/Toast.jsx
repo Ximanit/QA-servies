@@ -1,5 +1,3 @@
-// src/components/Common/Toast.jsx
-import React from 'react';
 import { Snackbar, Alert } from '@mui/material';
 
 const Toast = ({ open, message, severity, onClose }) => (

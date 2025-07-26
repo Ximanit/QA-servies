@@ -1,13 +1,5 @@
-// src/features/ticket/components/TicketForm.jsx
-import React, { useState } from 'react';
-import {
-	Box,
-	Button,
-	MenuItem,
-	FormControl,
-	Select,
-	Typography,
-} from '@mui/material';
+import { useState } from 'react';
+import { Box, Button, MenuItem, FormControl, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import ControlledTextField from '../../../components/Common/ControlledTextField'; // Новый компонент
 import FileUploader from '../../../components/Common/FileUploader';

@@ -1,5 +1,3 @@
-// src/pages/auth/LoginPage.jsx
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoginMutation } from '../../features/auth/authApi';
 import LoginForm from '../../features/auth/components/LoginForm';

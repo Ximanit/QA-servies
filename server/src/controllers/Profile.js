@@ -1,4 +1,3 @@
-// server/src/controllers/Profile.js
 const Profile = require('../models/Profile');
 const boom = require('@hapi/boom');
 const logger = require('../logger');

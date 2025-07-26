@@ -28,7 +28,7 @@ const ProfilePage = () => {
 		);
 	}
 
-	if (profileError) {
+	if (profileError || !profile) {
 		return (
 			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
 				<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
@@ -37,19 +37,6 @@ const ProfilePage = () => {
 				<Typography color="error">
 					Не удалось загрузить профиль: {profileError.status} -{' '}
 					{profileError.data?.message || 'Неизвестная ошибка'}
-				</Typography>
-			</Box>
-		);
-	}
-
-	if (!profile) {
-		return (
-			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>
-				<Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-					Ошибка
-				</Typography>
-				<Typography color="error">
-					Данные профиля не найдены. Проверьте авторизацию.
 				</Typography>
 			</Box>
 		);
