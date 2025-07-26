@@ -1,0 +1,11 @@
+node_modules
+dist
+.vite
+npm-debug.log
+.env
+.git
+.gitignore
+Dockerfile
+.dockerignore
+logs
+*.log

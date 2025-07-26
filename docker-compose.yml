@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3000'
+    environment:
+      - API_URL=http://server:3000
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - DB_URI=mongodb://mongo:27017/ticket-service
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=3000
+    volumes:
+      - ./server/logs:/app/logs
+      - ./server/Uploads:/app/Uploads
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
