@@ -5,15 +5,14 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const { secret } = require('../../config');
 const boom = require('boom');
+const logger = require('../logger');
+const NodeCache = require('node-cache');
+
+const cache = new NodeCache({ stdTTL: 600 }); // Кэш на 10 минут
 
 const generateAccesToken = (id, username) => {
-	const payload = {
-		id,
-		username,
-	};
-	return jwt.sign(payload, secret, {
-		expiresIn: '24h',
-	});
+	const payload = { id, username };
+	return jwt.sign(payload, secret, { expiresIn: '24h' });
 };
 
 module.exports = {
@@ -27,7 +26,7 @@ module.exports = {
 			const { username, password, name } = req.body;
 			const userName = name ?? 'User';
 
-			const usernameRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; //Пример, проверьте корректность под свои нужды
+			const usernameRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 			if (!usernameRegex.test(username)) {
 				throw boom.badRequest('Некорректный формат логина');
 			}
@@ -58,10 +57,14 @@ module.exports = {
 				roles: [userRole.value],
 			});
 			await user.save();
-
+			logger.info('Пользователь успешно зарегистрирован', { user });
 			res.status(201).json(user);
 		} catch (error) {
-			next(error); // Передаем ошибку в middleware обработки ошибок
+			logger.error('Ошибка регистрации пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
 		}
 	},
 
@@ -92,30 +95,63 @@ module.exports = {
 			}
 
 			const token = generateAccesToken(user._id, user.name);
-			res.json({ token, name: user.name, roles: user.roles, id: user._id });
+			logger.info('Пользователь успешно авторизовался', {
+				token,
+				name: user.name,
+				roles: user.roles,
+				id: user._id,
+			});
+			res.json({
+				token,
+				name: user.name,
+				roles: user.roles,
+				id: user._id,
+				email: user.username,
+			});
 		} catch (error) {
+			logger.error('Ошибка авторизации пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
 
 	async getAll(req, res, next) {
 		try {
+			const cacheKey = 'all_users';
+			const cachedUsers = cache.get(cacheKey);
+			if (cachedUsers) {
+				logger.info('Пользователи получены из кэша', { cacheKey });
+				return res.json(cachedUsers);
+			}
+
 			const users = await User.find();
+			cache.set(cacheKey, users);
+			logger.info('Успешное получение списка пользователей', { users });
 			res.json(users);
 		} catch (error) {
+			logger.error('Ошибка получения списка пользователей', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
 
 	async get(req, res, next) {
 		try {
-			const { username } = req.body;
-			const user = await User.findOne({ username });
+			const user = await User.findById(req.params.id);
 			if (!user) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			logger.info('Успешное получение пользователя', { user });
 			res.json(user);
 		} catch (error) {
+			logger.error('Ошибка получения пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -123,27 +159,26 @@ module.exports = {
 	async update(req, res, next) {
 		try {
 			const { id } = req.params;
-			const { password, ...rest } = req.body;
+			const { fio, email } = req.body;
 
-			if (password) {
-				const passwordRegex = /^[a-zA-Z._0-9]+$/;
-				if (!passwordRegex.test(password)) {
-					throw boom.badRequest(
-						'Пароль должен содержать только буквы a-z, A-Z, цифры 0-9, точку (.) и символ подчеркивания (_)'
-					);
-				}
-				rest.password = await bcrypt.hash(password, 7);
-			}
-
-			const updatedUser = await User.findByIdAndUpdate(id, rest, { new: true });
+			const updatedUser = await User.findByIdAndUpdate(id, {
+				name: fio,
+				username: email,
+			});
 			if (!updatedUser) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			cache.del('all_users'); // Инвалидация кэша при обновлении
+			logger.info('Успешное обновление пользователя', { updatedUser });
 			res.json({
 				message: 'Данные пользователя успешно обновлены',
 				user: updatedUser,
 			});
 		} catch (error) {
+			logger.error('Ошибка обновления пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -155,8 +190,14 @@ module.exports = {
 			if (!deletedUser) {
 				throw boom.notFound('Пользователь не найден');
 			}
+			cache.del('all_users'); // Инвалидация кэша при удалении
+			logger.info('Успешное удаление пользователя', { deletedUser });
 			res.json({ message: 'Пользователь удален!' });
 		} catch (error) {
+			logger.error('Ошибка удаления пользователя', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},
@@ -170,8 +211,69 @@ module.exports = {
 			}
 			const newRole = new Roles({ value: rolesName });
 			await newRole.save();
+			logger.info('Успешное добавление новой роли', { newRole });
 			res.json({ message: 'Роль успешно создана' });
 		} catch (error) {
+			logger.error('Ошибка добавления новой роли', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
+		}
+	},
+
+	async changePassword(req, res, next) {
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				throw boom.badRequest('Ошибка валидации', { errors: errors.array() });
+			}
+
+			const { id } = req.params;
+			const { currentPassword, newPassword } = req.body;
+
+			// Валидация нового пароля
+			const passwordRegex = /^.{5,}$/;
+			if (!passwordRegex.test(newPassword)) {
+				throw boom.badRequest(
+					'Новый пароль должен содержать минимум 5 символов'
+				);
+			}
+
+			// Проверка формата пароля
+			const passwordFormatRegex = /^[a-zA-Z._0-9]+$/;
+			if (!passwordFormatRegex.test(newPassword)) {
+				throw boom.badRequest(
+					'Новый пароль должен содержать только буквы a-z, A-Z, цифры 0-9, точку (.) и символ подчеркивания (_)'
+				);
+			}
+
+			// Поиск пользователя
+			const user = await User.findById(id);
+			if (!user) {
+				throw boom.notFound('Пользователь не найден');
+			}
+
+			// Проверка текущего пароля
+			const isMatch = await bcrypt.compare(currentPassword, user.password);
+			if (!isMatch) {
+				throw boom.unauthorized('Неверный текущий пароль');
+			}
+
+			// Хеширование нового пароля
+			const hashNewPassword = await bcrypt.hash(newPassword, 10);
+
+			// Обновление пароля
+			user.password = hashNewPassword;
+			await user.save();
+
+			logger.info('Пароль пользователя успешно изменен', { userId: id });
+			res.json({ message: 'Пароль успешно изменен' });
+		} catch (error) {
+			logger.error('Ошибка при смене пароля', {
+				error: error.message,
+				stack: error.stack,
+			});
 			next(error);
 		}
 	},

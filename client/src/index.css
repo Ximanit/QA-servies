@@ -1,13 +1,38 @@
 body {
-	font-family: Arial, sans-serif;
+	font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
 	margin: 0;
 	padding: 0;
+	background-color: #f4f6f8;
+}
+
+#root {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .login-page,
 .register-page,
 .dashboard,
 .question-page,
+.ticket-page,
+.profile-page,
+.stats-page,
 .not-found {
-	padding: 20px;
+	flex-grow: 1;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+	.login-page,
+	.register-page,
+	.dashboard,
+	.question-page,
+	.ticket-page,
+	.profile-page,
+	.stats-page,
+	.not-found {
+		padding: 16px;
+	}
 }
