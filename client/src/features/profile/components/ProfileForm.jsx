@@ -42,7 +42,12 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 	const onSubmit = async (values) => {
 		const success = await onUpdate(values);
 		if (success) {
-			reset(values); // Сохраняем новые значения в форме
+			reset({
+				...values,
+				currentPassword: '',
+				newPassword: '',
+				confirmNewPassword: '',
+			}); // Сбрасываем поля пароля после успешной отправки
 		}
 	};
 
@@ -115,7 +120,6 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 								/>
 							</>
 						)}
-						{/* //TODO надо прикрутить API для смены пароля */}
 						{tabValue === 1 && (
 							<>
 								<ControlledTextField
@@ -128,7 +132,18 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 								<ControlledTextField
 									name="newPassword"
 									control={control}
-									rules={{ required: 'Введите новый пароль!' }}
+									rules={{
+										required: 'Введите новый пароль!',
+										minLength: {
+											value: 5,
+											message: 'Пароль должен содержать минимум 5 символов',
+										},
+										pattern: {
+											value: /^[a-zA-Z._0-9]+$/,
+											message:
+												'Пароль должен содержать только буквы a-z, A-Z, цифры 0-9, точку (.) и символ подчеркивания (_)',
+										},
+									}}
 									placeholder="Новый пароль"
 									type="password"
 								/>

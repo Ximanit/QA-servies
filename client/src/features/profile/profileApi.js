@@ -1,4 +1,3 @@
-// src/store/api/profileApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_URL } from '../../constants/constants';
 import { baseQueryWithAuth } from '../../utils/apiUtils';
@@ -31,7 +30,19 @@ export const profileApi = createApi({
 			}),
 			invalidatesTags: ['Profile'],
 		}),
+		changePassword: builder.mutation({
+			query: ({ id, ...passwordData }) => ({
+				url: `/change-password/${id}`,
+				method: 'PUT',
+				body: passwordData,
+			}),
+			invalidatesTags: ['Profile'],
+		}),
 	}),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = profileApi;
+export const {
+	useGetProfileQuery,
+	useUpdateProfileMutation,
+	useChangePasswordMutation,
+} = profileApi;

@@ -221,4 +221,60 @@ module.exports = {
 			next(error);
 		}
 	},
+
+	async changePassword(req, res, next) {
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				throw boom.badRequest('Ошибка валидации', { errors: errors.array() });
+			}
+
+			const { id } = req.params;
+			const { currentPassword, newPassword } = req.body;
+
+			// Валидация нового пароля
+			const passwordRegex = /^.{5,}$/;
+			if (!passwordRegex.test(newPassword)) {
+				throw boom.badRequest(
+					'Новый пароль должен содержать минимум 5 символов'
+				);
+			}
+
+			// Проверка формата пароля
+			const passwordFormatRegex = /^[a-zA-Z._0-9]+$/;
+			if (!passwordFormatRegex.test(newPassword)) {
+				throw boom.badRequest(
+					'Новый пароль должен содержать только буквы a-z, A-Z, цифры 0-9, точку (.) и символ подчеркивания (_)'
+				);
+			}
+
+			// Поиск пользователя
+			const user = await User.findById(id);
+			if (!user) {
+				throw boom.notFound('Пользователь не найден');
+			}
+
+			// Проверка текущего пароля
+			const isMatch = await bcrypt.compare(currentPassword, user.password);
+			if (!isMatch) {
+				throw boom.unauthorized('Неверный текущий пароль');
+			}
+
+			// Хеширование нового пароля
+			const hashNewPassword = await bcrypt.hash(newPassword, 10);
+
+			// Обновление пароля
+			user.password = hashNewPassword;
+			await user.save();
+
+			logger.info('Пароль пользователя успешно изменен', { userId: id });
+			res.json({ message: 'Пароль успешно изменен' });
+		} catch (error) {
+			logger.error('Ошибка при смене пароля', {
+				error: error.message,
+				stack: error.stack,
+			});
+			next(error);
+		}
+	},
 };

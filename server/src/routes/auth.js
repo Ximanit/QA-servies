@@ -11,5 +11,6 @@ router.route('/user/:id').get(controller.get);
 router.route('/delete').delete(controller.delete);
 router.route('/update/:id').put(controller.update);
 router.route('/addRole').post(controller.addNewRole);
+router.route('/change-password/:id').put(controller.changePassword);
 
 module.exports = router;

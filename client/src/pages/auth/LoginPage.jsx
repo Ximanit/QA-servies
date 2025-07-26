@@ -53,7 +53,7 @@ const LoginPage = () => {
 				<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
 					Забыли пароль?{' '}
 					<Link
-						to="/auth/forgot-password"
+						to="/"
 						style={{
 							color: '#1976d2',
 							textDecoration: 'none',
