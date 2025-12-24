@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const boom = require('@hapi/boom');
-const { secret } = require('../../config');
+require('dotenv').config();
+
+const secret = process.env.JWT_SECRET;
 
 module.exports = (req, res, next) => {
 	const token = req.headers.authorization?.split(' ')[1];

@@ -51,7 +51,7 @@ module.exports = {
 			try {
 				if (err) throw boom.badRequest(err.message || 'Ошибка загрузки файлов');
 
-				const { title, description, category, priority, assignedTo } = req.body;
+				const { title, description, priority, assignedTo } = req.body;
 				if (!title || !description) {
 					throw boom.badRequest('Заголовок и описание обязательны');
 				}
@@ -68,7 +68,6 @@ module.exports = {
 				const ticket = new Ticket({
 					title,
 					description,
-					category,
 					author,
 					files,
 					priority,
@@ -165,7 +164,7 @@ module.exports = {
 			try {
 				if (err) throw boom.badRequest(err.message || 'Ошибка загрузки файлов');
 
-				const { title, description, category, status, assignedTo } = req.body;
+				const { title, description, status, assignedTo } = req.body;
 				const files =
 					req.files?.map((file) => ({
 						filename: file.filename,
@@ -180,7 +179,6 @@ module.exports = {
 				const updatedData = {
 					...(title && { title }),
 					...(description && { description }),
-					...(category && { category }),
 					...(status && { status }),
 					...(assignedTo && { assignedTo }),
 					updatedAt: Date.now(),

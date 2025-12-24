@@ -14,10 +14,6 @@ const TicketSchema = new Schema({
 		ref: 'usersauth',
 		required: true,
 	},
-	category: {
-		type: String,
-		default: 'General',
-	},
 	priority: {
 		type: String,
 		enum: ['Низкий', 'Средний', 'Высокий'],

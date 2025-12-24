@@ -3,12 +3,14 @@ const Roles = require('../models/Roles');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { secret } = require('../../config');
+require('dotenv').config();
 const boom = require('boom');
 const logger = require('../logger');
 const NodeCache = require('node-cache');
 
 const cache = new NodeCache({ stdTTL: 600 }); // Кэш на 10 минут
+
+const secret = process.env.JWT_SECRET;
 
 const generateAccesToken = (id, username) => {
 	const payload = { id, username };
@@ -43,18 +45,12 @@ module.exports = {
 				);
 			}
 
-			const userRole = await Roles.findOne({ value: 'USER' });
-			if (!userRole) {
-				throw boom.internal('Роль пользователя "USER" не найдена');
-			}
-
 			const hashPassword = await bcrypt.hash(password, 10);
 
 			const user = new User({
 				username,
 				name: userName,
 				password: hashPassword,
-				roles: [userRole.value],
 			});
 			await user.save();
 			logger.info('Пользователь успешно зарегистрирован', { user });
@@ -98,13 +94,11 @@ module.exports = {
 			logger.info('Пользователь успешно авторизовался', {
 				token,
 				name: user.name,
-				roles: user.roles,
 				id: user._id,
 			});
 			res.json({
 				token,
 				name: user.name,
-				roles: user.roles,
 				id: user._id,
 				email: user.username,
 			});
@@ -195,26 +189,6 @@ module.exports = {
 			res.json({ message: 'Пользователь удален!' });
 		} catch (error) {
 			logger.error('Ошибка удаления пользователя', {
-				error: error.message,
-				stack: error.stack,
-			});
-			next(error);
-		}
-	},
-
-	async addNewRole(req, res, next) {
-		try {
-			const { rolesName } = req.body;
-			const role = await Roles.findOne({ value: rolesName });
-			if (role) {
-				throw boom.conflict(`Роль ${rolesName} уже существует`);
-			}
-			const newRole = new Roles({ value: rolesName });
-			await newRole.save();
-			logger.info('Успешное добавление новой роли', { newRole });
-			res.json({ message: 'Роль успешно создана' });
-		} catch (error) {
-			logger.error('Ошибка добавления новой роли', {
 				error: error.message,
 				stack: error.stack,
 			});

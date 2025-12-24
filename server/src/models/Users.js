@@ -15,7 +15,6 @@ const User = new Schema({
 		type: String,
 		required: true,
 	},
-	roles: [{ type: String, ref: 'userroles' }],
 	registrDate: {
 		type: Date,
 		default: new Date(),
