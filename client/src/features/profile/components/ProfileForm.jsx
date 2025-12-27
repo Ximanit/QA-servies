@@ -20,7 +20,7 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 	} = useForm({
 		defaultValues: {
 			fio: profile?.fio || '',
-			email: profile?.email || '',
+			username: profile?.username || '',
 			currentPassword: '',
 			newPassword: '',
 			confirmNewPassword: '',
@@ -31,8 +31,8 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 
 	useEffect(() => {
 		reset({
-			fio: profile?.name || '',
-			email: profile?.username || '',
+			fio: profile?.fio || '',
+			username: profile?.username || '',
 			currentPassword: '',
 			newPassword: '',
 			confirmNewPassword: '',
@@ -109,11 +109,11 @@ const ProfileForm = ({ profile, onUpdate, updateLoading }) => {
 								<ControlledTextField
 									name="fio"
 									control={control}
-									rules={{ required: 'Введите ваше имя!' }}
-									placeholder="Имя"
+									rules={{ required: 'Введите ваше ФИО!' }}
+									placeholder="Фамилия Имя Отчество"
 								/>
 								<ControlledTextField
-									name="email"
+									name="username"
 									control={control}
 									rules={{ required: 'Введите ваш email!' }}
 									placeholder="Email"

@@ -95,6 +95,7 @@ module.exports = {
 				id: user._id,
 			});
 			res.json({
+				fio: user.fio,
 				token,
 				username: user.username,
 				id: user._id,

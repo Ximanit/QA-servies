@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+
 import { logoutUser } from '../../store/actions/authActions';
-import { useGetProfileQuery } from '../../features/profile/profileApi';
+import { useGetUserByIdQuery } from '../../features/auth/authApi';
+
 import MainLayout from '../../layouts/MainLayout';
 
 const ProtectedRoute = ({ children }) => {
-	const { token } = useSelector((state) => state.auth);
+	const { token, id } = useSelector((state) => state.auth);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { error, isLoading: isProfileLoading } = useGetProfileQuery(undefined, {
-		skip: !token,
+	const { error, isLoading: isProfileLoading } = useGetUserByIdQuery(id, {
+		skip: !token || !id,
 	});
 
 	useEffect(() => {

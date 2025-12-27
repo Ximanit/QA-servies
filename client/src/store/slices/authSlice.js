@@ -4,6 +4,7 @@ const initialState = {
 	token: localStorage.getItem('token') || null,
 	id: localStorage.getItem('id') || null,
 	email: localStorage.getItem('email') || null,
+	user: localStorage.getItem('user') || null,
 };
 
 const authSlice = createSlice({
@@ -11,9 +12,11 @@ const authSlice = createSlice({
 	initialState,
 	reducers: {
 		setUser: (state, action) => {
+			state.user = action.payload.data.fio;
 			state.token = action.payload.data.token;
 			state.id = action.payload.data.id || action.payload.data._id;
 			state.email = action.payload.data.email || action.payload.data.username;
+			localStorage.setItem('user', action.payload.data.name);
 			localStorage.setItem('token', action.payload.data.token);
 			localStorage.setItem(
 				'id',
@@ -25,9 +28,11 @@ const authSlice = createSlice({
 			);
 		},
 		logout: (state) => {
+			state.user = null;
 			state.token = null;
 			state.id = null;
 			state.email = null;
+			localStorage.removeItem('user');
 			localStorage.removeItem('token');
 			localStorage.removeItem('id');
 			localStorage.removeItem('email');

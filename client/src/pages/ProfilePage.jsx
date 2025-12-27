@@ -71,7 +71,7 @@ const ProfilePage = () => {
 						<Typography
 							variant="body1"
 							sx={{ fontWeight: 500, textAlign: 'center' }}>
-							{profile.name || 'Фамилия Имя Отчество'}
+							{profile.fio || 'Фамилия Имя Отчество'}
 						</Typography>
 						<Typography
 							variant="body2"

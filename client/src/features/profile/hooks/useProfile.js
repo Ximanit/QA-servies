@@ -1,6 +1,9 @@
 import { useSelector } from 'react-redux';
-import { useGetUserByIdQuery, useUpdateUserMutation } from '../../auth/authApi';
-// import { useChangePasswordMutation } from '../profileApi';
+import {
+	useGetUserByIdQuery,
+	useUpdateUserMutation,
+	useChangePasswordMutation,
+} from '../../auth/authApi';
 import { useToast } from '../../../utils/ToastContext';
 import { TOAST_MESSAGES } from '../../../constants/messages';
 
@@ -12,32 +15,32 @@ export const useProfile = () => {
 		data: profile,
 		isLoading: profileLoading,
 		error: profileError,
-	} = useGetUserByIdQuery(userId);
+	} = useGetUserByIdQuery(userId, { skip: !userId });
+
 	const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
-	// const [changePassword, { isLoading: changePasswordLoading }] =
-	// 	useChangePasswordMutation();
+	const [changePassword, { isLoading: changePasswordLoading }] =
+		useChangePasswordMutation();
 
 	const updateProfileData = async (values) => {
 		try {
+			// Если переданы пароли — меняем пароль
 			if (values.currentPassword && values.newPassword) {
-				// Смена пароля
-				// await changePassword({
-				// 	id: userId,
-				// 	currentPassword: values.currentPassword,
-				// 	newPassword: values.newPassword,
-				// }).unwrap();
+				await changePassword({
+					id: userId,
+					currentPassword: values.currentPassword,
+					newPassword: values.newPassword,
+				}).unwrap();
 				showToast(TOAST_MESSAGES.PASSWORD_CHANGED, 'success');
-				return true;
 			} else {
-				// Обновление профиля
+				// Обновляем только профиль
 				await updateUser({
 					id: userId,
 					fio: values.fio,
-					email: values.email,
+					username: values.email, // ← здесь email → username
 				}).unwrap();
 				showToast(TOAST_MESSAGES.PROFILE_UPDATED, 'success');
-				return true;
 			}
+			return true;
 		} catch (error) {
 			showToast(error.data?.message || TOAST_MESSAGES.ERROR_PROFILE, 'error');
 			return false;
@@ -46,9 +49,9 @@ export const useProfile = () => {
 
 	return {
 		profile,
-		isLoading: profileLoading,
+		isLoading: profileLoading || updateLoading || changePasswordLoading,
 		profileError,
 		updateProfile: updateProfileData,
-		updateLoading: updateLoading,
+		updateLoading: updateLoading || changePasswordLoading,
 	};
 };
