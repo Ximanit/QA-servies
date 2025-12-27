@@ -29,6 +29,7 @@ export const authApi = createApi({
 				await queryFulfilled;
 				const { data } = await dispatch(
 					authApi.endpoints.login.initiate({
+						fio: userData.fio,
 						username: userData.username,
 						password: userData.password,
 					})

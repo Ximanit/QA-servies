@@ -28,7 +28,7 @@ const RegisterForm = ({ onSubmit, isLoading }) => {
 			onSubmit={handleSubmit(onSubmit)}
 			sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 			<ControlledTextField
-				name="name"
+				name="fio"
 				control={control}
 				rules={{ required: 'Введите ваше ФИО!' }}
 				placeholder="Фамилия Имя Отчество"

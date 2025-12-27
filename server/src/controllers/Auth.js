@@ -24,7 +24,7 @@ module.exports = {
 				throw boom.badRequest('Ошибка валидации', { errors: errors.array() });
 			}
 
-			const { username, password } = req.body;
+			const { username, password, fio } = req.body;
 
 			const usernameRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 			if (!usernameRegex.test(username)) {
@@ -46,6 +46,7 @@ module.exports = {
 			const hashPassword = await bcrypt.hash(password, 10);
 
 			const user = new User({
+				fio,
 				username,
 				password: hashPassword,
 			});
