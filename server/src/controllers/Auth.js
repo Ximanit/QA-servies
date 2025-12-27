@@ -1,5 +1,4 @@
 const User = require('../models/Users');
-const Roles = require('../models/Roles');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -25,8 +24,7 @@ module.exports = {
 				throw boom.badRequest('Ошибка валидации', { errors: errors.array() });
 			}
 
-			const { username, password, name } = req.body;
-			const userName = name ?? 'User';
+			const { username, password } = req.body;
 
 			const usernameRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 			if (!usernameRegex.test(username)) {
@@ -49,7 +47,6 @@ module.exports = {
 
 			const user = new User({
 				username,
-				name: userName,
 				password: hashPassword,
 			});
 			await user.save();
@@ -90,17 +87,16 @@ module.exports = {
 				throw boom.unauthorized('Неверный пароль');
 			}
 
-			const token = generateAccesToken(user._id, user.name);
+			const token = generateAccesToken(user._id, user.username);
 			logger.info('Пользователь успешно авторизовался', {
 				token,
-				name: user.name,
+				username: user.username,
 				id: user._id,
 			});
 			res.json({
 				token,
-				name: user.name,
+				username: user.username,
 				id: user._id,
-				email: user.username,
 			});
 		} catch (error) {
 			logger.error('Ошибка авторизации пользователя', {
@@ -153,11 +149,10 @@ module.exports = {
 	async update(req, res, next) {
 		try {
 			const { id } = req.params;
-			const { fio, email } = req.body;
+			const { username } = req.body;
 
 			const updatedUser = await User.findByIdAndUpdate(id, {
-				name: fio,
-				username: email,
+				username: username,
 			});
 			if (!updatedUser) {
 				throw boom.notFound('Пользователь не найден');

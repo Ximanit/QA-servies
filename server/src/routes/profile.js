@@ -6,15 +6,12 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);
 
-router
-	.route('/')
-	.post(controller.createProfile) // Создание ответа
-	.get(controller.getProfile); // Получение всех ответов
+router.route('/').post(controller.createProfile).get(controller.getProfile);
 
 router
 	.route('/:id')
-	.get(controller.getProfileById) // Получение ответа по ID
-	.put(controller.updateProfile) // Обновление ответа
-	.delete(controller.deleteProfile); // Удаление ответа
+	.get(controller.getProfileById)
+	.put(controller.updateProfile)
+	.delete(controller.deleteProfile);
 
 module.exports = router;

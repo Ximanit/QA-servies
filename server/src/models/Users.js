@@ -6,11 +6,6 @@ const User = new Schema({
 		unique: true,
 		required: true,
 	},
-	name: {
-		type: String,
-		required: true,
-		default: 'User',
-	},
 	password: {
 		type: String,
 		required: true,
