@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Box, CssBaseline, useMediaQuery } from '@mui/material';
+
 import { logoutUser } from '../store/actions/authActions';
 import { useGetUserTicketsQuery } from '../features/tickets/ticketsApi';
-
-import { Box, CssBaseline, useMediaQuery } from '@mui/material';
 
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';

@@ -1,21 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_URL } from '../../constants/constants';
-import { baseQueryWithAuth } from '../../utils/apiUtils';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
-const baseQuery = fetchBaseQuery({
-	baseUrl: API_URL,
-	prepareHeaders: (headers, { getState }) => {
-		const token = getState().auth.token;
-		if (token) headers.set('Authorization', `Bearer ${token}`);
-		return headers;
-	},
-});
-
-const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
+import { apiBaseQuery } from '../../utils/apiUtils';
 
 export const profileApi = createApi({
 	reducerPath: 'profileApi',
-	baseQuery: baseQueryWithAuthHandler,
+	baseQuery: apiBaseQuery,
 	tagTypes: ['Profile'],
 	endpoints: (builder) => ({
 		getProfile: builder.query({
@@ -30,11 +19,11 @@ export const profileApi = createApi({
 			}),
 			invalidatesTags: ['Profile'],
 		}),
-		changePassword: builder.mutation({
-			query: ({ id, ...passwordData }) => ({
-				url: `/change-password/${id}`,
-				method: 'PUT',
-				body: passwordData,
+		createProfile: builder.mutation({
+			query: (profileData) => ({
+				url: '/profile',
+				method: 'POST',
+				body: profileData,
 			}),
 			invalidatesTags: ['Profile'],
 		}),
@@ -44,5 +33,5 @@ export const profileApi = createApi({
 export const {
 	useGetProfileQuery,
 	useUpdateProfileMutation,
-	useChangePasswordMutation,
+	useCreateProfileMutation,
 } = profileApi;

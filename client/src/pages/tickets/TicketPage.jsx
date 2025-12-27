@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Box, Card, Typography, Skeleton, Button } from '@mui/material';
 import { motion } from 'framer-motion';
+import { Box, Card, Typography, Skeleton, Button } from '@mui/material';
+
 import { useTicketDetails } from '../../features/tickets/hooks/useTicketDetails';
 import { useTicketMessages } from '../../features/tickets/hooks/useTicketMessages';
 import { useTicketNotifications } from '../../features/tickets/hooks/useTicketNotifications';

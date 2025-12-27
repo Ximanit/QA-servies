@@ -1,16 +1,13 @@
 import { useState } from 'react';
-import { Button, Box, InputAdornment, IconButton } from '@mui/material';
 import { useForm } from 'react-hook-form';
+
+import { Button, Box, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 
 import ControlledTextField from '../../../components/Common/ControlledTextField';
 
 const LoginForm = ({ onSubmit, isLoading }) => {
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-	} = useForm();
+	const { control, handleSubmit } = useForm();
 	const [showPassword, setShowPassword] = useState(false);
 
 	const handleTogglePassword = () => setShowPassword((prev) => !prev);
@@ -22,6 +19,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
 			sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 			<ControlledTextField
 				name="username"
+				label="Логин"
 				control={control}
 				rules={{ required: 'Введите имя пользователя!' }}
 				placeholder="Имя пользователя"
@@ -35,6 +33,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
 			/>
 			<ControlledTextField
 				name="password"
+				label="Пароль"
 				control={control}
 				rules={{ required: 'Введите пароль!' }}
 				placeholder="Пароль"

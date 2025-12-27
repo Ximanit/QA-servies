@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { useGetUserByIdQuery, useUpdateUserMutation } from '../../auth/authApi';
-import { useChangePasswordMutation } from '../profileApi';
+// import { useChangePasswordMutation } from '../profileApi';
 import { useToast } from '../../../utils/ToastContext';
 import { TOAST_MESSAGES } from '../../../constants/messages';
 
@@ -14,18 +14,18 @@ export const useProfile = () => {
 		error: profileError,
 	} = useGetUserByIdQuery(userId);
 	const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
-	const [changePassword, { isLoading: changePasswordLoading }] =
-		useChangePasswordMutation();
+	// const [changePassword, { isLoading: changePasswordLoading }] =
+	// 	useChangePasswordMutation();
 
 	const updateProfileData = async (values) => {
 		try {
 			if (values.currentPassword && values.newPassword) {
 				// Смена пароля
-				await changePassword({
-					id: userId,
-					currentPassword: values.currentPassword,
-					newPassword: values.newPassword,
-				}).unwrap();
+				// await changePassword({
+				// 	id: userId,
+				// 	currentPassword: values.currentPassword,
+				// 	newPassword: values.newPassword,
+				// }).unwrap();
 				showToast(TOAST_MESSAGES.PASSWORD_CHANGED, 'success');
 				return true;
 			} else {
@@ -49,6 +49,6 @@ export const useProfile = () => {
 		isLoading: profileLoading,
 		profileError,
 		updateProfile: updateProfileData,
-		updateLoading: updateLoading || changePasswordLoading,
+		updateLoading: updateLoading,
 	};
 };

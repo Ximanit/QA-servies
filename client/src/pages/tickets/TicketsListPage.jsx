@@ -31,14 +31,13 @@ import {
 const TicketsListPage = () => {
 	const navigate = useNavigate();
 	const userId = useSelector((state) => state.auth.id);
-	const { data: tickets = [], isLoading } = useGetUserTicketsQuery(userId);
+	const { data: tickets = [] } = useGetUserTicketsQuery(userId);
 	const notifications = useNotifications(); // Получаем уведомления
 	const [search, setSearch] = useState('');
 	const [statusFilter, setStatusFilter] = useState('Все статусы');
 	const [priorityFilter, setPriorityFilter] = useState('Все приоритеты');
 	const [activeTab, setActiveTab] = useState(0);
 
-	// Memoized event handlers
 	const handleCardClick = useCallback(
 		(ticketId) => {
 			navigate(`/tickets/${ticketId}`);
@@ -65,12 +64,11 @@ const TicketsListPage = () => {
 		[notifications]
 	);
 
-	// Filtered tickets based on tab, search, and filters
 	const filteredTickets = useMemo(() => {
 		return filterTickets(
 			tickets,
 			userId,
-			activeTab === 1, // true for "Созданные", false for "Полученные"
+			activeTab === 1,
 			search,
 			statusFilter,
 			priorityFilter
@@ -84,7 +82,7 @@ const TicketsListPage = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.4, ease: 'easeInOut' }}
 			sx={{ p: { xs: 2, sm: 3 } }}>
-			{/* Header Section */}
+			{/*Заголовок*/}
 			<Box
 				sx={{
 					display: 'flex',
@@ -106,7 +104,7 @@ const TicketsListPage = () => {
 				</Button>
 			</Box>
 
-			{/* Tabs */}
+			{/* Вкладки */}
 			<Tabs
 				value={activeTab}
 				onChange={handleTabChange}
@@ -116,7 +114,7 @@ const TicketsListPage = () => {
 				<Tab label="Созданные" />
 			</Tabs>
 
-			{/* Filters Section */}
+			{/* Поиск и фильтры */}
 			<Box
 				sx={{
 					display: 'flex',

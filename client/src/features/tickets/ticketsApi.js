@@ -1,21 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_URL } from '../../constants/constants';
-import { baseQueryWithAuth } from '../../utils/apiUtils';
-
-const baseQuery = fetchBaseQuery({
-	baseUrl: API_URL,
-	prepareHeaders: (headers, { getState }) => {
-		const token = getState().auth.token;
-		if (token) headers.set('Authorization', `Bearer ${token}`);
-		return headers;
-	},
-});
-
-const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { apiBaseQuery } from '../../utils/apiUtils';
 
 export const ticketsApi = createApi({
 	reducerPath: 'ticketsApi',
-	baseQuery: baseQueryWithAuthHandler,
+	baseQuery: apiBaseQuery,
 	tagTypes: ['Tickets', 'TicketDetails', 'Messages', 'Notifications'],
 	endpoints: (builder) => ({
 		getTickets: builder.query({
@@ -119,7 +107,7 @@ export const ticketsApi = createApi({
 			transformResponse: (response) => ({
 				createdStats: response.createdStats || [],
 				assignedStats: response.assignedStats || [],
-			}), // Приводим статистику к новому формату
+			}),
 		}),
 	}),
 });

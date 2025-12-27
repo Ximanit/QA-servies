@@ -14,11 +14,13 @@ import {
 	Grid,
 } from '@mui/material';
 import { useGetTicketStatsQuery } from '../../tickets/ticketsApi';
+
 import {
 	calculateStats,
 	getStatusData,
 	getPriorityData,
 } from '../utils/statsUtils';
+
 import StatsSummary from '../components/StatsSummary';
 import StatsCharts from '../components/StatsCharts';
 

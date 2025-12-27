@@ -14,8 +14,6 @@ const ProfilePage = () => {
 	const { profile, isLoading, profileError, updateProfile, updateLoading } =
 		useProfile();
 
-	console.log(profile);
-
 	if (isLoading) {
 		return (
 			<Box sx={{ maxWidth: 800, mx: 'auto', mt: 3, px: 2 }}>

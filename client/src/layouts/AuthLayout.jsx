@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { Box, CssBaseline, Typography } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 
 const AuthLayout = () => {
 	return (

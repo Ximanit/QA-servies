@@ -1,10 +1,12 @@
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Box, Typography } from '@mui/material';
+
 import { useLoginMutation } from '../../features/auth/authApi';
 import LoginForm from '../../features/auth/components/LoginForm';
-import { Box, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
 
 import { useToast } from '../../utils/ToastContext';
+
 import { TOAST_MESSAGES } from '../../constants/messages';
 
 const LoginPage = () => {

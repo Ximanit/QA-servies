@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+
 import { useCreateTicketMutation } from '../../features/tickets/ticketsApi';
 import { useGetUsersQuery } from '../../features/auth/authApi';
 import { useToast } from '../../utils/ToastContext';
@@ -23,8 +24,6 @@ const CreateTicketPage = () => {
 		refetchOnMountOrArgChange: true,
 	});
 	const { showToast } = useToast();
-
-	console.log('useGetUsersQuery:', { users, usersLoading, error });
 
 	const handleSubmit = async (values) => {
 		try {

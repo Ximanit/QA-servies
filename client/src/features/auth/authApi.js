@@ -1,24 +1,11 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+
 import { setUser } from '../../store/slices/authSlice';
-import { API_URL } from '../../constants/constants';
-
-import { baseQueryWithAuth } from '../../utils/apiUtils';
-
-// Кастомный baseQuery с обработкой 401
-const baseQuery = fetchBaseQuery({
-	baseUrl: API_URL,
-	prepareHeaders: (headers, { getState }) => {
-		const token = getState().auth.token;
-		if (token) headers.set('Authorization', `Bearer ${token}`);
-		return headers;
-	},
-});
-
-const baseQueryWithAuthHandler = baseQueryWithAuth(baseQuery);
+import { apiBaseQuery } from '../../utils/apiUtils';
 
 export const authApi = createApi({
 	reducerPath: 'authApi',
-	baseQuery: baseQueryWithAuthHandler,
+	baseQuery: apiBaseQuery,
 	tagTypes: ['Users'],
 	endpoints: (builder) => ({
 		login: builder.mutation({
@@ -53,24 +40,29 @@ export const authApi = createApi({
 			query: () => '/auth/users',
 			providesTags: ['Users'],
 		}),
-		// Новый эндпоинт для получения пользователя по ID
 		getUserById: builder.query({
 			query: (id) => `/auth/user/${id}`,
 			providesTags: ['Users'],
 		}),
-		// Новый эндпоинт для обновления пользователя
 		updateUser: builder.mutation({
 			query: ({ id, ...userData }) => ({
 				url: `/auth/update/${id}`,
-				method: 'PUT', // или 'PUT' в зависимости от вашего API
+				method: 'PUT',
 				body: userData,
 			}),
-			// invalidatesTags: ['Users'], // Инвалидация кэша при обновлении
+			invalidatesTags: ['Users'], // Инвалидация кэша при обновлении
 			onQueryStarted: async (_, { dispatch, queryFulfilled, getState }) => {
 				const { data } = await queryFulfilled;
 				const currentToken = getState().auth.token; // Получаем текущий токен
 				dispatch(setUser({ data: { ...data.user, token: currentToken } }));
 			},
+		}),
+		changePassword: builder.mutation({
+			query: ({ id, ...passwordData }) => ({
+				url: `/auth/change-password/${id}`, // Обратите внимание: путь с /auth/
+				method: 'PUT',
+				body: passwordData,
+			}),
 		}),
 	}),
 });
@@ -81,4 +73,5 @@ export const {
 	useGetUsersQuery,
 	useGetUserByIdQuery,
 	useUpdateUserMutation,
+	useChangePasswordMutation,
 } = authApi;

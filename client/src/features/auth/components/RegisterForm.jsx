@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, Box, InputAdornment, IconButton } from '@mui/material';
 import { useForm } from 'react-hook-form';
+
 import {
 	Visibility,
 	VisibilityOff,
@@ -8,6 +8,8 @@ import {
 	Lock,
 	Badge,
 } from '@mui/icons-material';
+import { Button, Box, InputAdornment, IconButton } from '@mui/material';
+
 import ControlledTextField from '../../../components/Common/ControlledTextField';
 
 const RegisterForm = ({ onSubmit, isLoading }) => {

@@ -1,10 +1,13 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useRegisterMutation } from '../../features/auth/authApi';
-import RegisterForm from '../../features/auth/components/RegisterForm';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
+import { useRegisterMutation } from '../../features/auth/authApi';
+
+import RegisterForm from '../../features/auth/components/RegisterForm';
+
 import { useToast } from '../../utils/ToastContext';
+
 import { TOAST_MESSAGES } from '../../constants/messages';
 
 const RegisterPage = () => {
