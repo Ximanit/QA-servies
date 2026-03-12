@@ -1,7 +1,7 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logoutUser } from '../store/actions/authActions';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://qa-servies.onrender.com';
 
 // Общий raw baseQuery с заголовками авторизации
 const rawBaseQuery = fetchBaseQuery({
