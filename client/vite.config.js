@@ -5,10 +5,7 @@ import { analyzer } from 'vite-bundle-analyzer';
 
 // https://vite.dev/config/
 export default defineConfig({
-	plugins: [react(), analyzer()],
-	server: {
-		open: false, // Отключение автоматического открытия браузера
-	},
+	plugins: [react()],
 	build: {
 		minify: 'esbuild',
 		rollupOptions: {
