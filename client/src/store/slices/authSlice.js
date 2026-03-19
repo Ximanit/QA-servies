@@ -16,15 +16,15 @@ const authSlice = createSlice({
 			state.token = action.payload.data.token;
 			state.id = action.payload.data.id || action.payload.data._id;
 			state.email = action.payload.data.email || action.payload.data.username;
-			localStorage.setItem('user', action.payload.data.name);
+			localStorage.setItem('user', action.payload.data.fio);
 			localStorage.setItem('token', action.payload.data.token);
 			localStorage.setItem(
 				'id',
-				action.payload.data.id || action.payload.data._id
+				action.payload.data.id || action.payload.data._id,
 			);
 			localStorage.setItem(
 				'email',
-				action.payload.data.email || action.payload.data.username
+				action.payload.data.email || action.payload.data.username,
 			);
 		},
 		logout: (state) => {
